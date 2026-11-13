@@ -1,0 +1,1277 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>الاتزان الكيميائي — Chemical Equilibrium</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800;900&family=Inter:wght@400;600;700;900&display=swap" rel="stylesheet">
+<style>:root{
+  --navy:#1b3358; --navy2:#22416d;
+  --bg1:#eef4fc; --bg2:#f7f9fe; --card:#ffffff; --line:#dbe6f5;
+  --ink:#1c2a3f; --muted:#5b6b82;
+  --blue:#1d5fc2; --blue2:#2f7be6; --blueSoft:#e7f0fd;
+  --green:#0d8a5b; --green2:#15a46d; --greenSoft:#e5f7ee;
+  --purple:#6a44c2; --purple2:#8a63e0; --purpleSoft:#f0eafd;
+  --red:#e0474c; --amber:#f2b33d;
+  --radius:22px; --shadow:0 6px 24px rgba(34,65,109,.09);
+}
+*{box-sizing:border-box}
+html,body{margin:0;padding:0}
+body{font-family:'Cairo','Inter',system-ui,sans-serif;color:var(--ink);
+  background:radial-gradient(1200px 500px at 85% -10%,#dfeafc 0,transparent 60%),
+  radial-gradient(900px 500px at 0% 100%,#e8e4fb 0,transparent 55%),linear-gradient(180deg,var(--bg1),var(--bg2));
+  min-height:100vh;line-height:1.7}
+html[lang=en] body{font-family:'Inter','Cairo',system-ui,sans-serif}
+button{font-family:inherit;cursor:pointer}
+input{font-family:inherit}
+:focus-visible{outline:3px solid #f2b33d;outline-offset:2px}
+.eq{direction:ltr;unicode-bidi:isolate;display:inline-block;font-family:'Inter',sans-serif;font-weight:600;white-space:nowrap}
+.eqblock{direction:ltr;text-align:center;font-family:'Inter',sans-serif;font-weight:600;font-size:1.12em;background:#f4f7fd;border:1px solid var(--line);border-radius:14px;padding:10px 12px;margin:10px 0;overflow-x:auto}
+.frac{display:inline-flex;flex-direction:column;vertical-align:middle;text-align:center;margin:0 4px}
+.frac>span:first-child{border-bottom:2px solid currentColor;padding:0 4px}
+.frac>span{padding:0 4px}
+
+/* NAV */
+.nav{background:var(--navy);color:#fff;display:flex;align-items:center;gap:18px;padding:10px 26px;position:sticky;top:0;z-index:30;box-shadow:0 2px 10px rgba(0,0,0,.15)}
+.brand{display:flex;align-items:center;gap:12px;font-weight:800;font-size:1.15rem;flex:1;min-width:0}
+.brand span{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.navlinks{display:flex;gap:6px;align-items:center}
+.navlinks button{background:transparent;border:0;color:#e8eefb;display:flex;align-items:center;gap:7px;padding:8px 12px;border-radius:12px;font-size:.95rem;font-weight:600}
+.navlinks button:hover{background:rgba(255,255,255,.1)}
+.navlinks svg{width:20px;height:20px}
+.lang{border:1px solid rgba(255,255,255,.35)!important}
+
+.wrap{max-width:1240px;margin:0 auto;padding:24px 22px 120px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);box-shadow:var(--shadow);padding:22px}
+.banner{background:linear-gradient(120deg,#e9f0fe,#f1edfd);border:1px solid #d9e2f8;border-radius:var(--radius);padding:22px 28px;display:flex;align-items:center;gap:22px;justify-content:center;text-align:center;position:relative;overflow:hidden}
+.banner h1{margin:0;font-size:2rem;font-weight:900;color:#13284a;line-height:1.3}
+.banner p{margin:6px 0 0;color:#33445e;font-size:1.08rem}
+.spark{position:absolute;width:46px;height:30px;top:18px;inset-inline-start:22px}
+.btn{border:0;border-radius:16px;padding:13px 24px;font-size:1.05rem;font-weight:800;color:#fff;display:inline-flex;align-items:center;justify-content:center;gap:10px;box-shadow:0 5px 14px rgba(29,95,194,.22);transition:transform .12s}
+.btn:hover{transform:translateY(-1px)}
+.btn:disabled{opacity:.5;cursor:not-allowed;transform:none}
+.btn.blue{background:linear-gradient(180deg,var(--blue2),var(--blue))}
+.btn.green{background:linear-gradient(180deg,var(--green2),var(--green));box-shadow:0 5px 14px rgba(13,138,91,.22)}
+.btn.purple{background:linear-gradient(180deg,var(--purple2),var(--purple));box-shadow:0 5px 14px rgba(106,68,194,.22)}
+.btn.ghost{background:#fff;color:var(--navy);border:1.5px solid var(--line);box-shadow:none}
+.btn.sm{padding:8px 14px;font-size:.92rem;border-radius:12px}
+.muted{color:var(--muted)}
+.tag{display:inline-block;font-size:.78rem;font-weight:700;padding:3px 10px;border-radius:999px;background:#fff4dc;color:#8a5a00;border:1px solid #f4dca4}
+.tag.ill{background:#eef3fb;color:#3d5579;border-color:#d4def0}
+
+/* LOGIN */
+.login{max-width:980px;margin:30px auto;display:grid;grid-template-columns:1.1fr 1fr;gap:26px;align-items:stretch}
+.login .hero{background:linear-gradient(150deg,#e3edfd,#efe9fd);border-radius:var(--radius);padding:30px;border:1px solid #d6e0f6;position:relative;overflow:hidden}
+.login h1{font-size:2.1rem;line-height:1.3;margin:0 0 6px;color:#13284a;font-weight:900}
+.field{display:flex;flex-direction:column;gap:6px;margin-bottom:16px}
+.field label{font-weight:700}
+.field input{border:1.5px solid var(--line);border-radius:14px;padding:12px 14px;font-size:1.05rem;background:#fbfcff}
+.field input:focus{border-color:var(--blue2);outline:none;box-shadow:0 0 0 3px #dbe8fd}
+.err{color:var(--red);font-size:.9rem;min-height:1.2em}
+.consent{display:flex;gap:10px;align-items:flex-start;font-size:.92rem;color:var(--muted);margin:6px 0 16px}
+.consent input{margin-top:6px;width:18px;height:18px}
+
+/* DASHBOARD */
+.dash{display:grid;grid-template-columns:1fr 290px;gap:22px}
+html[dir=rtl] .dash{grid-template-columns:1fr 290px}
+.side{display:flex;flex-direction:column;gap:18px}
+.scorebox{padding:0;overflow:hidden}
+.scorebox h3{margin:0;background:#f2f6fd;padding:12px 18px;text-align:center;font-size:1.05rem}
+.ring{display:block;margin:16px auto 4px}
+.weak li{display:flex;gap:10px;align-items:center;margin:6px 0;font-weight:600}
+.dot{width:22px;height:22px;border-radius:50%;display:inline-flex;align-items:center;justify-content:center;color:#fff;font-weight:900;font-size:.85rem;flex:none}
+.dot.r{background:var(--red)} .dot.g{background:var(--green2)}
+.paths{display:grid;grid-template-columns:repeat(3,1fr);gap:18px;margin-top:22px}
+.path{border-radius:var(--radius);padding:18px 18px 20px;display:flex;flex-direction:column;align-items:center;text-align:center;border:1.5px solid var(--line);position:relative;background:#fff;box-shadow:var(--shadow)}
+.path.blue{background:linear-gradient(180deg,#eef4ff,#fff 60%)}
+.path.green{background:linear-gradient(180deg,#e8f8f0,#fff 60%)}
+.path.purple{background:linear-gradient(180deg,#f3eefe,#fff 60%)}
+.path.rec{border:2.5px solid var(--green2);box-shadow:0 10px 30px rgba(13,138,91,.18)}
+.path.rec.blue{border-color:var(--blue2);box-shadow:0 10px 30px rgba(29,95,194,.18)}
+.path.rec.purple{border-color:var(--purple2);box-shadow:0 10px 30px rgba(106,68,194,.18)}
+.recbadge{position:absolute;top:-16px;padding:4px 18px;border-radius:999px;color:#fff;font-weight:800;font-size:.9rem}
+.pill{width:100%;border-radius:999px;color:#fff;font-weight:900;font-size:clamp(.95rem,1.35vw,1.2rem);white-space:nowrap;padding:9px 14px;display:flex;align-items:center;justify-content:center;gap:10px}
+.pill.blue{background:linear-gradient(180deg,var(--blue2),var(--blue))}
+.pill.green{background:linear-gradient(180deg,var(--green2),var(--green))}
+.pill.purple{background:linear-gradient(180deg,var(--purple2),var(--purple))}
+.path .ill{height:130px;margin:10px 0}
+.path p{margin:4px 0 12px;color:#33445e}
+.what{width:100%;border-radius:14px;padding:6px 0;font-weight:800}
+.what.blue{background:var(--blueSoft);color:#183d78}.what.green{background:var(--greenSoft);color:#0b5b3d}.what.purple{background:var(--purpleSoft);color:#43278a}
+.feat{list-style:none;padding:0;margin:10px 0 16px;text-align:start;width:100%}
+.feat li{display:flex;gap:10px;align-items:center;margin:6px 8px}
+.range{font-size:.85rem;font-weight:700;color:var(--muted);margin-top:4px}
+.helpbar{display:flex;gap:18px;align-items:center;margin-top:24px}
+.bubble{flex:1;background:#fff;border:1.5px solid var(--line);border-radius:20px;padding:14px 20px;text-align:center;box-shadow:var(--shadow)}
+
+/* QUIZ */
+.qwrap{max-width:820px;margin:0 auto}
+.progress{height:10px;background:#e3eaf6;border-radius:99px;overflow:hidden;margin:10px 0 18px}
+.progress>i{display:block;height:100%;background:linear-gradient(90deg,var(--blue2),var(--purple2));border-radius:99px;transition:width .3s}
+.opt{display:flex;width:100%;text-align:start;gap:12px;align-items:center;background:#fbfcff;border:1.5px solid var(--line);border-radius:16px;padding:13px 16px;margin:9px 0;font-size:1.03rem;color:var(--ink)}
+.opt:hover{border-color:#a9c3ec;background:#f4f8ff}
+.opt.sel{border-color:var(--blue2);background:#eaf2ff}
+.opt.ok{border-color:var(--green2);background:#e6f8ef}
+.opt.no{border-color:var(--red);background:#fdeced}
+.opt .k{width:30px;height:30px;border-radius:50%;background:#e9eff9;display:inline-flex;align-items:center;justify-content:center;font-weight:800;flex:none}
+.fb{border-radius:16px;padding:12px 16px;margin-top:12px;font-weight:600}
+.fb.ok{background:#e6f8ef;color:#0b5b3d;border:1px solid #bfe9d3}
+.fb.hint{background:#fffaf0;color:#5b3d00;border:1px dashed #f0c46b}
+.fb.hint>div{margin:3px 0}
+.hintb{background:#fff8e6;color:#8a5a00;border:1.5px solid #f4dca4;box-shadow:none;flex:none}
+.chatact{margin-top:2px;font-size:.82rem!important;padding:5px 10px!important}
+.fb.no{background:#fff4e6;color:#7a4300;border:1px solid #f6d7a8}
+
+.qnav{display:flex;flex-wrap:wrap;gap:6px;margin:4px 0}
+.qn{width:38px;height:38px;border-radius:12px;border:1.5px solid var(--line);background:#f2f5fa;color:var(--muted);font-weight:800;font-family:'Inter',sans-serif;position:relative}
+.qn.a{background:var(--blue);border-color:var(--blue);color:#fff}
+.qn.cur{outline:3px solid var(--navy);outline-offset:1px}
+.qn.f:after{content:"";position:absolute;top:-4px;inset-inline-end:-4px;width:12px;height:12px;border-radius:50%;background:var(--amber);border:2px solid #fff}
+.flagb{background:#fff;color:#8a5a00;border:1.5px solid #f4dca4;box-shadow:none;flex:none}
+.flagb.on{background:#fff4dc}
+/* UNIT / PATH */
+.ulist{display:grid;grid-template-columns:repeat(auto-fill,minmax(270px,1fr));gap:16px;margin-top:18px}
+.ucard{background:#fff;border:1.5px solid var(--line);border-radius:20px;padding:18px;box-shadow:var(--shadow);display:flex;flex-direction:column;gap:8px;text-align:start}
+.ucard h3{margin:0;font-size:1.1rem}
+.ucard .n{width:38px;height:38px;border-radius:12px;display:inline-flex;align-items:center;justify-content:center;font-weight:900;color:#fff}
+.ucard.done{border-color:#bfe9d3}
+.section{margin:18px 0}
+.section h2{font-size:1.35rem;margin:0 0 8px;color:#13284a}
+.kp{list-style:none;padding:0;margin:0}
+.kp li{position:relative;padding-inline-start:28px;margin:8px 0}
+.kp li:before{content:"";position:absolute;inset-inline-start:4px;top:.62em;width:12px;height:12px;border-radius:4px;background:var(--blue2)}
+.mis{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin:10px 0}
+.mis>div{border-radius:16px;padding:12px 14px}
+.mis .w{background:#fdeced;border:1px solid #f6c6c8}
+.mis .r{background:#e6f8ef;border:1px solid #bfe9d3}
+table.rules{border-collapse:collapse;width:100%;margin:8px 0;font-size:.98rem}
+table.rules td,table.rules th{border:1px solid var(--line);padding:8px 10px;text-align:start}
+table.rules th{background:#f2f6fd}
+.tabs{display:flex;gap:8px;flex-wrap:wrap;margin:8px 0 14px}
+.tabs button{border:1.5px solid var(--line);background:#fff;border-radius:12px;padding:7px 14px;font-weight:700;color:var(--navy)}
+.tabs button.on{background:var(--navy);color:#fff;border-color:var(--navy)}
+
+/* SIMS */
+.sim{background:#fbfcff;border:1.5px solid var(--line);border-radius:20px;padding:16px;margin:14px 0}
+.simhead{display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:8px}
+.simhead h3{margin:0;font-size:1.12rem}
+.simgrid{display:grid;grid-template-columns:1.3fr 1fr;gap:14px}
+canvas{max-width:100%;display:block;background:#fff;border:1px solid var(--line);border-radius:14px}
+.ctrls{display:flex;flex-wrap:wrap;gap:8px;margin:10px 0}
+.counter{display:flex;gap:10px;flex-wrap:wrap;margin:8px 0}
+.counter>div{flex:1;min-width:120px;background:#fff;border:1px solid var(--line);border-radius:12px;padding:6px 10px;text-align:center;font-weight:700}
+.legend{display:flex;gap:14px;flex-wrap:wrap;font-size:.9rem;color:var(--muted)}
+.legend i{display:inline-block;width:12px;height:12px;border-radius:3px;margin-inline-end:5px;vertical-align:middle}
+.predict{background:#fffaf0;border:1px dashed #f0c46b;border-radius:14px;padding:10px 14px;margin:10px 0}
+.kcrow{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin:6px 0;padding:8px 10px;border:1px solid var(--line);border-radius:12px;background:#fff}
+.kcrow .sp{min-width:110px}
+.kcrow select{font-family:inherit;padding:6px 8px;border-radius:10px;border:1.5px solid var(--line)}
+.numin{border:1.5px solid var(--line);border-radius:12px;padding:9px 12px;font-size:1.05rem;width:140px;direction:ltr}
+
+/* CHAT */
+.fab{position:fixed;bottom:20px;inset-inline-end:20px;z-index:40;border:0;background:linear-gradient(180deg,var(--blue2),var(--blue));color:#fff;border-radius:999px;padding:8px 18px 8px 10px;display:flex;align-items:center;gap:8px;font-weight:800;box-shadow:0 8px 24px rgba(29,95,194,.35)}
+html[dir=ltr] .fab{padding:8px 10px 8px 18px}
+.fab svg{width:42px;height:42px}
+.chat{position:fixed;bottom:86px;inset-inline-end:20px;width:390px;max-width:calc(100vw - 24px);height:560px;max-height:calc(100vh - 120px);background:#fff;border:1.5px solid var(--line);border-radius:22px;box-shadow:0 20px 50px rgba(20,40,80,.25);z-index:45;display:none;flex-direction:column;overflow:hidden}
+.chat.open{display:flex}
+.chat header{background:var(--navy);color:#fff;padding:10px 14px;display:flex;align-items:center;gap:10px}
+.chat header svg{width:38px;height:38px}
+.chat header b{flex:1}
+.chat header button{background:transparent;border:0;color:#fff;font-size:1.4rem}
+.mode{font-size:.78rem;padding:5px 12px;text-align:center}
+.mode.demo{background:#fff4dc;color:#7a4b00}
+.mode.live{background:#e6f8ef;color:#0b5b3d}
+.msgs{flex:1;overflow-y:auto;padding:12px;display:flex;flex-direction:column;gap:8px;background:#f6f9fe}
+.m{max-width:85%;padding:9px 13px;border-radius:16px;white-space:pre-wrap;font-size:.97rem}
+.m.bot{background:#fff;border:1px solid var(--line);align-self:flex-start}
+.m.me{background:var(--blue);color:#fff;align-self:flex-end}
+.starters{display:flex;gap:6px;flex-wrap:nowrap;overflow-x:auto;padding:8px 10px;border-top:1px solid var(--line)}
+.starters button{white-space:nowrap;flex:none;border:1px solid var(--line);background:#fff;border-radius:999px;padding:4px 10px;font-size:.82rem;color:var(--navy)}
+.chatin{display:flex;gap:8px;padding:10px;border-top:1px solid var(--line)}
+.chatin input{flex:1;border:1.5px solid var(--line);border-radius:14px;padding:10px 12px;font-size:1rem}
+
+.report td,.report th{padding:8px 10px;border-bottom:1px solid var(--line);text-align:start}
+.report{width:100%;border-collapse:collapse}
+.bar{height:12px;border-radius:99px;background:#e3eaf6;overflow:hidden}
+.bar>i{display:block;height:100%}
+.moods{display:flex;gap:10px;flex-wrap:wrap;margin:10px 0}
+.moods button{border:1.5px solid var(--line);background:#fff;border-radius:14px;padding:8px 16px;font-weight:700}
+.moods button.on{border-color:var(--blue2);background:#eaf2ff}
+.axes{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin:14px 0}
+.axes>div{border-radius:18px;padding:14px;border:1px solid var(--line)}
+.toast{position:fixed;top:72px;left:50%;transform:translateX(-50%);background:var(--navy);color:#fff;padding:10px 18px;border-radius:12px;z-index:60;opacity:0;transition:opacity .3s;pointer-events:none}
+.toast.on{opacity:1}
+
+@media (max-width:980px){
+  .dash{grid-template-columns:1fr!important}
+  .side{order:-1;display:grid;grid-template-columns:1fr 1fr}
+  .paths{grid-template-columns:1fr;gap:26px}
+  .path.rec{order:-1}
+  .login{grid-template-columns:1fr}
+  .simgrid{grid-template-columns:1fr}
+  .axes{grid-template-columns:1fr}
+}
+@media (max-width:640px){
+  .nav{padding:8px 12px;gap:8px}
+  .navlinks button span{display:none}
+  .brand{font-size:.98rem}
+  .brand svg{width:34px;height:34px}
+  .wrap{padding:14px 12px 110px}
+  .banner{padding:16px}
+  .banner h1{font-size:1.4rem}
+  .banner .spark{display:none}
+  .side{grid-template-columns:1fr}
+  .side .note,.side .flk{display:none}
+  .dash .side{order:0}
+  .mis{grid-template-columns:1fr}
+  .login h1{font-size:1.6rem}
+  .helpbar{flex-direction:column}
+  .fab span{display:none}
+  .fab{padding:6px!important}
+  .chat{inset-inline-end:12px;bottom:76px;height:70vh}
+}
+@media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
+</style>
+</head>
+<body>
+<div id="app"></div>
+<div id="fabWrap"></div>
+<script>/* Original SVG illustrations */
+const ART = {
+robot:(s=120)=>`<svg viewBox="0 0 120 130" width="${s}" height="${s*1.08}" aria-hidden="true">
+ <defs><linearGradient id="rb1" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#fff"/><stop offset="1" stop-color="#dfe9f7"/></linearGradient>
+ <linearGradient id="rb2" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#1e3a64"/><stop offset="1" stop-color="#0f2142"/></linearGradient>
+ <linearGradient id="rb3" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#4a95f5"/><stop offset="1" stop-color="#1d5fc2"/></linearGradient></defs>
+ <line x1="60" y1="10" x2="60" y2="22" stroke="#9fb6d6" stroke-width="3"/><circle cx="60" cy="9" r="5" fill="#4a95f5"/>
+ <rect x="22" y="22" width="76" height="62" rx="28" fill="url(#rb1)" stroke="#c4d4ea" stroke-width="2"/>
+ <rect x="12" y="40" width="14" height="28" rx="7" fill="url(#rb3)"/><rect x="94" y="40" width="14" height="28" rx="7" fill="url(#rb3)"/>
+ <path d="M19 44 Q20 14 60 14 Q100 14 101 44" fill="none" stroke="url(#rb3)" stroke-width="5" stroke-linecap="round"/>
+ <rect x="32" y="36" width="56" height="36" rx="17" fill="url(#rb2)"/>
+ <ellipse cx="48" cy="54" rx="7" ry="8" fill="#5ee6ff"/><ellipse cx="72" cy="54" rx="7" ry="8" fill="#5ee6ff"/>
+ <circle cx="50" cy="51" r="2.2" fill="#fff"/><circle cx="74" cy="51" r="2.2" fill="#fff"/>
+ <path d="M52 64 Q60 69 68 64" stroke="#5ee6ff" stroke-width="2.5" fill="none" stroke-linecap="round"/>
+ <rect x="34" y="86" width="52" height="38" rx="18" fill="url(#rb1)" stroke="#c4d4ea" stroke-width="2"/>
+ <rect x="50" y="96" width="20" height="14" rx="5" fill="url(#rb3)"/><circle cx="60" cy="103" r="3" fill="#5ee6ff"/>
+</svg>`,
+atom:(s=56)=>`<svg viewBox="0 0 64 64" width="${s}" height="${s}" aria-hidden="true"><g fill="none" stroke="#fff" stroke-width="3"><ellipse cx="32" cy="32" rx="28" ry="11"/><ellipse cx="32" cy="32" rx="28" ry="11" transform="rotate(60 32 32)"/><ellipse cx="32" cy="32" rx="28" ry="11" transform="rotate(120 32 32)"/></g><circle cx="32" cy="32" r="5" fill="#fff"/></svg>`,
+books:()=>`<svg viewBox="0 0 200 140" class="ill" aria-hidden="true">
+ <ellipse cx="100" cy="128" rx="78" ry="9" fill="#d9e4f5"/>
+ <g><rect x="38" y="88" width="128" height="30" rx="7" fill="#1d5fc2"/><rect x="44" y="92" width="116" height="12" rx="3" fill="#fff"/><rect x="38" y="104" width="128" height="14" rx="5" fill="#2f7be6"/></g>
+ <g transform="rotate(-4 100 70)"><rect x="46" y="58" width="116" height="28" rx="7" fill="#f2b33d"/><rect x="52" y="62" width="104" height="11" rx="3" fill="#fff"/><rect x="46" y="73" width="116" height="13" rx="5" fill="#f6c768"/></g>
+ <g transform="rotate(3 100 40)"><rect x="54" y="30" width="100" height="26" rx="7" fill="#e9a72d"/><rect x="58" y="34" width="90" height="10" rx="3" fill="#fff3d6"/><rect x="88" y="20" width="30" height="20" rx="4" fill="#d9921f"/></g>
+</svg>`,
+target:()=>`<svg viewBox="0 0 200 140" class="ill" aria-hidden="true">
+ <path d="M30 120 Q30 92 60 96 Q66 70 98 80 Q120 60 146 82 Q176 80 172 120Z" fill="#dbe8fb"/>
+ <circle cx="100" cy="72" r="50" fill="#e0474c"/><circle cx="100" cy="72" r="40" fill="#fff"/><circle cx="100" cy="72" r="30" fill="#e0474c"/><circle cx="100" cy="72" r="19" fill="#fff"/><circle cx="100" cy="72" r="9" fill="#e0474c"/>
+ <line x1="100" y1="72" x2="150" y2="24" stroke="#1d3a66" stroke-width="5" stroke-linecap="round"/>
+ <path d="M146 16 L160 14 L158 28 Z" fill="#2f7be6"/><path d="M152 20 L166 22 L156 30Z" fill="#1d5fc2"/>
+ <g fill="#f2b33d"><path d="M36 40 l4 10 l10 4 l-10 4 l-4 10 l-4 -10 l-10 -4 l10 -4z"/><path d="M168 54 l3 7 l7 3 l-7 3 l-3 7 l-3 -7 l-7 -3 l7 -3z"/></g>
+</svg>`,
+rocket:()=>`<svg viewBox="0 0 200 140" class="ill" aria-hidden="true">
+ <path d="M24 122 Q24 98 52 102 Q60 80 92 90 Q112 74 136 94 Q170 88 176 122Z" fill="#e3ecfb"/>
+ <g transform="rotate(38 104 66)">
+  <path d="M104 6 C126 26 130 60 124 96 L84 96 C78 60 82 26 104 6Z" fill="#2f7be6"/>
+  <path d="M104 6 C114 15 120 26 123 38 L85 38 C88 26 94 15 104 6Z" fill="#e0474c"/>
+  <circle cx="104" cy="58" r="13" fill="#fff"/><circle cx="104" cy="58" r="8" fill="#5ec8ff"/>
+  <path d="M84 76 L66 102 L86 96Z" fill="#e0474c"/><path d="M124 76 L142 102 L122 96Z" fill="#e0474c"/>
+  <path d="M90 96 Q104 132 118 96Z" fill="#f2b33d"/><path d="M96 96 Q104 118 112 96Z" fill="#fff1b8"/>
+ </g>
+ <g fill="#f2b33d"><path d="M40 30 l4 10 l10 4 l-10 4 l-4 10 l-4 -10 l-10 -4 l10 -4z"/><path d="M170 40 l3 7 l7 3 l-7 3 l-3 7 l-3 -7 l-7 -3 l7 -3z"/></g>
+</svg>`,
+flasks:()=>`<svg viewBox="0 0 220 150" width="210" aria-hidden="true">
+ <path d="M18 140 Q8 100 30 92 Q24 120 40 140Z" fill="#9bd1a8"/><path d="M30 140 Q34 108 56 104 Q44 124 48 140Z" fill="#7cc08f"/>
+ <path d="M70 20 h30 v40 l34 66 a10 10 0 0 1 -9 14 h-80 a10 10 0 0 1 -9 -14 l34 -66z" fill="#eaf4ff" stroke="#b9cfe8" stroke-width="3"/>
+ <path d="M58 94 h54 l18 34 a8 8 0 0 1 -7 11 h-76 a8 8 0 0 1 -7 -11z" fill="#3d8df0" opacity=".85"/>
+ <rect x="66" y="12" width="38" height="10" rx="4" fill="#cfe0f5"/>
+ <path d="M152 52 h20 v26 l26 50 a8 8 0 0 1 -7 12 h-58 a8 8 0 0 1 -7 -12 l26 -50z" fill="#fdf0f5" stroke="#e8c4d3" stroke-width="3"/>
+ <path d="M140 104 h44 l12 24 a7 7 0 0 1 -6 10 h-56 a7 7 0 0 1 -6 -10z" fill="#ef7fa8" opacity=".85"/>
+ <rect x="148" y="44" width="28" height="9" rx="4" fill="#f3d6e2"/>
+ <circle cx="80" cy="112" r="4" fill="#fff" opacity=".6"/><circle cx="92" cy="122" r="3" fill="#fff" opacity=".6"/><circle cx="160" cy="118" r="3" fill="#fff" opacity=".6"/>
+</svg>`,
+spark:(c='#f2b33d')=>`<svg viewBox="0 0 46 30" class="spark" aria-hidden="true"><g stroke="${c}" stroke-width="4" stroke-linecap="round"><line x1="4" y1="6" x2="16" y2="12"/><line x1="2" y1="18" x2="16" y2="18"/><line x1="4" y1="28" x2="16" y2="24"/></g></svg>`,
+check:(c='#15a46d')=>`<svg viewBox="0 0 22 22" width="20" height="20" aria-hidden="true"><circle cx="11" cy="11" r="10" fill="${c}"/><path d="M6 11.5l3.2 3 6.5-7" stroke="#fff" stroke-width="2.4" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg>`,
+i:{home:'<svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 3 2 12h3v8h5v-6h4v6h5v-8h3z"/></svg>',
+   chart:'<svg viewBox="0 0 24 24" fill="currentColor"><rect x="4" y="12" width="4" height="8" rx="1"/><rect x="10" y="7" width="4" height="13" rx="1"/><rect x="16" y="3" width="4" height="17" rx="1"/></svg>',
+   help:'<svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2a10 10 0 1 0 0 20 10 10 0 0 0 0-20zm1 17h-2v-2h2zm2.1-7.7-.9.9c-.7.8-1.2 1.4-1.2 2.8h-2v-.5c0-1.1.5-2.1 1.2-2.8l1.2-1.3A2 2 0 1 0 10 9H8a4 4 0 1 1 7.1 2.3z"/></svg>',
+   out:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10 17l5-5-5-5M15 12H3M14 3h5a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-5"/></svg>',
+   globe:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3c3 3 3 15 0 18M12 3c-3 3-3 15 0 18"/></svg>',
+   play:'<svg viewBox="0 0 24 24" width="18" fill="currentColor"><path d="M7 4v16l13-8z"/></svg>',
+   book:'<svg viewBox="0 0 24 24" width="26" fill="none" stroke="currentColor" stroke-width="2"><path d="M2 5h7a3 3 0 0 1 3 3v12a2 2 0 0 0-2-2H2zM22 5h-7a3 3 0 0 0-3 3v12a2 2 0 0 1 2-2h8z"/></svg>',
+   cycle:'<svg viewBox="0 0 24 24" width="26" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M20 8a8 8 0 0 0-14-2L4 8M4 4v4h4M4 16a8 8 0 0 0 14 2l2-2M20 20v-4h-4"/></svg>',
+   star:'<svg viewBox="0 0 24 24" width="26" fill="#f6c443"><path d="M12 2l3 7 7 .6-5.3 4.7L18.3 22 12 18l-6.3 4 1.6-7.7L2 9.6 9 9z"/></svg>',
+   send:'<svg viewBox="0 0 24 24" width="20" fill="currentColor"><path d="M3 20l18-8L3 4v6l12 2-12 2z"/></svg>'}
+};
+
+/* ============ CONTENT (structured, editable by teacher) ============
+   Equations go inside $...$ :  digits after letters = subscripts,  ^{..} superscript,  _{..} subscript,
+   <=> = ⇌ ,  «numerator|denominator» = fraction.
+   review:true  → item awaiting teacher confirmation (tag shown while CONFIG.showReviewTags = true)
+*/
+const CONCEPTS = {
+  c_dyn:  {u:'u1', ar:'الاتزان الديناميكي', en:'Dynamic equilibrium'},
+  c_conc: {u:'u1', ar:'التركيزات عند الاتزان', en:'Concentrations at equilibrium'},
+  c_lec:  {u:'u1', ar:'مبدأ لوشاتيليه (التركيز)', en:"Le Chatelier – concentration"},
+  c_mass: {u:'u2', ar:'قانون فعل الكتلة', en:'Law of mass action'},
+  c_kc:   {u:'u3', ar:'كتابة تعبير ثابت الاتزان Kc', en:'Writing the Kc expression'},
+  c_phase:{u:'u3', ar:'الحالة الفيزيائية في تعبير Kc', en:'Phases in the Kc expression'},
+  c_temp: {u:'u4', ar:'تأثير درجة الحرارة على الاتزان', en:'Temperature and equilibrium'},
+  c_ktemp:{u:'u4', ar:'ثابت الاتزان ودرجة الحرارة', en:'K and temperature'},
+  c_pres: {u:'u5', ar:'تأثير الضغط على الاتزان', en:'Pressure and equilibrium'},
+  c_kp:   {u:'u5', ar:'الضغط الجزئي و Kp', en:'Partial pressure and Kp'},
+  c_cat:  {u:'u6', ar:'العامل الحفاز', en:'The catalyst'}
+};
+
+/* Diagnostic pre/post test — drafted questions, pending teacher approval */
+const PRETEST = [
+ {id:'P01', c:'c_dyn', q:{ar:'عند الوصول لحالة الاتزان الكيميائي:', en:'When chemical equilibrium is reached:'},
+  o:[{ar:'يتوقف التفاعل تمامًا',en:'The reaction stops completely'},{ar:'يستمر التفاعلان الطردي والعكسي بنفس المعدل',en:'Forward and backward reactions continue at the same rate'},{ar:'يستمر التفاعل الطردي فقط',en:'Only the forward reaction continues'},{ar:'يصبح معدل التفاعل الطردي أكبر من العكسي',en:'The forward rate becomes greater than the backward rate'}], a:1,
+  x:{ar:'الاتزان ديناميكي: التفاعلان مستمران ومعدلهما متساوٍ.',en:'Equilibrium is dynamic: both reactions continue at equal rates.'}},
+ {id:'P02', c:'c_conc', q:{ar:'عند الاتزان، تركيزات المتفاعلات والنواتج:',en:'At equilibrium, the concentrations of reactants and products are:'},
+  o:[{ar:'متساوية دائمًا',en:'Always equal'},{ar:'ثابتة، لكنها ليست بالضرورة متساوية',en:'Constant, but not necessarily equal'},{ar:'تتغير باستمرار',en:'Continuously changing'},{ar:'تساوي صفرًا',en:'Equal to zero'}], a:1,
+  x:{ar:'تساوي المعدلات لا يعني تساوي التركيزات.',en:'Equal rates do not mean equal concentrations.'}},
+ {id:'P03', c:'c_lec', q:{ar:'في التفاعل $aA+bB<=>cC+dD$ عند زيادة تركيز المادة A يُزاح الاتزان في الاتجاه:',en:'For $aA+bB<=>cC+dD$, increasing the concentration of A shifts equilibrium:'},
+  o:[{ar:'الطردي (نحو النواتج)',en:'Forward (toward products)'},{ar:'العكسي (نحو المتفاعلات)',en:'Backward (toward reactants)'},{ar:'لا يتأثر الاتزان',en:'No effect'},{ar:'يتوقف التفاعل',en:'The reaction stops'}], a:0,
+  x:{ar:'النظام يستهلك جزءًا من المادة المضافة فيتجه للنواتج.',en:'The system consumes some of the added substance, shifting toward products.'}},
+ {id:'P04', c:'c_lec', q:{ar:'عند سحب (إنقاص تركيز) أحد النواتج من نظام متزن، يُزاح الاتزان في الاتجاه:',en:'Removing (decreasing) a product from a system at equilibrium shifts it:'},
+  o:[{ar:'العكسي',en:'Backward'},{ar:'الطردي',en:'Forward'},{ar:'لا يتأثر',en:'No effect'},{ar:'يعود لنفس الحالة الأصلية تمامًا',en:'Returns exactly to the original state'}], a:1,
+  x:{ar:'النظام يعوّض جزءًا مما سُحب، فيتجه طرديًا.',en:'The system replaces some of what was removed: forward shift.'}},
+ {id:'P05', c:'c_mass', q:{ar:'تعبير معدل التفاعل الطردي للتفاعل $FeCl3(aq)+3NH4SCN(aq)<=>Fe(SCN)3(aq)+3NH4Cl(aq)$ حسب المعالجة المدرسية:',en:'The school-level forward rate expression for $FeCl3(aq)+3NH4SCN(aq)<=>Fe(SCN)3(aq)+3NH4Cl(aq)$ is:'},
+  o:[{ar:'$r_{f}=k_{f}[FeCl3][NH4SCN]^{3}$',en:'$r_{f}=k_{f}[FeCl3][NH4SCN]^{3}$'},{ar:'$r_{f}=k_{f}[FeCl3][NH4SCN]$',en:'$r_{f}=k_{f}[FeCl3][NH4SCN]$'},{ar:'$r_{f}=k_{f}[Fe(SCN)3][NH4Cl]^{3}$',en:'$r_{f}=k_{f}[Fe(SCN)3][NH4Cl]^{3}$'},{ar:'$r_{f}=k_{f}([FeCl3]+3[NH4SCN])$',en:'$r_{f}=k_{f}([FeCl3]+3[NH4SCN])$'}], a:0,
+  x:{ar:'المعامل يصبح أسًا للتركيز، والطردي يعتمد على تركيز المتفاعلات.',en:'Coefficients become powers; the forward rate depends on reactant concentrations.'}},
+ {id:'P06', c:'c_kc', q:{ar:'تعبير $K_{c}$ للتفاعل $2H2O(g)<=>2H2(g)+O2(g)$ هو:',en:'The $K_{c}$ expression for $2H2O(g)<=>2H2(g)+O2(g)$ is:'},
+  o:[{ar:'$K_{c}=«[H2]^{2}[O2]|[H2O]^{2}»$',en:'$K_{c}=«[H2]^{2}[O2]|[H2O]^{2}»$'},{ar:'$K_{c}=«[H2O]^{2}|[H2]^{2}[O2]»$',en:'$K_{c}=«[H2O]^{2}|[H2]^{2}[O2]»$'},{ar:'$K_{c}=«[H2][O2]|[H2O]»$',en:'$K_{c}=«[H2][O2]|[H2O]»$'},{ar:'$K_{c}=«2[H2][O2]|2[H2O]»$',en:'$K_{c}=«2[H2][O2]|2[H2O]»$'}], a:0,
+  x:{ar:'النواتج في البسط، المتفاعلات في المقام، والمعاملات أُسس.',en:'Products on top, reactants below, coefficients as powers.'}},
+ {id:'P07', c:'c_phase', q:{ar:'تعبير $K_{c}$ للتفاعل $3I2(s)+3H2O(l)<=>5I^{-}(aq)+IO3^{-}(aq)+6H^{+}(aq)$ هو:',en:'The $K_{c}$ expression for $3I2(s)+3H2O(l)<=>5I^{-}(aq)+IO3^{-}(aq)+6H^{+}(aq)$ is:'},
+  o:[{ar:'$K_{c}=«[I^{-}]^{5}[IO3^{-}][H^{+}]^{6}|[I2]^{3}[H2O]^{3}»$',en:'$K_{c}=«[I^{-}]^{5}[IO3^{-}][H^{+}]^{6}|[I2]^{3}[H2O]^{3}»$'},{ar:'$K_{c}=[I^{-}]^{5}[IO3^{-}][H^{+}]^{6}$',en:'$K_{c}=[I^{-}]^{5}[IO3^{-}][H^{+}]^{6}$'},{ar:'$K_{c}=«[I^{-}]^{5}[IO3^{-}][H^{+}]^{6}|[H2O]^{3}»$',en:'$K_{c}=«[I^{-}]^{5}[IO3^{-}][H^{+}]^{6}|[H2O]^{3}»$'},{ar:'$K_{c}=[I^{-}][IO3^{-}][H^{+}]$',en:'$K_{c}=[I^{-}][IO3^{-}][H^{+}]$'}], a:1,
+  x:{ar:'الصلب النقي (I₂) والسائل النقي (H₂O) لا يُكتبان في التعبير.',en:'Pure solid I₂ and pure liquid H₂O are omitted.'}},
+ {id:'P08', c:'c_temp', q:{ar:'في التفاعل الطارد للحرارة $N2(g)+3H2(g)<=>2NH3(g)+Heat$ عند رفع درجة الحرارة:',en:'For the exothermic $N2(g)+3H2(g)<=>2NH3(g)+Heat$, raising the temperature:'},
+  o:[{ar:'يُزاح الاتزان طرديًا ويزداد NH₃',en:'Shifts forward, more NH₃'},{ar:'يُزاح الاتزان عكسيًا ويقل NH₃',en:'Shifts backward, less NH₃'},{ar:'لا يتأثر الاتزان',en:'No effect'},{ar:'يتوقف التفاعل',en:'The reaction stops'}], a:1,
+  x:{ar:'التسخين يُفضّل الاتجاه الماص للحرارة، وهو هنا العكسي.',en:'Heating favours the endothermic direction — here the backward one.'}},
+ {id:'P09', c:'c_ktemp', q:{ar:'تغيير تركيز إحدى المواد عند ثبوت درجة الحرارة يجعل قيمة $K_{c}$:',en:'Changing a concentration at constant temperature makes the value of $K_{c}$:'},
+  o:[{ar:'تزداد',en:'Increase'},{ar:'تقل',en:'Decrease'},{ar:'لا تتغير',en:'Stay the same'},{ar:'تساوي صفرًا',en:'Become zero'}], a:2,
+  x:{ar:'$K_{c}$ يتغير بتغير درجة الحرارة فقط.',en:'$K_{c}$ changes only when temperature changes.'}},
+ {id:'P10', c:'c_pres', q:{ar:'في التفاعل $N2(g)+3H2(g)<=>2NH3(g)$ زيادة الضغط (بتقليل الحجم) تزيح الاتزان:',en:'For $N2(g)+3H2(g)<=>2NH3(g)$, increasing pressure (by reducing volume) shifts equilibrium:'},
+  o:[{ar:'طرديًا (نحو عدد مولات غازية أقل)',en:'Forward (toward fewer gas moles)'},{ar:'عكسيًا (نحو عدد مولات أكبر)',en:'Backward (toward more gas moles)'},{ar:'لا يتأثر',en:'No shift'},{ar:'يتوقف التفاعل',en:'Reaction stops'}], a:0,
+  x:{ar:'4 مولات غازية يسارًا و2 يمينًا؛ زيادة الضغط تفضل الجانب الأقل.',en:'4 gas moles on the left, 2 on the right; higher pressure favours fewer.'}},
+ {id:'P11', c:'c_pres', q:{ar:'في التفاعل $CO(g)+NO2(g)<=>CO2(g)+NO(g)$ عند زيادة الضغط بتقليل الحجم:',en:'For $CO(g)+NO2(g)<=>CO2(g)+NO(g)$, compressing the container:'},
+  o:[{ar:'يُزاح الاتزان طرديًا',en:'Shifts forward'},{ar:'يُزاح الاتزان عكسيًا',en:'Shifts backward'},{ar:'لا يتغير موضع الاتزان، لكن تركيزات الغازات تزيد',en:'Position does not shift, but gas concentrations increase'},{ar:'لا يحدث أي تغيير على الإطلاق',en:'Nothing changes at all'}], a:2,
+  x:{ar:'عدد المولات الغازية متساوٍ (2 = 2)، فلا إزاحة، لكن الانضغاط يزيد التركيزات.',en:'Equal gas moles (2 = 2): no shift, yet compression raises concentrations.'}},
+ {id:'P12', c:'c_kp', q:{ar:'للتفاعل $N2(g)+2O2(g)<=>2NO2(g)$ إذا كانت الضغوط الجزئية: $P_{N2}=0.2 atm$ و $P_{O2}=1 atm$ و $P_{NO2}=2 atm$ فإن $K_{p}$ يساوي:',en:'For $N2(g)+2O2(g)<=>2NO2(g)$ with $P_{N2}=0.2$, $P_{O2}=1$, $P_{NO2}=2$ atm, $K_{p}$ equals:'},
+  o:[{ar:'20',en:'20'},{ar:'10',en:'10'},{ar:'0.05',en:'0.05'},{ar:'40',en:'40'}], a:0,
+  x:{ar:'$K_{p}=«(2)^{2}|(0.2)(1)^{2}»=20$',en:'$K_{p}=«(2)^{2}|(0.2)(1)^{2}»=20$'}},
+ {id:'P13', c:'c_cat', q:{ar:'إضافة عامل حفاز لنظام متزن:',en:'Adding a catalyst to a system at equilibrium:'},
+  o:[{ar:'يزيد معدل التفاعل الطردي فقط',en:'Speeds up only the forward reaction'},{ar:'يزيد معدل التفاعلين ولا يغير موضع الاتزان',en:'Speeds up both reactions without changing the equilibrium position'},{ar:'يزيح الاتزان نحو النواتج',en:'Shifts equilibrium toward products'},{ar:'يزيد قيمة ثابت الاتزان',en:'Increases the equilibrium constant'}], a:1,
+  x:{ar:'الحفاز يقلل طاقة التنشيط للاتجاهين بنفس القدر.',en:'A catalyst lowers activation energy equally for both directions.'}},
+ {id:'P14', c:'c_temp', q:{ar:'في النظام $2NO2(g)<=>N2O4(g)+Heat$ (NO₂ بني محمر، N₂O₄ عديم اللون)، عند التسخين:',en:'In $2NO2(g)<=>N2O4(g)+Heat$ (NO₂ reddish-brown, N₂O₄ colourless), on heating:'},
+  o:[{ar:'يزداد اللون البني المحمر',en:'The reddish-brown colour deepens'},{ar:'يختفي اللون',en:'The colour disappears'},{ar:'لا يتغير اللون',en:'No colour change'},{ar:'يتحول للون أزرق',en:'It turns blue'}], a:0,
+  x:{ar:'التسخين يُفضّل الاتجاه العكسي الماص للحرارة فيتكوّن NO₂ أكثر.',en:'Heating favours the endothermic reverse direction → more NO₂.'}}
+];
+
+/* ---------------- UNITS ---------------- */
+const UNITS = [
+{ id:'u1', n:1, color:'blue',
+  t:{ar:'الاتزان الديناميكي ومبدأ لوشاتيليه', en:"Dynamic equilibrium & Le Chatelier's principle"},
+  goal:{ar:'تفسير الاتزان الديناميكي، وتطبيق مبدأ لوشاتيليه على تغيّر التركيز.',en:"Explain dynamic equilibrium and apply Le Chatelier's principle to concentration changes."},
+  sections:[
+   {h:{ar:'التفاعل الانعكاسي',en:'Reversible reactions'}, b:{ar:
+    '<p>التفاعل الانعكاسي يسير في الاتجاهين: الطردي (من اليسار لليمين) والعكسي (من اليمين لليسار).</p><div class="eqblock">$aA+bB<=>cC+dD$</div>',en:
+    '<p>A reversible reaction proceeds in both directions: forward (left to right) and backward (right to left).</p><div class="eqblock">$aA+bB<=>cC+dD$</div>'}},
+   {h:{ar:'الاتزان الديناميكي',en:'Dynamic equilibrium'}, b:{ar:
+    '<ul class="kp"><li>التفاعل الطردي مستمر، والتفاعل العكسي مستمر.</li><li>معدل التفاعل الطردي = معدل التفاعل العكسي.</li><li>التركيزات تظل ثابتة مع الزمن طالما الظروف ثابتة.</li><li>التركيزات <b>ليست بالضرورة متساوية</b>.</li></ul><p>الاتزان ديناميكي وليس ساكنًا: تساوي المعدلين يعني أن العمليتين تحدثان بنفس السرعة، وليس أن كميات المتفاعلات والنواتج متساوية.</p>',en:
+    '<ul class="kp"><li>The forward reaction continues, and so does the backward reaction.</li><li>Forward rate = backward rate.</li><li>Concentrations stay constant with time under unchanged conditions.</li><li>Concentrations are <b>not necessarily equal</b>.</li></ul><p>Equilibrium is dynamic, not static: equal rates mean both processes happen at the same rate, not that the amounts are equal.</p>'}},
+   {h:{ar:'النظام المغلق',en:'Closed system'}, review:true, b:{ar:
+    '<p>يتحقق الاتزان الكيميائي في نظام مغلق يمنع دخول أو خروج المواد بطريقة تغيّر تركيب النظام المتفاعل. لو هرب غاز ناتج مثلًا، قد يتغير التركيب ولا يبقى النظام في نفس حالة الاتزان.</p>',en:
+    '<p>Chemical equilibrium is established in a closed system, which prevents substances entering or leaving in a way that changes the composition. If a product gas escapes, the composition may change and the system may not remain at the same equilibrium.</p>'}},
+   {h:{ar:'مبدأ لوشاتيليه',en:"Le Chatelier's principle"}, b:{ar:
+    '<p>إذا حدث تغيّر في أحد العوامل المؤثرة على نظام في حالة اتزان (التركيز أو الضغط أو درجة الحرارة)، يُزاح الاتزان في الاتجاه الذي يقلل من تأثير هذا التغيّر.</p><p>النظام <b>لا يلغي</b> التغيّر بالكامل؛ بل يستجيب ويصل إلى اتزان جديد.</p>',en:
+    '<p>When a system at equilibrium is subjected to a change in concentration, pressure or temperature, the equilibrium shifts in the direction that tends to oppose the change.</p><p>The system does <b>not</b> cancel the disturbance completely; it responds and establishes a new equilibrium.</p>'}},
+   {h:{ar:'تأثير التركيز',en:'Effect of concentration'}, b:{ar:
+    '<table class="rules"><tr><th>التغيير</th><th>اتجاه الإزاحة</th></tr><tr><td>زيادة تركيز متفاعل</td><td>طردي (نحو النواتج)</td></tr><tr><td>نقص تركيز متفاعل</td><td>عكسي (نحو المتفاعلات)</td></tr><tr><td>زيادة تركيز ناتج</td><td>عكسي</td></tr><tr><td>نقص تركيز ناتج</td><td>طردي</td></tr></table><p>النظام يستهلك جزءًا من المادة المضافة، أو يعوّض جزءًا من المادة المسحوبة.</p>',en:
+    '<table class="rules"><tr><th>Change</th><th>Shift</th></tr><tr><td>Increase a reactant</td><td>Forward (toward products)</td></tr><tr><td>Decrease a reactant</td><td>Backward (toward reactants)</td></tr><tr><td>Increase a product</td><td>Backward</td></tr><tr><td>Decrease a product</td><td>Forward</td></tr></table><p>The system consumes some of an added substance, or replaces some of a removed substance.</p>'}}
+  ],
+  sims:['dyn'],
+  mis:[
+   {w:{ar:'عند الاتزان التفاعل يتوقف.',en:'At equilibrium the reaction stops.'}, r:{ar:'التفاعلان مستمران بنفس المعدل (اتزان ديناميكي).',en:'Both reactions continue at equal rates (dynamic).'}, c:'c_dyn'},
+   {w:{ar:'تساوي المعدلات يعني تساوي التركيزات.',en:'Equal rates mean equal concentrations.'}, r:{ar:'التركيزات ثابتة لكنها غالبًا غير متساوية.',en:'Concentrations are constant but usually not equal.'}, c:'c_conc'},
+   {w:{ar:'النظام يرجع لنفس حالته الأصلية بالضبط بعد الإزاحة.',en:'After a shift the system returns exactly to its original state.'}, r:{ar:'النظام يقلل أثر التغيير ويصل لاتزان جديد.',en:'The system opposes the change and reaches a new equilibrium.'}, c:'c_lec'}
+  ],
+  quiz:[
+   {id:'Q1a', c:'c_dyn', q:{ar:'صح أم خطأ: "عند الاتزان، يتوقف التفاعل الطردي."',en:'True or false: "At equilibrium the forward reaction stops."'}, o:[{ar:'صح',en:'True'},{ar:'خطأ — التفاعل الطردي مستمر بنفس معدل العكسي',en:'False — it continues at the same rate as the backward reaction'}], a:1, x:{ar:'الاتزان ديناميكي.',en:'Equilibrium is dynamic.'}},
+   {id:'Q1b', c:'c_lec', q:{ar:'عند إنقاص تركيز أحد المتفاعلات في نظام متزن، يُزاح الاتزان:',en:'Decreasing a reactant concentration shifts equilibrium:'}, o:[{ar:'طرديًا',en:'Forward'},{ar:'عكسيًا',en:'Backward'},{ar:'لا يتأثر',en:'No shift'}], a:1, x:{ar:'النظام يعوّض جزءًا من المتفاعل المسحوب، فيتجه عكسيًا.',en:'The system replaces some of the removed reactant: backward.'}},
+   {id:'Q1c', c:'c_lec', q:{ar:'بعد إضافة متفاعل، الاتزان الجديد:',en:'After adding a reactant, the new equilibrium:'}, o:[{ar:'يلغي الإضافة تمامًا ويعود كما كان',en:'Cancels the addition completely'},{ar:'يقلل أثر الإضافة لكن لا يلغيه بالكامل',en:'Reduces the effect but does not cancel it completely'}], a:1, x:{ar:'النظام يقاوم التغيير ويصل لاتزان جديد.',en:'The system opposes the change and settles at a new equilibrium.'}}
+  ]
+},
+{ id:'u2', n:2, color:'green',
+  t:{ar:'قانون فعل الكتلة ومعدل التفاعل',en:'Law of mass action & reaction rates'},
+  goal:{ar:'كتابة تعبيرات معدل التفاعل الطردي والعكسي واستنتاج تعبير ثابت الاتزان.',en:'Write forward/backward rate expressions and derive the equilibrium-constant expression.'},
+  sections:[
+   {h:{ar:'المثال المدرسي',en:'The school-level example'}, b:{ar:
+    '<div class="eqblock">$FeCl3(aq)+3NH4SCN(aq)<=>Fe(SCN)3(aq)+3NH4Cl(aq)$</div><p>معدل التفاعل الطردي:</p><div class="eqblock">$r_{f}=k_{f}[FeCl3][NH4SCN]^{3}$</div><p>معدل التفاعل العكسي:</p><div class="eqblock">$r_{b}=k_{b}[Fe(SCN)3][NH4Cl]^{3}$</div><p>عند الاتزان $r_{f}=r_{b}$ ، إذن:</p><div class="eqblock">$K_{c}=«k_{f}|k_{b}»=«[Fe(SCN)3][NH4Cl]^{3}|[FeCl3][NH4SCN]^{3}»$</div><ul class="kp"><li>الأقواس المربعة [ ] تعني التركيز.</li><li>$k_{f}$ ثابت معدل التفاعل الطردي، و $k_{b}$ ثابت معدل التفاعل العكسي.</li><li>معاملات المعادلة الموزونة تظهر كأُسس في هذه المعالجة المدرسية.</li></ul><p class="muted">ملحوظة: هذا التعبير المعتمد على المعاملات هو المعالجة المدرسية لهذا المثال، وليس قانون معدل عامًا لكل التفاعلات.</p>',en:
+    '<div class="eqblock">$FeCl3(aq)+3NH4SCN(aq)<=>Fe(SCN)3(aq)+3NH4Cl(aq)$</div><p>Forward rate:</p><div class="eqblock">$r_{f}=k_{f}[FeCl3][NH4SCN]^{3}$</div><p>Backward rate:</p><div class="eqblock">$r_{b}=k_{b}[Fe(SCN)3][NH4Cl]^{3}$</div><p>At equilibrium $r_{f}=r_{b}$, so:</p><div class="eqblock">$K_{c}=«k_{f}|k_{b}»=«[Fe(SCN)3][NH4Cl]^{3}|[FeCl3][NH4SCN]^{3}»$</div><ul class="kp"><li>Square brackets mean concentration.</li><li>$k_{f}$ is the forward rate constant; $k_{b}$ the backward rate constant.</li><li>Balanced-equation coefficients appear as powers in this school-level treatment.</li></ul><p class="muted">Note: this coefficient-based expression is the school-level treatment for this example, not a universal rate law.</p>'}},
+   {h:{ar:'تجربة اللون',en:'The colour investigation'}, b:{ar:
+    '<ul class="kp"><li>إضافة $FeCl3$ (متفاعل) ← إزاحة طردية ← يصبح اللون الأحمر أعمق.</li><li>إضافة $NH4Cl$ (ناتج) ← إزاحة عكسية ← يصبح اللون الأحمر أفتح.</li></ul>',en:
+    '<ul class="kp"><li>Adding $FeCl3$ (reactant) → forward shift → deeper red.</li><li>Adding $NH4Cl$ (product) → backward shift → paler red.</li></ul>'}},
+   {h:{ar:'منحنى المعدل مع الزمن',en:'Rate–time graph'}, b:{ar:
+    '<p>في البداية يكون معدل التفاعل الطردي كبيرًا والعكسي صغيرًا. مع الوقت يقل الطردي ويزداد العكسي حتى يتساويا. عند الاتزان: المعدلان <b>غير صفريين ومتساويان</b> والتفاعل مستمر في الاتجاهين. شاهد ذلك في المحاكاة بالوحدة الأولى.</p>',en:
+    '<p>Initially the forward rate is high and the backward rate is low. Over time they approach each other until equal. At equilibrium both rates are <b>non-zero and equal</b>, and the reaction continues both ways. See the Unit 1 simulation.</p>'}}
+  ],
+  sims:['fescn'],
+  mis:[
+   {w:{ar:'المعامل يُضرب في التركيز.',en:'The coefficient multiplies the concentration.'}, r:{ar:'المعامل يصبح أسًا للتركيز: $[NH4SCN]^{3}$',en:'The coefficient becomes a power: $[NH4SCN]^{3}$'}, c:'c_mass'}
+  ],
+  quiz:[
+   {id:'Q2a', c:'c_mass', q:{ar:'عند الاتزان يكون:',en:'At equilibrium:'}, o:[{ar:'$r_{f}=r_{b}$ و $K_{c}=«k_{f}|k_{b}»$',en:'$r_{f}=r_{b}$ and $K_{c}=«k_{f}|k_{b}»$'},{ar:'$r_{f}=0$',en:'$r_{f}=0$'},{ar:'$K_{c}=k_{f}×k_{b}$',en:'$K_{c}=k_{f}×k_{b}$'}], a:0, x:{ar:'تساوي المعدلين يعطي النسبة $«k_{f}|k_{b}»$.',en:'Equal rates give the ratio $«k_{f}|k_{b}»$.'}},
+   {id:'Q2b', c:'c_lec', q:{ar:'عند إضافة $NH4Cl$ لنظام الاتزان السابق، اللون:',en:'Adding $NH4Cl$ to this equilibrium makes the colour:'}, o:[{ar:'أحمر أعمق',en:'Deeper red'},{ar:'أحمر أفتح',en:'Paler red'},{ar:'لا يتغير',en:'Unchanged'}], a:1, x:{ar:'$NH4Cl$ ناتج ← إزاحة عكسية ← لون أفتح.',en:'$NH4Cl$ is a product → backward shift → paler.'}}
+  ]
+},
+{ id:'u3', n:3, color:'purple',
+  t:{ar:'ثابت الاتزان Kc',en:'The equilibrium constant Kc'},
+  goal:{ar:'كتابة تعبير Kc من المعادلة الموزونة، واستبعاد المواد الصلبة والسائلة النقية.',en:'Construct Kc from a balanced equation and omit pure solids and liquids.'},
+  sections:[
+   {h:{ar:'التعبير العام',en:'General expression'}, b:{ar:
+    '<div class="eqblock">$aA+bB<=>cC+dD$ &nbsp;&nbsp;&nbsp; $K_{c}=«[C]^{c}[D]^{d}|[A]^{a}[B]^{b}»$</div><ol><li>النواتج في البسط.</li><li>المتفاعلات في المقام.</li><li>معامل كل مادة يصبح أسًا.</li><li>لا تُكتب المواد الصلبة النقية والسوائل النقية.</li><li>عوّض بتركيزات الاتزان واعرض خطوات الحساب.</li></ol>',en:
+    '<div class="eqblock">$aA+bB<=>cC+dD$ &nbsp;&nbsp;&nbsp; $K_{c}=«[C]^{c}[D]^{d}|[A]^{a}[B]^{b}»$</div><ol><li>Products in the numerator.</li><li>Reactants in the denominator.</li><li>Each coefficient becomes a power.</li><li>Omit pure solids and pure liquids.</li><li>Substitute equilibrium concentrations and show the arithmetic.</li></ol>'}},
+   {h:{ar:'لماذا لا نكتب الصلب والسائل النقي؟',en:'Why omit pure solids and liquids?'}, review:true, b:{ar:
+    '<p>تركيز المادة الصلبة النقية أو السائلة النقية يظل ثابتًا تقريبًا طالما هذه المادة موجودة، فيُدمج أثره الثابت داخل قيمة ثابت الاتزان ولا يُكتب كحد متغير.</p>',en:
+    '<p>The concentration of a pure solid or pure liquid stays effectively constant while that phase is present, so its constant contribution is incorporated into K and not written as a variable term.</p>'}},
+   {h:{ar:'رموز الحالة',en:'State symbols'}, b:{ar:
+    '<p><b>(s)</b> صلب · <b>(l)</b> سائل · <b>(g)</b> غاز · <b>(aq)</b> محلول مائي · <b>(v)</b> بخار. البخار حالة غازية فيُكتب في التعبير، بينما السائل النقي لا يُكتب.</p>',en:
+    '<p><b>(s)</b> solid · <b>(l)</b> liquid · <b>(g)</b> gas · <b>(aq)</b> aqueous · <b>(v)</b> vapour. Vapour is gaseous and is included; a pure liquid is omitted.</p>'}},
+   {h:{ar:'أمثلة',en:'Examples'}, b:{ar:
+    '<div class="eqblock">$2H2O(v)<=>2H2(g)+O2(g)$ &nbsp; ⟹ &nbsp; $K_{c}=«[H2]^{2}[O2]|[H2O]^{2}»$</div><div class="eqblock">$NH3(l)<=>NH3(g)$ &nbsp; ⟹ &nbsp; $K_{c}=[NH3]$</div><div class="eqblock">$3I2(s)+3H2O(l)<=>5I^{-}(aq)+IO3^{-}(aq)+6H^{+}(aq)$ &nbsp; ⟹ &nbsp; $K_{c}=[I^{-}]^{5}[IO3^{-}][H^{+}]^{6}$</div>',en:
+    '<div class="eqblock">$2H2O(v)<=>2H2(g)+O2(g)$ &nbsp; ⟹ &nbsp; $K_{c}=«[H2]^{2}[O2]|[H2O]^{2}»$</div><div class="eqblock">$NH3(l)<=>NH3(g)$ &nbsp; ⟹ &nbsp; $K_{c}=[NH3]$</div><div class="eqblock">$3I2(s)+3H2O(l)<=>5I^{-}(aq)+IO3^{-}(aq)+6H^{+}(aq)$ &nbsp; ⟹ &nbsp; $K_{c}=[I^{-}]^{5}[IO3^{-}][H^{+}]^{6}$</div>'}},
+   {h:{ar:'دلالة قيمة Kc',en:'Meaning of Kc'}, review:true, b:{ar:
+    '<p>$K_{c}$ يصف تركيب خليط الاتزان عند درجة حرارة محددة. القيمة <b>الكبيرة جدًا</b> تدل عمومًا على أن النواتج هي السائدة، والقيمة <b>الصغيرة جدًا</b> تدل على أن المتفاعلات هي السائدة. قيمة K لا تدل على سرعة التفاعل.</p>',en:
+    '<p>$K_{c}$ describes the equilibrium composition at a specified temperature. A <b>very large</b> value generally indicates product-favoured; a <b>very small</b> value reactant-favoured. K says nothing about how fast a reaction is.</p>'}},
+   {h:{ar:'هل الخليط في حالة اتزان؟',en:'Is the mixture at equilibrium?'}, b:{ar:
+    '<p>احسب قيمة التعبير باستخدام تركيزات الخليط الحالية، وقارنها بقيمة $K_{c}$ المعطاة <b>عند نفس درجة الحرارة</b>. إذا اختلفت القيمتان فالخليط ليس في حالة اتزان.</p>',en:
+    '<p>Calculate the expression using the current concentrations and compare with the stated $K_{c}$ <b>at the same temperature</b>. If they differ, the mixture is not at equilibrium.</p>'}},
+   {h:{ar:'عكس المعادلة وضربها',en:'Reversing and multiplying'}, b:{ar:
+    '<div class="eqblock">$K_{reverse}=«1|K_{forward}»$ &nbsp;&nbsp;&nbsp; $K_{new}=(K_{original})^{n}$</div><p>عند عكس المعادلة يصبح الثابت مقلوب الثابت الأصلي، وعند ضرب كل المعاملات في n يُرفع الثابت للأس n.</p>',en:
+    '<div class="eqblock">$K_{reverse}=«1|K_{forward}»$ &nbsp;&nbsp;&nbsp; $K_{new}=(K_{original})^{n}$</div><p>Reversing gives the reciprocal; multiplying all coefficients by n raises K to the power n.</p>'}}
+  ],
+  sims:['kc'],
+  mis:[
+   {w:{ar:'كل المواد تُكتب في تعبير Kc.',en:'Every substance appears in Kc.'}, r:{ar:'المواد الصلبة النقية والسوائل النقية لا تُكتب.',en:'Pure solids and pure liquids are omitted.'}, c:'c_phase'},
+   {w:{ar:'المعامل يُكتب كرقم مضروب.',en:'The coefficient is written as a multiplier.'}, r:{ar:'المعامل يصبح أسًا.',en:'The coefficient becomes a power.'}, c:'c_kc'},
+   {w:{ar:'بخار الماء (v) يُعامل كسائل ويُحذف.',en:'Water vapour (v) is treated as a liquid and omitted.'}, r:{ar:'البخار غاز ويُكتب في التعبير.',en:'Vapour is a gas and is included.'}, c:'c_phase'}
+  ],
+  quiz:[
+   {id:'Q3a', c:'c_phase', q:{ar:'تعبير $K_{c}$ للتفاعل $NH3(l)<=>NH3(g)$ هو:',en:'The $K_{c}$ for $NH3(l)<=>NH3(g)$ is:'}, o:[{ar:'$K_{c}=«[NH3(g)]|[NH3(l)]»$',en:'$K_{c}=«[NH3(g)]|[NH3(l)]»$'},{ar:'$K_{c}=[NH3]$',en:'$K_{c}=[NH3]$'},{ar:'$K_{c}=1$',en:'$K_{c}=1$'}], a:1, x:{ar:'السائل النقي لا يُكتب.',en:'The pure liquid is omitted.'}},
+   {id:'Q3b', c:'c_kc', q:{ar:'في تعبير $K_{c}$، معامل المادة في المعادلة الموزونة:',en:'In a $K_{c}$ expression, a substance’s coefficient:'}, o:[{ar:'يُضرب في التركيز',en:'Multiplies the concentration'},{ar:'يصبح أسًا للتركيز',en:'Becomes the power of the concentration'},{ar:'يُهمل',en:'Is ignored'}], a:1, x:{ar:'مثال: $[H2]^{2}$',en:'Example: $[H2]^{2}$'}}
+  ]
+},
+{ id:'u4', n:4, color:'blue',
+  t:{ar:'درجة الحرارة والاتزان',en:'Temperature and equilibrium'},
+  goal:{ar:'التنبؤ بأثر تغيير درجة الحرارة على موضع الاتزان وقيمة K.',en:'Predict how temperature affects equilibrium position and K.'},
+  sections:[
+   {h:{ar:'تمثيل الحرارة',en:'Representing heat'}, b:{ar:
+    '<p>في التفاعل <b>الطارد</b> للحرارة تُكتب الحرارة مع النواتج، و $ΔH$ سالبة. في التفاعل <b>الماص</b> تُكتب الحرارة مع المتفاعلات، و $ΔH$ موجبة.</p>',en:
+    '<p>For an <b>exothermic</b> forward reaction heat is written with the products and $ΔH$ is negative. For an <b>endothermic</b> one, heat is on the reactant side and $ΔH$ is positive.</p>'}},
+   {h:{ar:'قواعد الإزاحة',en:'Shift rules'}, b:{ar:
+    '<table class="rules"><tr><th>التفاعل الطردي</th><th>رفع الحرارة</th><th>خفض الحرارة</th></tr><tr><td>طارد للحرارة</td><td>إزاحة عكسية</td><td>إزاحة طردية</td></tr><tr><td>ماص للحرارة</td><td>إزاحة طردية</td><td>إزاحة عكسية</td></tr></table>',en:
+    '<table class="rules"><tr><th>Forward reaction</th><th>Raise T</th><th>Lower T</th></tr><tr><td>Exothermic</td><td>Backward</td><td>Forward</td></tr><tr><td>Endothermic</td><td>Forward</td><td>Backward</td></tr></table>'}},
+   {h:{ar:'درجة الحرارة وثابت الاتزان',en:'Temperature and K'}, review:true, b:{ar:
+    '<ul class="kp"><li>رفع الحرارة <b>يقلل</b> $K_{c}$ للتفاعل الطارد، و<b>يزيد</b> $K_{c}$ للتفاعل الماص.</li><li>تغيير التركيز عند ثبوت الحرارة لا يغير $K_{c}$.</li></ul><p>ثوابت المعدل $k_{f}$ و $k_{b}$ تعتمد على درجة الحرارة، والنسبة بينهما هي $K_{c}$؛ لذلك تغيير الحرارة يغير $K_{c}$ نفسه، بينما تغيير التركيز يزيح الاتزان دون تغيير $K_{c}$.</p>',en:
+    '<ul class="kp"><li>Raising T <b>decreases</b> $K_{c}$ for an exothermic reaction and <b>increases</b> it for an endothermic one.</li><li>Changing concentration at constant T does not change $K_{c}$.</li></ul><p>The rate constants $k_{f}$ and $k_{b}$ depend on temperature and their ratio is $K_{c}$; so temperature changes K itself, while concentration changes only shift the position.</p>'}},
+   {h:{ar:'الحرارة ومعدل التفاعل',en:'Temperature and rate'}, b:{ar:
+    '<p>التسخين يزيد معدل التفاعلين الطردي والعكسي فيصل النظام للاتزان أسرع. هذا تأثير <b>منفصل</b> عن قاعدة إزاحة الموضع نحو الاتجاه الماص للحرارة.</p>',en:
+    '<p>Heating increases both forward and backward rates, so equilibrium is reached faster. This is <b>separate</b> from the rule that the position shifts toward the endothermic direction.</p>'}},
+   {h:{ar:'مثال: تحضير النشادر',en:'Example: ammonia synthesis'}, review:true, b:{ar:
+    '<div class="eqblock">$N2(g)+3H2(g)<=>2NH3(g)+Heat$ &nbsp; <bdi>($ΔH=-92 kJ$)</bdi></div><ul class="kp"><li>رفع الحرارة ← إزاحة عكسية ← يقل ناتج النشادر عند الاتزان.</li><li>خفض الحرارة ← إزاحة طردية ← يزيد ناتج النشادر.</li></ul>',en:
+    '<div class="eqblock">$N2(g)+3H2(g)<=>2NH3(g)+Heat$ &nbsp; <bdi>($ΔH=-92 kJ$)</bdi></div><ul class="kp"><li>Raising T → backward shift → lower equilibrium yield of NH₃.</li><li>Lowering T → forward shift → higher yield.</li></ul>'}},
+   {h:{ar:'مثال: NO₂ / N₂O₄',en:'Example: NO₂ / N₂O₄'}, b:{ar:
+    '<div class="eqblock">$2NO2(g)<=>N2O4(g)+Heat$</div><p>NO₂ بني محمر و N₂O₄ عديم اللون. التسخين يفضّل الاتجاه العكسي الماص فيزيد NO₂ البني، والتبريد يفضّل الاتجاه الطردي الطارد فيزيد N₂O₄.</p>',en:
+    '<div class="eqblock">$2NO2(g)<=>N2O4(g)+Heat$</div><p>NO₂ is reddish-brown and N₂O₄ colourless. Heating favours the endothermic reverse direction (more brown NO₂); cooling favours the exothermic forward direction (more N₂O₄).</p>'}}
+  ],
+  sims:['no2'],
+  mis:[
+   {w:{ar:'الحرارة تأثيرها مثل التركيز تمامًا ولا تغير K.',en:'Temperature acts just like concentration and does not change K.'}, r:{ar:'تغيير الحرارة يغير قيمة K نفسها.',en:'Changing temperature changes K itself.'}, c:'c_ktemp'},
+   {w:{ar:'التسخين يزيد معدل التفاعل الطردي فقط.',en:'Heating speeds up only the forward reaction.'}, r:{ar:'التسخين يزيد المعدلين، والإزاحة تكون نحو الاتجاه الماص.',en:'Heating speeds up both; the shift is toward the endothermic direction.'}, c:'c_temp'}
+  ],
+  quiz:[
+   {id:'Q4a', c:'c_ktemp', q:{ar:'رفع درجة الحرارة لتفاعل طردي طارد للحرارة يجعل $K_{c}$:',en:'Raising T for an exothermic forward reaction makes $K_{c}$:'}, o:[{ar:'يزداد',en:'Increase'},{ar:'يقل',en:'Decrease'},{ar:'لا يتغير',en:'Unchanged'}], a:1, x:{ar:'الإزاحة عكسية فتقل النواتج ويقل K.',en:'Backward shift, fewer products, smaller K.'}},
+   {id:'Q4b', c:'c_temp', q:{ar:'تسخين نظام متزن:',en:'Heating a system at equilibrium:'}, o:[{ar:'يزيد معدل التفاعلين، ويزيح الموضع نحو الاتجاه الماص للحرارة',en:'Increases both rates and shifts the position toward the endothermic direction'},{ar:'يزيد معدل التفاعل الطردي فقط',en:'Increases only the forward rate'},{ar:'لا يؤثر على المعدل',en:'Has no effect on rate'}], a:0, x:{ar:'تأثيران مختلفان: السرعة والموضع.',en:'Two distinct effects: rate and position.'}}
+  ]
+},
+{ id:'u5', n:5, color:'green',
+  t:{ar:'الضغط والحجم و Kp',en:'Pressure, volume & Kp'},
+  goal:{ar:'التنبؤ بأثر الضغط على الاتزانات الغازية، وكتابة واستخدام تعبير Kp.',en:'Predict pressure effects on gaseous equilibria and use Kp.'},
+  sections:[
+   {h:{ar:'الضغط والحجم',en:'Pressure and volume'}, b:{ar:
+    '<p>لكمية ثابتة من الغاز عند ثبوت درجة الحرارة: تقليل الحجم يزيد الضغط، وزيادة الحجم تقلل الضغط.</p>',en:
+    '<p>For a fixed amount of gas at constant temperature, decreasing volume increases pressure; increasing volume decreases pressure.</p>'}},
+   {h:{ar:'أثر الضغط على الاتزان',en:'Effect on equilibrium'}, b:{ar:
+    '<ul class="kp"><li>زيادة الضغط (تقليل الحجم) ← إزاحة نحو الجانب ذي <b>عدد المولات الغازية الأقل</b>.</li><li>تقليل الضغط (زيادة الحجم) ← إزاحة نحو الجانب ذي عدد المولات الغازية الأكبر.</li><li>إذا تساوى عدد المولات الغازية في الجانبين لا يُزاح موضع الاتزان.</li><li>احسب المولات <b>الغازية فقط</b> (لا تحسب الصلب أو السائل أو المحلول المائي).</li></ul><p>الانضغاط يرفع الضغط، والإزاحة نحو جزيئات غازية أقل تقاوم هذه الزيادة.</p><p><b>"لا إزاحة" لا تعني "لا تغيير"</b>: الانضغاط يزيد تركيزات الغازات حتى لو لم يتغير الموضع. وتغيير الضغط عند ثبوت الحرارة لا يغير $K_{c}$ أو $K_{p}$.</p>',en:
+    '<ul class="kp"><li>Increasing pressure (smaller volume) → shift toward <b>fewer gas moles</b>.</li><li>Decreasing pressure (larger volume) → shift toward more gas moles.</li><li>Equal gas moles on both sides → no shift in position.</li><li>Count <b>gaseous species only</b> (not solids, liquids or aqueous species).</li></ul><p>Compression raises pressure; a shift toward fewer gas molecules tends to oppose it.</p><p><b>"No shift" does not mean "nothing changes"</b>: compression still raises gas concentrations. Pressure changes at constant T do not change $K_{c}$ or $K_{p}$.</p>'}},
+   {h:{ar:'أمثلة',en:'Examples'}, b:{ar:
+    '<div class="eqblock">$N2(g)+3H2(g)<=>2NH3(g)$ &nbsp; <bdi>(4 مولات ← 2 مول)</bdi></div><p>زيادة الضغط تفضّل النواتج، وتقليله يفضّل المتفاعلات.</p><div class="eqblock">$CO(g)+NO2(g)<=>CO2(g)+NO(g)$ &nbsp; <bdi>(2 = 2)</bdi></div><p>لا إزاحة في الموضع، لكن التركيزات والضغوط الجزئية تتغير.</p>',en:
+    '<div class="eqblock">$N2(g)+3H2(g)<=>2NH3(g)$ &nbsp; (4 mol → 2 mol)</div><p>Higher pressure favours products; lower pressure favours reactants.</p><div class="eqblock">$CO(g)+NO2(g)<=>CO2(g)+NO(g)$ &nbsp; (2 = 2)</div><p>No shift, but concentrations and partial pressures change.</p>'}},
+   {h:{ar:'الضغط الجزئي و Kp',en:'Partial pressure and Kp'}, b:{ar:
+    '<p>الضغط الجزئي هو مساهمة غاز واحد في ضغط الخليط.</p><div class="eqblock">$P_{total}=P_{1}+P_{2}+...+P_{n}$ </div><p>مثال: $2+5+7=14 atm$</p><div class="eqblock">$K_{p}=«(P_{C})^{c}(P_{D})^{d}|(P_{A})^{a}(P_{B})^{b}»$</div><p><b>مثال محلول:</b> للتفاعل $N2(g)+2O2(g)<=>2NO2(g)$ ، $P_{N2}=0.2 atm$ و $P_{O2}=1 atm$ و $P_{NO2}=2 atm$:</p><div class="eqblock">$K_{p}=«(P_{NO2})^{2}|P_{N2}(P_{O2})^{2}»=«(2)^{2}|(0.2)(1)^{2}»=20$</div>',en:
+    '<p>A partial pressure is one gas’s contribution to the mixture’s pressure.</p><div class="eqblock">$P_{total}=P_{1}+P_{2}+...+P_{n}$ &nbsp;&nbsp; e.g. $2+5+7=14 atm$</div><div class="eqblock">$K_{p}=«(P_{C})^{c}(P_{D})^{d}|(P_{A})^{a}(P_{B})^{b}»$</div><p><b>Worked example:</b> for $N2(g)+2O2(g)<=>2NO2(g)$ with $P_{N2}=0.2$, $P_{O2}=1$, $P_{NO2}=2$ atm:</p><div class="eqblock">$K_{p}=«(P_{NO2})^{2}|P_{N2}(P_{O2})^{2}»=«(2)^{2}|(0.2)(1)^{2}»=20$</div>'}}
+  ],
+  sims:['piston','kp'],
+  mis:[
+   {w:{ar:'لو مفيش إزاحة يبقى مفيش أي تغيير.',en:'No shift means nothing changes.'}, r:{ar:'التركيزات تزيد بالانضغاط حتى بدون إزاحة.',en:'Compression raises concentrations even without a shift.'}, c:'c_pres'},
+   {w:{ar:'نحسب كل المولات في المعادلة.',en:'Count all moles in the equation.'}, r:{ar:'نحسب المولات الغازية فقط.',en:'Count gaseous moles only.'}, c:'c_pres'}
+  ],
+  quiz:[
+   {id:'Q5a', c:'c_kp', q:{ar:'خليط غازات ضغوطها الجزئية 2 و 5 و 7 atm. الضغط الكلي:',en:'Partial pressures 2, 5 and 7 atm. Total pressure:'}, o:[{ar:'14 atm',en:'14 atm'},{ar:'70 atm',en:'70 atm'},{ar:'7 atm',en:'7 atm'}], a:0, x:{ar:'$P_{total}=2+5+7=14 atm$',en:'$P_{total}=2+5+7=14 atm$'}},
+   {id:'Q5b', c:'c_pres', q:{ar:'عند تقليل الضغط (زيادة الحجم) لتفاعل النشادر $N2+3H2<=>2NH3$:',en:'Lowering pressure (larger volume) for $N2+3H2<=>2NH3$:'}, o:[{ar:'إزاحة طردية',en:'Forward shift'},{ar:'إزاحة عكسية (نحو المولات الأكثر)',en:'Backward shift (toward more moles)'},{ar:'لا إزاحة',en:'No shift'}], a:1, x:{ar:'الجانب الأيسر فيه 4 مولات غازية.',en:'The left side has 4 gas moles.'}}
+  ]
+},
+{ id:'u6', n:6, color:'purple',
+  t:{ar:'دور العامل الحفاز',en:'The role of a catalyst'},
+  goal:{ar:'تفسير لماذا يسرّع الحفاز الوصول للاتزان دون تغيير موضعه.',en:'Explain why a catalyst speeds up reaching equilibrium without shifting it.'},
+  sections:[
+   {h:{ar:'ماذا يفعل العامل الحفاز؟',en:'What does a catalyst do?'}, b:{ar:
+    '<ul class="kp"><li>يوفر مسارًا بديلًا للتفاعل بطاقة تنشيط أقل.</li><li>يزيد معدل التفاعلين الطردي والعكسي.</li><li>لا يغير طاقة المتفاعلات أو النواتج، ولا يغير $ΔH$.</li><li>لا يغير موضع الاتزان ولا قيمة ثابت الاتزان.</li><li>يجعل النظام يصل للاتزان أسرع.</li></ul>',en:
+    '<ul class="kp"><li>Provides an alternative pathway with lower activation energy.</li><li>Increases both forward and backward rates.</li><li>Does not change reactant/product energy levels or $ΔH$.</li><li>Does not change the equilibrium position or constant.</li><li>Equilibrium is reached sooner.</li></ul>'}},
+   {h:{ar:'منحنى الطاقة',en:'Energy profile'}, b:{ar:
+    '<p>المتفاعلات والنواتج عند نفس مستويات الطاقة في المسارين. الحفاز يخفض قمة طاقة التنشيط للاتجاهين الطردي والعكسي <b>بنفس المقدار</b>، لذلك يزيد المعدلين معًا ولا يزيح الاتزان.</p>',en:
+    '<p>Reactants and products have the same energy levels in both pathways. The catalyst lowers the forward and backward barriers <b>by the same amount</b>, so both rates increase and the position does not shift.</p>'}}
+  ],
+  sims:['cat'],
+  mis:[
+   {w:{ar:'الحفاز يزيد كمية النواتج عند الاتزان.',en:'A catalyst increases the amount of product at equilibrium.'}, r:{ar:'الحفاز يسرّع الوصول للاتزان فقط.',en:'A catalyst only speeds up reaching equilibrium.'}, c:'c_cat'}
+  ],
+  quiz:[
+   {id:'Q6a', c:'c_cat', q:{ar:'العامل الحفاز يغيّر:',en:'A catalyst changes:'}, o:[{ar:'قيمة ΔH',en:'ΔH'},{ar:'طاقة التنشيط',en:'Activation energy'},{ar:'ثابت الاتزان',en:'The equilibrium constant'}], a:1, x:{ar:'يخفض طاقة التنشيط فقط.',en:'It lowers activation energy only.'}},
+   {id:'Q6b', c:'c_cat', q:{ar:'لماذا لا يزيح الحفاز الاتزان؟',en:'Why does a catalyst not shift equilibrium?'}, o:[{ar:'لأنه يخفض حاجز الطاقة للاتجاهين بنفس المقدار',en:'It lowers both barriers by the same amount'},{ar:'لأنه يُستهلك في التفاعل',en:'It is consumed in the reaction'},{ar:'لأنه يبطئ التفاعل العكسي',en:'It slows the backward reaction'}], a:0, x:{ar:'المعدلان يزيدان معًا.',en:'Both rates increase together.'}}
+  ]
+}
+];
+
+/* Enrichment — critical thinking & problem solving (approved reactions only) */
+const CHALLENGES = [
+ {id:'E1', c:'c_conc', q:{ar:'طالب قال: "بما إن معدل التفاعلين متساوي عند الاتزان، يبقى كمية النواتج = كمية المتفاعلات." أفضل رد علمي:',en:'A student says: "Since rates are equal at equilibrium, product amount = reactant amount." Best scientific reply:'},
+  o:[{ar:'كلامه صحيح دائمًا',en:'Always correct'},{ar:'خطأ: تساوي المعدلين يعني تساوي سرعة العمليتين، والتركيزات ثابتة لكن ليست بالضرورة متساوية',en:'Wrong: equal rates mean equal speeds of the two processes; concentrations are constant but not necessarily equal'},{ar:'صحيح فقط في التفاعلات الغازية',en:'Correct only for gaseous reactions'}], a:1,
+  x:{ar:'الفكرة المحورية: تساوي "المعدل" ≠ تساوي "الكمية".',en:'Key idea: equal rate ≠ equal amount.'}},
+ {id:'E2', c:'c_cat', q:{ar:'في تفاعل النشادر الطارد، خفض الحرارة يزيد الناتج عند الاتزان لكنه يبطّئ التفاعل. ما الذي يضيفه العامل الحفاز هنا؟',en:'In the exothermic ammonia reaction, lowering T raises equilibrium yield but slows the reaction. What does a catalyst add?'},
+  o:[{ar:'يزيد الناتج عند الاتزان',en:'Raises the equilibrium yield'},{ar:'يجعل النظام يصل للاتزان أسرع دون تغيير الناتج عند الاتزان',en:'Reaches equilibrium faster without changing the equilibrium yield'},{ar:'يغير إشارة ΔH',en:'Changes the sign of ΔH'}], a:1,
+  x:{ar:'افصل بين "السرعة" و"الموضع": الحفاز يعالج مشكلة السرعة فقط.',en:'Separate rate from position: the catalyst only addresses rate.'}},
+ {id:'E3', c:'c_pres', q:{ar:'ضغطنا وعاء فيه $CO(g)+NO2(g)<=>CO2(g)+NO(g)$ لنصف حجمه. زميلك قال "مفيش أي حاجة اتغيرت". تقييمك:',en:'A vessel with $CO(g)+NO2(g)<=>CO2(g)+NO(g)$ is compressed to half volume. A classmate says "nothing changed". Your evaluation:'},
+  o:[{ar:'صحيح تمامًا',en:'Fully correct'},{ar:'نصف صحيح: الموضع لم يتغير، لكن تركيزات كل الغازات زادت',en:'Half correct: position unchanged, but all gas concentrations increased'},{ar:'خطأ: الاتزان أُزيح طرديًا',en:'Wrong: it shifted forward'}], a:1,
+  x:{ar:'"لا إزاحة" ≠ "لا تغيير".',en:'"No shift" ≠ "no change".'}},
+ {id:'E4', c:'c_pres', q:{ar:'لتفاعل $N2(g)+3H2(g)<=>2NH3(g)+Heat$ ، أي مجموعة ظروف تزيد ناتج النشادر عند الاتزان؟',en:'For $N2(g)+3H2(g)<=>2NH3(g)+Heat$, which pair of conditions increases the equilibrium yield of NH₃?'},
+  o:[{ar:'زيادة الضغط وخفض الحرارة',en:'Higher pressure and lower temperature'},{ar:'خفض الضغط ورفع الحرارة',en:'Lower pressure and higher temperature'},{ar:'إضافة حفاز فقط',en:'Adding a catalyst only'}], a:0,
+  x:{ar:'الضغط ← نحو مولات أقل (طردي)، والتبريد ← نحو الاتجاه الطارد (طردي).',en:'Pressure → fewer moles (forward); cooling → exothermic direction (forward).'}},
+ {id:'E5', c:'c_kc', q:{ar:'للتفاعل $2HCl(g)<=>H2(g)+Cl2(g)$ قيمة $K_{p}=2.45×10^{-7}$. ثابت الاتزان للتفاعل المعكوس $H2(g)+Cl2(g)<=>2HCl(g)$ هو:',en:'For $2HCl(g)<=>H2(g)+Cl2(g)$, $K_{p}=2.45×10^{-7}$. For the reverse $H2(g)+Cl2(g)<=>2HCl(g)$, K is:'},
+  o:[{ar:'$2.45×10^{-7}$',en:'$2.45×10^{-7}$'},{ar:'$«1|2.45×10^{-7}»$',en:'$«1|2.45×10^{-7}»$'},{ar:'$(2.45×10^{-7})^{2}$',en:'$(2.45×10^{-7})^{2}$'}], a:1,
+  x:{ar:'عكس المعادلة ⟸ مقلوب الثابت.',en:'Reversing the equation ⟹ reciprocal constant.'}},
+ {id:'E6', c:'c_temp', q:{ar:'سخّنا أنبوبة فيها $2NO2(g)<=>N2O4(g)+Heat$. ما الوصف الأدق لما حدث؟',en:'We heat a tube containing $2NO2(g)<=>N2O4(g)+Heat$. The most accurate description:'},
+  o:[{ar:'زاد معدل التفاعلين، وأُزيح الموضع عكسيًا فزاد اللون البني',en:'Both rates increased, and the position shifted backward so the brown colour deepened'},{ar:'زاد معدل التفاعل العكسي فقط',en:'Only the backward rate increased'},{ar:'لم يتغير K',en:'K did not change'}], a:0,
+  x:{ar:'تأثيران: سرعة أكبر للاتجاهين + موضع جديد، و K نفسه يتغير مع الحرارة.',en:'Two effects: faster rates both ways + a new position; K itself changes with T.'}},
+ {id:'E7', c:'c_phase', q:{ar:'في تعبير $K_{c}$ لتفاعل فيه $H2O(v)$ وتفاعل آخر فيه $H2O(l)$:',en:'In $K_{c}$ for one reaction with $H2O(v)$ and another with $H2O(l)$:'},
+  o:[{ar:'يُكتب الماء في الحالتين',en:'Water is written in both'},{ar:'يُكتب البخار (v) ولا يُكتب السائل النقي (l)',en:'Vapour (v) is included; pure liquid (l) is omitted'},{ar:'لا يُكتب في الحالتين',en:'Omitted in both'}], a:1,
+  x:{ar:'البخار غاز تركيزه متغير، والسائل النقي تركيزه ثابت.',en:'Vapour is a gas with variable concentration; a pure liquid’s is constant.'}}
+];
+
+/* ============ ACQUIRE KNOWLEDGE (free, content-based) ============
+   HINTS[id] = { h:[hint1, hint2], w:{ optionIndex: why-this-is-wrong } }
+   Level 3 (solution) = the question's own correct option + explanation (x).
+*/
+const HINTS = {
+ Q1a:{h:[{ar:'فكّر: الاتزان "ساكن" ولا "ديناميكي"؟',en:'Think: is equilibrium static or dynamic?'},{ar:'ديناميكي يعني التفاعلين شغالين. هل ينفع واحد منهم يقف؟',en:'Dynamic means both reactions run. Can one of them stop?'}],
+   w:{0:{ar:'لو التفاعل الطردي وقف، كان التفاعل العكسي هيستهلك النواتج والتركيزات هتتغير — لكن عند الاتزان التركيزات ثابتة.',en:'If the forward reaction stopped, the backward one would consume products and concentrations would change — yet at equilibrium they are constant.'}}},
+ Q1b:{h:[{ar:'لما نسحب مادة، النظام بيحاول يعمل إيه؟ يعوّضها ولا يستهلكها؟',en:'When we remove a substance, does the system replace it or consume it?'},{ar:'النظام هيعوّض جزء من المتفاعل المسحوب — يعني هيكوّن متفاعلات. ده أنهي اتجاه؟',en:'It replaces some of the removed reactant — i.e. it forms reactants. Which direction is that?'}],
+   w:{0:{ar:'الطردي بيستهلك المتفاعلات أكتر، وده عكس اللي النظام محتاجه بعد ما قلّ المتفاعل.',en:'Forward would consume even more reactant — the opposite of what the system needs.'},2:{ar:'أي تغيير في التركيز بيأثر على الاتزان؛ النظام لازم يستجيب.',en:'Any concentration change disturbs equilibrium; the system must respond.'}}},
+ Q1c:{h:[{ar:'المبدأ بيقول النظام "يقلل" أثر التغيير. هل "يقلل" زي "يلغي"؟',en:'The principle says the system "opposes" the change. Is opposing the same as cancelling?'},{ar:'بعد الإضافة النظام بيوصل لاتزان جديد — مش لنفس الحالة القديمة.',en:'After the addition the system reaches a new equilibrium — not the old one.'}],
+   w:{0:{ar:'النظام بيستهلك جزء بس من المادة المضافة، فيوصل لاتزان جديد مختلف عن الأصلي.',en:'The system consumes only part of the added substance, reaching a new, different equilibrium.'}}},
+ Q2a:{h:[{ar:'عند الاتزان إيه العلاقة بين المعدل الطردي والعكسي؟',en:'At equilibrium, how are the forward and backward rates related?'},{ar:'لو rf = rb، اقسم ثابت المعدل الطردي على العكسي — ده بيدّي إيه؟',en:'If rf = rb, divide kf by kb — what does that give?'}],
+   w:{1:{ar:'المعدل الطردي مش صفر عند الاتزان؛ التفاعلين شغالين.',en:'The forward rate is not zero at equilibrium; both reactions run.'},2:{ar:'Kc نسبة (قسمة) بين الثابتين، مش حاصل ضربهم.',en:'Kc is a ratio (division) of the two constants, not their product.'}}},
+ Q2b:{h:[{ar:'NH₄Cl موجود في أنهي جانب من المعادلة؟',en:'Which side of the equation is NH₄Cl on?'},{ar:'إضافة ناتج ← النظام يستهلكه ← إزاحة عكسية. الإزاحة العكسية بتقلل المادة الملونة ولا بتزودها؟',en:'Adding a product → the system consumes it → backward shift. Does that increase or decrease the coloured product?'}],
+   w:{0:{ar:'اللون بيغمق لما نضيف متفاعل (FeCl₃)، لكن NH₄Cl ناتج.',en:'Colour deepens when we add a reactant (FeCl₃), but NH₄Cl is a product.'},2:{ar:'إضافة ناتج بتزيح الاتزان، فاللون لازم يتغير.',en:'Adding a product shifts equilibrium, so the colour must change.'}}},
+ Q3a:{h:[{ar:'بص على الحالة الفيزيائية لكل مادة: (l) و (g).',en:'Look at each state symbol: (l) and (g).'},{ar:'السائل النقي (l) تركيزه ثابت فمش بيتكتب. يبقى فاضل مين في التعبير؟',en:'A pure liquid (l) is omitted. What is left in the expression?'}],
+   w:{0:{ar:'السائل النقي ما بيتكتبش في تعبير Kc.',en:'The pure liquid is not written in Kc.'},2:{ar:'Kc مش رقم ثابت 1؛ بيساوي تركيز الغاز عند الاتزان.',en:'Kc is not simply 1; it equals the gas concentration at equilibrium.'}}},
+ Q3b:{h:[{ar:'افتكر مثال: 2H₂O(v) ⇌ 2H₂ + O₂ — الـ 2 اتكتبت إزاي في Kc؟',en:'Recall 2H₂O(v) ⇌ 2H₂ + O₂ — how did the 2 appear in Kc?'},{ar:'اتكتبت [H₂]² — يعني الرقم بقى إيه؟',en:'It became [H₂]² — so the number became what?'}],
+   w:{0:{ar:'المعامل مش بيتضرب في التركيز؛ بيبقى أُس.',en:'The coefficient does not multiply; it becomes a power.'},2:{ar:'المعامل مهم جدًا ولازم يظهر كأُس.',en:'The coefficient matters and must appear as a power.'}}},
+ Q4a:{h:[{ar:'التفاعل طارد ← الحرارة مكتوبة مع النواتج. التسخين هيزيح لأنهي اتجاه؟',en:'Exothermic → heat is with the products. Heating shifts which way?'},{ar:'الإزاحة العكسية بتقلل النواتج. لو النواتج قلّت (في البسط)، K هيعمل إيه؟',en:'A backward shift lowers products (numerator). What happens to K?'}],
+   w:{0:{ar:'K بيزيد بالتسخين للتفاعل الماص، مش الطارد.',en:'K increases on heating for endothermic reactions, not exothermic.'},2:{ar:'الحرارة هي العامل الوحيد اللي بيغير قيمة K.',en:'Temperature is the one factor that does change K.'}}},
+ Q4b:{h:[{ar:'فيه تأثيرين منفصلين للحرارة: على "السرعة" وعلى "الموضع".',en:'Heat has two separate effects: on rate and on position.'},{ar:'التسخين بيسرّع الاتجاهين، والموضع بيتزاح ناحية الاتجاه الماص للحرارة.',en:'Heating speeds both directions; the position moves toward the endothermic direction.'}],
+   w:{1:{ar:'التسخين بيزود معدل التفاعلين الطردي والعكسي، مش واحد بس.',en:'Heating increases both rates, not just one.'},2:{ar:'التسخين عمومًا بيزود معدل التفاعل.',en:'Heating generally increases reaction rate.'}}},
+ Q5a:{h:[{ar:'الضغط الكلي = مجموع الضغوط الجزئية.',en:'Total pressure = sum of partial pressures.'},{ar:'اجمع: 2 + 5 + 7',en:'Add: 2 + 5 + 7'}],
+   w:{1:{ar:'إحنا بنجمع الضغوط الجزئية، مش بنضربها.',en:'We add partial pressures, not multiply them.'},2:{ar:'7 atm ده ضغط غاز واحد بس، مش الكلي.',en:'7 atm is one gas only, not the total.'}}},
+ Q5b:{h:[{ar:'عِد المولات الغازية: يسار (1 + 3) ويمين (2).',en:'Count gas moles: left (1 + 3), right (2).'},{ar:'تقليل الضغط ← الجانب اللي فيه مولات غازية أكتر. ده أنهي جانب؟',en:'Lower pressure → the side with more gas moles. Which side?'}],
+   w:{0:{ar:'الإزاحة الطردية بتقلل عدد المولات — وده بيحصل لما الضغط يزيد مش يقل.',en:'Forward reduces moles — that happens when pressure increases, not decreases.'},2:{ar:'عدد المولات مش متساوي (4 مقابل 2)، فالضغط بيأثر.',en:'Moles are unequal (4 vs 2), so pressure has an effect.'}}},
+ Q6a:{h:[{ar:'الحفاز بيوفّر "طريق تاني" للتفاعل. الطريق ده إيه اللي بيتغير فيه؟',en:'A catalyst offers another path. What changes on that path?'},{ar:'بص على منحنى الطاقة: مستوى المتفاعلات والنواتج ثابت، القمة بس اللي بتنزل.',en:'Look at the energy profile: reactant/product levels stay; only the peak drops.'}],
+   w:{0:{ar:'ΔH هو فرق الطاقة بين المتفاعلات والنواتج، والحفاز ما بيغيرهمش.',en:'ΔH is the reactant–product energy gap; a catalyst does not change it.'},2:{ar:'الحفاز ما بيغيرش ثابت الاتزان ولا موضعه.',en:'A catalyst changes neither K nor the position.'}}},
+ Q6b:{h:[{ar:'الحفاز بيأثر على الاتجاه الطردي بس ولا الاتنين؟',en:'Does a catalyst affect only forward, or both?'},{ar:'لو الاتجاهين اتسرّعوا بنفس القدر، هل في اتجاه "اتفضّل" على التاني؟',en:'If both speed up equally, is either direction favoured?'}],
+   w:{1:{ar:'الحفاز ما بيُستهلكش في التفاعل.',en:'A catalyst is not consumed.'},2:{ar:'الحفاز بيسرّع التفاعل العكسي كمان، مش بيبطّأه.',en:'A catalyst speeds up the backward reaction too.'}}},
+ E1:{h:[{ar:'فرّق بين "المعدل" (سرعة التحول) و"الكمية" (التركيز).',en:'Separate "rate" (speed of conversion) from "amount" (concentration).'},{ar:'في محاكاة الدرس 1: المعدلين بقوا متساويين، لكن عدد الجسيمات الزرقا والبرتقاني كان متساوي؟',en:'In the Unit 1 simulation the rates became equal — were the blue and orange counts equal?'}],
+   w:{0:{ar:'تساوي المعدلين لا يعني تساوي التركيزات.',en:'Equal rates do not imply equal concentrations.'},2:{ar:'القاعدة دي مش متعلقة بالحالة الغازية؛ التركيزات عمومًا مش لازم تتساوى.',en:'This has nothing to do with gases; concentrations need not be equal in general.'}}},
+ E2:{h:[{ar:'الحفاز بيأثر على "السرعة" ولا على "الموضع"؟',en:'Does a catalyst affect rate or position?'},{ar:'المشكلة هنا إن التبريد بيبطّأ التفاعل. مين بيحل مشكلة البطء من غير ما يغير الناتج؟',en:'The problem is that cooling slows the reaction. What fixes slowness without changing yield?'}],
+   w:{0:{ar:'الحفاز ما بيغيرش الناتج عند الاتزان.',en:'A catalyst does not change the equilibrium yield.'},2:{ar:'الحفاز ما بيغيرش ΔH.',en:'A catalyst does not change ΔH.'}}},
+ E3:{h:[{ar:'عِد المولات الغازية في الجانبين.',en:'Count gas moles on both sides.'},{ar:'2 = 2 يعني مفيش إزاحة… بس لما الحجم يبقى النص، التركيز بيحصله إيه؟',en:'2 = 2 means no shift… but when volume halves, what happens to concentration?'}],
+   w:{0:{ar:'الموضع ما اتغيرش فعلًا، لكن تركيزات كل الغازات زادت بالانضغاط.',en:'The position is unchanged, but all gas concentrations rose on compression.'},2:{ar:'عدد المولات متساوي، فمفيش إزاحة طردية.',en:'Moles are equal, so there is no forward shift.'}}},
+ E4:{h:[{ar:'فكّر في كل عامل لوحده: الضغط، وبعدين الحرارة.',en:'Think about each factor alone: pressure, then temperature.'},{ar:'المولات 4 ← 2، والحرارة مع النواتج. أنهي ظروف تزيح الاتنين طرديًا؟',en:'Moles 4 → 2, heat with products. Which conditions push both forward?'}],
+   w:{1:{ar:'خفض الضغط ورفع الحرارة الاتنين بيزيحوا عكسيًا هنا.',en:'Lower pressure and higher temperature both shift backward here.'},2:{ar:'الحفاز بيسرّع الوصول بس، ما بيزودش الناتج.',en:'A catalyst only speeds things up; it does not raise the yield.'}}},
+ E5:{h:[{ar:'التفاعل اتكتب بالعكس — المتفاعلات بقت نواتج.',en:'The reaction is written in reverse — reactants became products.'},{ar:'لو البسط والمقام اتبدلوا، القيمة الجديدة = ؟',en:'If numerator and denominator swap, the new value = ?'}],
+   w:{0:{ar:'القيمة دي للاتجاه الأصلي بس؛ لازم تتغير لما نعكس المعادلة.',en:'That value belongs only to the original direction.'},2:{ar:'التربيع بيحصل لما نضرب المعاملات في 2، مش لما نعكس.',en:'Squaring is for doubling coefficients, not reversing.'}}},
+ E6:{h:[{ar:'التسخين له تأثيرين: على السرعة وعلى الموضع.',en:'Heating has two effects: rate and position.'},{ar:'الحرارة مع النواتج ← الطردي طارد ← التسخين يزيح لأنهي اتجاه؟ وده بيكوّن أنهي غاز؟',en:'Heat with products → forward exothermic → heating shifts which way? Forming which gas?'}],
+   w:{1:{ar:'التسخين بيزود معدل التفاعلين، مش العكسي بس.',en:'Heating increases both rates, not just the backward one.'},2:{ar:'الحرارة هي العامل اللي بيغير K.',en:'Temperature is what changes K.'}}},
+ E7:{h:[{ar:'بص على الرمز: (v) و (l) — مين فيهم غاز؟',en:'Look at (v) and (l) — which is a gas?'},{ar:'البخار غاز تركيزه بيتغير، والسائل النقي تركيزه ثابت.',en:'Vapour is a gas with changing concentration; a pure liquid’s is constant.'}],
+   w:{0:{ar:'السائل النقي (l) ما بيتكتبش.',en:'The pure liquid (l) is not written.'},2:{ar:'البخار (v) غاز، فلازم يتكتب.',en:'Vapour (v) is a gas, so it is included.'}}}
+};
+
+/* Concept explainers: simple explanation + example + where to practise */
+const EXPLAIN = {
+ c_dyn:{s:{ar:'الاتزان الديناميكي: التفاعل الطردي والعكسي شغالين طول الوقت وبنفس المعدل، عشان كده الكميات بتفضل ثابتة. زي سلّم متحرك والناس طالعة ونازلة بنفس العدد في الدقيقة.',en:'Dynamic equilibrium: forward and backward reactions keep running at the same rate, so amounts stay constant — like people going up and down an escalator at the same rate.'},
+   q:{ar:'سؤال ليك: عند الاتزان، هل التفاعل وقف؟',en:'Your turn: at equilibrium, has the reaction stopped?'}},
+ c_conc:{s:{ar:'عند الاتزان التركيزات ثابتة، لكن مش لازم تكون متساوية. "تساوي المعدلات" ≠ "تساوي الكميات".',en:'At equilibrium concentrations are constant but not necessarily equal. Equal rates ≠ equal amounts.'},
+   q:{ar:'في محاكاة الدرس 1: بعد الاتزان، عدد الجسيمات الزرقا والبرتقاني متساوي؟',en:'In the Unit 1 simulation, after equilibrium, are blue and orange counts equal?'}},
+ c_lec:{s:{ar:'مبدأ لوشاتيليه: لو غيّرت حاجة في نظام متزن، النظام يتزاح في الاتجاه اللي يقلل أثر التغيير. ضفت مادة؟ يستهلك جزء منها. سحبت مادة؟ يعوّض جزء منها.',en:"Le Chatelier: change something and the system shifts to oppose it. Added a substance? It consumes some. Removed one? It replaces some."},
+   q:{ar:'جرّب: لو زوّدنا متفاعل، الاتزان هيتزاح فين؟',en:'Try: if we add a reactant, which way will it shift?'}},
+ c_mass:{s:{ar:'قانون فعل الكتلة (مدرسيًا): معدل التفاعل بيعتمد على تركيز المواد المتفاعلة مرفوعة لأُس معاملاتها. عند الاتزان rf = rb، ومنها Kc = kf / kb.',en:'Mass action (school level): rate depends on reactant concentrations raised to their coefficients. At equilibrium rf = rb, giving Kc = kf / kb.'},
+   q:{ar:'في FeCl₃ + 3NH₄SCN، الـ 3 هتظهر إزاي في معدل التفاعل الطردي؟',en:'In FeCl₃ + 3NH₄SCN, how does the 3 appear in the forward rate?'}},
+ c_kc:{s:{ar:'خطوات Kc: (1) النواتج فوق (2) المتفاعلات تحت (3) المعامل يبقى أُس (4) الصلب والسائل النقي ما يتكتبوش.',en:'Kc steps: (1) products on top (2) reactants below (3) coefficient → power (4) omit pure solids and liquids.'},
+   q:{ar:'جرّب "مُنشئ تعبير Kc" في الدرس 3.',en:'Try the Kc builder in Unit 3.'}},
+ c_phase:{s:{ar:'(s) صلب و (l) سائل نقي: تركيزهم ثابت فما بيتكتبوش في Kc. (g) غاز و (aq) محلول و (v) بخار: بيتكتبوا.',en:'(s) solid and (l) pure liquid: constant, so omitted. (g), (aq) and (v) vapour: included.'},
+   q:{ar:'في NH₃(l) ⇌ NH₃(g)، مين هيتكتب في Kc؟',en:'In NH₃(l) ⇌ NH₃(g), what goes into Kc?'}},
+ c_temp:{s:{ar:'الحرارة: حدّد الأول الحرارة مكتوبة فين. التسخين يزيح بعيد عن الحرارة (ناحية الاتجاه الماص)، والتبريد يزيح ناحيتها (الاتجاه الطارد).',en:'Temperature: first find where heat is written. Heating shifts toward the endothermic direction; cooling toward the exothermic one.'},
+   q:{ar:'في 2NO₂ ⇌ N₂O₄ + حرارة، لو سخّنا اللون البني هيغمق ولا يفتح؟',en:'In 2NO₂ ⇌ N₂O₄ + heat, will heating deepen or fade the brown?'}},
+ c_ktemp:{s:{ar:'قيمة K بتتغير بالحرارة بس. تغيير التركيز أو الضغط بيزيح الاتزان من غير ما يغير K. التسخين: K يقل للطارد ويزيد للماص.',en:'K changes only with temperature. Concentration or pressure changes shift equilibrium without changing K. Heating: K falls for exothermic, rises for endothermic.'},
+   q:{ar:'لو ضفنا متفاعل عند نفس درجة الحرارة، K هيتغير؟',en:'If we add a reactant at the same temperature, does K change?'}},
+ c_pres:{s:{ar:'الضغط: عِد المولات الغازية بس. زيادة الضغط (تصغير الحجم) ← ناحية المولات الأقل. لو متساويين ← مفيش إزاحة، بس التركيزات بتزيد.',en:'Pressure: count gas moles only. Higher pressure (smaller volume) → fewer moles. Equal → no shift, but concentrations rise.'},
+   q:{ar:'في N₂ + 3H₂ ⇌ 2NH₃، كام مول غاز في كل جانب؟',en:'In N₂ + 3H₂ ⇌ 2NH₃, how many gas moles on each side?'}},
+ c_kp:{s:{ar:'الضغط الكلي = مجموع الضغوط الجزئية. Kp زي Kc بالظبط بس بنستخدم الضغوط الجزئية بدل التركيزات.',en:'Total pressure = sum of partial pressures. Kp is like Kc but uses partial pressures.'},
+   q:{ar:'جرّب حاسبة Kp في الدرس 5.',en:'Try the Kp calculator in Unit 5.'}},
+ c_cat:{s:{ar:'العامل الحفاز بيعمل "طريق مختصر" بطاقة تنشيط أقل للاتجاهين بنفس القدر، فبيوصل للاتزان أسرع — لكن ما بيغيرش الموضع ولا K ولا ΔH.',en:'A catalyst opens a shortcut with lower activation energy for both directions equally, so equilibrium comes sooner — but position, K and ΔH are unchanged.'},
+   q:{ar:'جرّب "سباق الوصول للاتزان" في الدرس 6.',en:'Try the "race to equilibrium" in Unit 6.'}}
+};
+
+/* Keyword map (normalized Arabic + English) → concept */
+const KEYS = {
+ c_dyn:['ديناميك','يتوقف','وقف','توقف','ساكن','اتزان كيميائي','dynamic','stop','static'],
+ c_conc:['متساوي','تساوي','نفس الكميه','equal','same amount'],
+ c_lec:['شاتيليه','شاتليه','لوشاتيليه','ازاحه','يزاح','اضافه','سحب','تركيز','chatelier','shift','add','remove','concentration'],
+ c_mass:['فعل الكتله','معدل التفاعل','kf','kb','ثابت المعدل','mass action','rate','fecl','scn','ثيوسيانات','لون احمر'],
+ c_kc:['kc','ثابت الاتزان','تعبير','بسط','مقام','اس','constant','expression'],
+ c_phase:['صلب','سائل','بخار','(s)','(l)','(v)','solid','liquid','vapour','vapor','حاله فيزيائيه'],
+ c_temp:['حراره','تسخين','سخن','تبريد','برد','طارد','ماص','no2','n2o4','بني','temperature','heat','cool','exothermic','endothermic'],
+ c_ktemp:['k يتغير','قيمه k','تتغير k','k change'],
+ c_pres:['ضغط','حجم','مكبس','مولات','pressure','volume','piston','moles'],
+ c_kp:['kp','ضغط جزئي','ضغوط جزئيه','ضغط كلي','partial','total pressure'],
+ c_cat:['حفاز','عامل مساعد','طاقه التنشيط','تنشيط','catalyst','activation']
+};
+
+/* ============ SIMULATIONS (conceptual / illustrative) ============ */
+const SIMS = {};
+const illTag = () => `<span class="tag ill">${T({ar:'نموذج مفاهيمي توضيحي — ليس بيانات مقاسة',en:'Conceptual / illustrative — not measured data'})}</span>`;
+function simShell(title, body){ return `<div class="sim"><div class="simhead"><h3>${title}</h3>${illTag()}</div>${body}</div>`; }
+function rnd(a,b){return a+Math.random()*(b-a)}
+function fitCanvas(cv){ const r=window.devicePixelRatio||1, w=cv.width, h=cv.height; cv.style.width='100%'; cv.style.maxWidth=Math.round(w*1.35)+'px'; cv.style.aspectRatio=w+'/'+h; cv.width=w*r; cv.height=h*r; const c=cv.getContext('2d'); c.scale(r,r); return {c,w,h}; }
+
+/* ---------- 1. Dynamic equilibrium + concentration lab ---------- */
+SIMS.dyn = (root)=>{
+  root.innerHTML = simShell(T({ar:'من بداية التفاعل إلى الاتزان — ومعمل التركيز',en:'From reaction start to equilibrium — concentration lab'}), `
+  <p class="muted">${T({ar:'الجسيمات الزرقاء = متفاعل A ، والبرتقالية = ناتج B. اضغط تشغيل وراقب المعدلين والتركيزين. بعد الوصول للاتزان جرّب تغيير التركيز وتوقّع اتجاه الإزاحة.',en:'Blue = reactant A, orange = product B. Press play and watch the two rates and concentrations. After equilibrium, disturb the system and predict the shift.'})}</p>
+  <div class="simgrid">
+    <div><canvas id="dP" width="460" height="300"></canvas>
+      <div class="legend" style="margin-top:6px"><span><i style="background:#2f7be6;border-radius:50%"></i>A</span><span><i style="background:#f08a24"></i>B</span><span>${chem('$A<=>B$')}</span></div></div>
+    <div>
+      <div class="counter"><div style="color:#1d5fc2">${T({ar:'تحولات طردية',en:'Forward events'})}<br><span id="dF">0</span></div><div style="color:#c96a10">${T({ar:'تحولات عكسية',en:'Backward events'})}<br><span id="dB">0</span></div></div>
+      <div style="font-weight:700;font-size:.9rem">${T({ar:'المعدل مع الزمن',en:'Rate vs time'})}</div><canvas id="dR" width="320" height="130"></canvas>
+      <div style="font-weight:700;font-size:.9rem;margin-top:6px">${T({ar:'التركيز مع الزمن',en:'Concentration vs time'})}</div><canvas id="dC" width="320" height="130"></canvas>
+      <div class="legend"><span><i style="background:#2f7be6"></i>${T({ar:'طردي / [A]',en:'forward / [A]'})}</span><span><i style="background:#f08a24"></i>${T({ar:'عكسي / [B]',en:'backward / [B]'})}</span></div>
+    </div>
+  </div>
+  <div class="ctrls"><button class="btn blue sm" id="dGo">${T({ar:'▶ تشغيل',en:'▶ Play'})}</button><button class="btn ghost sm" id="dReset">${T({ar:'↺ إعادة',en:'↺ Reset'})}</button></div>
+  <div class="ctrls" id="dDist">
+    <button class="btn ghost sm" data-a="addA">+ ${T({ar:'إضافة متفاعل A',en:'Add reactant A'})}</button>
+    <button class="btn ghost sm" data-a="remA">− ${T({ar:'سحب متفاعل A',en:'Remove reactant A'})}</button>
+    <button class="btn ghost sm" data-a="addB">+ ${T({ar:'إضافة ناتج B',en:'Add product B'})}</button>
+    <button class="btn ghost sm" data-a="remB">− ${T({ar:'سحب ناتج B',en:'Remove product B'})}</button>
+  </div>
+  <div id="dPred"></div><div id="dFb"></div>`);
+  const P=fitCanvas(root.querySelector('#dP')), R=fitCanvas(root.querySelector('#dR')), C=fitCanvas(root.querySelector('#dC'));
+  const pf=0.022, pb=0.011; let parts=[], run=false, rf=0, rb=0, hist=[], marks=[], raf, acc=0, last=0, totF=0, totB=0, tick=0;
+  const mk=s=>({x:rnd(12,P.w-12),y:rnd(12,P.h-12),vx:rnd(-1,1),vy:rnd(-1,1),s,fl:0});
+  function reset(){parts=[];for(let i=0;i<54;i++)parts.push(mk('A'));rf=rb=0;hist=[];marks=[];totF=totB=0;tick=0;run=false;root.querySelector('#dGo').textContent=T({ar:'▶ تشغيل',en:'▶ Play'});root.querySelector('#dPred').innerHTML='';root.querySelector('#dFb').innerHTML='';draw();}
+  function step(){ let f=0,b=0; for(const p of parts){ if(p.s==='A'&&Math.random()<pf){p.s='B';p.fl=8;f++} else if(p.s==='B'&&Math.random()<pb){p.s='A';p.fl=8;b++} }
+    totF+=f;totB+=b; rf=rf*.93+f*.07; rb=rb*.93+b*.07; tick++;
+    const nA=parts.filter(p=>p.s==='A').length; hist.push([rf,rb,nA,parts.length-nA]); if(hist.length>320){hist.shift();marks=marks.map(m=>m-1).filter(m=>m>=0)} }
+  function move(){ for(const p of parts){p.x+=p.vx;p.y+=p.vy;if(p.x<8||p.x>P.w-8)p.vx*=-1;if(p.y<8||p.y>P.h-8)p.vy*=-1;p.x=Math.max(8,Math.min(P.w-8,p.x));p.y=Math.max(8,Math.min(P.h-8,p.y));if(p.fl)p.fl--;} }
+  function graph(G,i1,i2,max){ const c=G.c; c.clearRect(0,0,G.w,G.h); c.strokeStyle='#c9d6ea'; c.lineWidth=1; c.beginPath(); c.moveTo(24,6); c.lineTo(24,G.h-16); c.lineTo(G.w-4,G.h-16); c.stroke();
+    c.fillStyle='#8a99b2'; c.font='10px Inter'; c.fillText(T({ar:'الزمن',en:'time'}),G.w-36,G.h-4);
+    const n=hist.length; if(!n)return; const sx=(G.w-30)/320, sy=(G.h-26)/max;
+    for(const m of marks){c.strokeStyle='#f2b33d';c.setLineDash([4,3]);c.beginPath();c.moveTo(25+m*sx,6);c.lineTo(25+m*sx,G.h-16);c.stroke();c.setLineDash([])}
+    [[i1,'#2f7be6'],[i2,'#f08a24']].forEach(([k,col])=>{c.strokeStyle=col;c.lineWidth=2.2;c.beginPath();hist.forEach((h,j)=>{const x=25+j*sx,y=G.h-17-h[k]*sy; j?c.lineTo(x,y):c.moveTo(x,y)});c.stroke();}); }
+  function draw(){ const c=P.c; c.clearRect(0,0,P.w,P.h);
+    for(const p of parts){ if(p.fl){c.strokeStyle='rgba(242,179,61,'+(p.fl/8)+')';c.lineWidth=3;c.beginPath();c.arc(p.x,p.y,11,0,7);c.stroke()}
+      if(p.s==='A'){c.fillStyle='#2f7be6';c.beginPath();c.arc(p.x,p.y,6,0,7);c.fill()} else {c.fillStyle='#f08a24';c.beginPath();c.roundRect?c.roundRect(p.x-6,p.y-6,12,12,3):c.rect(p.x-6,p.y-6,12,12);c.fill()} }
+    const mr=Math.max(1.6, ...hist.map(h=>Math.max(h[0],h[1])));
+    graph(R,0,1,mr*1.1); graph(C,2,3,Math.max(60,parts.length)*1.05);
+    root.querySelector('#dF').textContent=totF; root.querySelector('#dB').textContent=totB; }
+  function loop(t){ raf=requestAnimationFrame(loop); if(!run){return} const dt=t-last; last=t; acc+=Math.min(dt,100); move(); while(acc>55){step();acc-=55} draw(); }
+  root.querySelector('#dGo').onclick=()=>{ run=!run; last=performance.now(); root.querySelector('#dGo').textContent=run?T({ar:'❚❚ إيقاف',en:'❚❚ Pause'}):T({ar:'▶ تشغيل',en:'▶ Play'}); logEv('sim','dyn:'+(run?'play':'pause')); };
+  root.querySelector('#dReset').onclick=()=>{reset();logEv('sim','dyn:reset')};
+  const expect={addA:'f',remA:'b',addB:'b',remB:'f'};
+  const why={addA:{ar:'أضفنا متفاعلًا، فيزداد معدل التفاعل الطردي مؤقتًا ويستهلك النظام جزءًا من A المضاف ← إزاحة طردية.',en:'Adding reactant raises the forward rate temporarily; the system consumes some added A → forward shift.'},
+    remA:{ar:'سحبنا متفاعلًا، فيقل المعدل الطردي مؤقتًا ويعوّض النظام جزءًا من A ← إزاحة عكسية.',en:'Removing reactant lowers the forward rate; the system replaces some A → backward shift.'},
+    addB:{ar:'أضفنا ناتجًا، فيزداد المعدل العكسي مؤقتًا ويستهلك النظام جزءًا من B ← إزاحة عكسية.',en:'Adding product raises the backward rate; the system consumes some B → backward shift.'},
+    remB:{ar:'سحبنا ناتجًا، فيقل المعدل العكسي مؤقتًا ويعوّض النظام جزءًا من B ← إزاحة طردية.',en:'Removing product lowers the backward rate; the system replaces some B → forward shift.'}};
+  root.querySelectorAll('#dDist button').forEach(b=>b.onclick=()=>{
+    if(tick<60){ root.querySelector('#dFb').innerHTML=`<div class="fb no">${T({ar:'شغّل المحاكاة أولًا واستنى لحد ما المعدلين يتساووا تقريبًا (الاتزان).',en:'Run the simulation first and wait until the rates are about equal (equilibrium).'})}</div>`; return;}
+    const a=b.dataset.a; run=false; root.querySelector('#dGo').textContent=T({ar:'▶ تشغيل',en:'▶ Play'});
+    root.querySelector('#dFb').innerHTML='';
+    root.querySelector('#dPred').innerHTML=`<div class="predict"><b>${T({ar:'توقّع قبل ما نطبّق: الاتزان هيتزاح ناحية؟',en:'Predict first: which way will equilibrium shift?'})}</b><div class="ctrls"><button class="btn blue sm" data-p="f">${T({ar:'طردي (نحو B)',en:'Forward (toward B)'})}</button><button class="btn ghost sm" data-p="b">${T({ar:'عكسي (نحو A)',en:'Backward (toward A)'})}</button></div></div>`;
+    root.querySelectorAll('#dPred [data-p]').forEach(pb2=>pb2.onclick=()=>{
+      const ok=pb2.dataset.p===expect[a];
+      if(a==='addA'){for(let i=0;i<16&&parts.length<130;i++)parts.push(mk('A'))}
+      if(a==='addB'){for(let i=0;i<16&&parts.length<130;i++)parts.push(mk('B'))}
+      if(a==='remA'||a==='remB'){const s=a==='remA'?'A':'B';let k=0;parts=parts.filter(p=>{if(p.s===s&&k<14){k++;return false}return true})}
+      marks.push(hist.length-1);
+      root.querySelector('#dPred').innerHTML='';
+      root.querySelector('#dFb').innerHTML=`<div class="fb ${ok?'ok':'no'}">${ok?T({ar:'✔ توقّع صحيح! ',en:'✔ Correct prediction! '}):T({ar:'✘ مش بالظبط. ',en:'✘ Not quite. '})}${T(why[a])}<br>${T({ar:'لاحظ: التفاعلان لسه شغالين، والنظام بيوصل لاتزان جديد — مش بيرجع لنفس الحالة الأصلية.',en:'Note: both reactions keep running and the system reaches a new equilibrium — not the original state.'})}</div>`;
+      logEv('sim',`dyn:${a}:predict=${pb2.dataset.p}:${ok?'correct':'wrong'}`);
+      run=true; last=performance.now(); root.querySelector('#dGo').textContent=T({ar:'❚❚ إيقاف',en:'❚❚ Pause'});
+    });
+  });
+  reset(); raf=requestAnimationFrame(loop);
+  return ()=>cancelAnimationFrame(raf);
+};
+
+/* ---------- 2. Fe(III) thiocyanate colour ---------- */
+SIMS.fescn = (root)=>{
+  let lv=3; const L=[0,1,2,3,4,5,6];
+  const col=k=>{const a=[248,214,180],b=[128,12,16],t=k/6;return `rgb(${a.map((v,i)=>Math.round(v+(b[i]-v)*t)).join(',')})`};
+  root.innerHTML=simShell(T({ar:'تجربة اللون: كلوريد الحديد III وثيوسيانات الأمونيوم',en:'Colour investigation: iron(III) chloride and ammonium thiocyanate'}),`
+   <div class="eqblock">${chem('$FeCl3(aq)+3NH4SCN(aq)<=>Fe(SCN)3(aq)+3NH4Cl(aq)$')}</div>
+   <div style="display:flex;gap:20px;align-items:center;flex-wrap:wrap;justify-content:center">
+    <svg viewBox="0 0 160 190" width="170" aria-label="beaker"><path d="M30 20 v140 a14 14 0 0 0 14 14 h72 a14 14 0 0 0 14 -14 v-140" fill="#f4f8ff" stroke="#9fb6d6" stroke-width="4"/><path id="fLiq" d="M34 70 h92 v88 a12 12 0 0 1 -12 12 h-68 a12 12 0 0 1 -12 -12z" fill="${col(lv)}" style="transition:fill .8s"/><line x1="22" y1="20" x2="138" y2="20" stroke="#9fb6d6" stroke-width="4" stroke-linecap="round"/></svg>
+    <div style="flex:1;min-width:220px"><div class="ctrls"><button class="btn blue sm" data-a="fe">+ ${chem('$FeCl3$')}</button><button class="btn green sm" data-a="nh">+ ${chem('$NH4Cl$')}</button><button class="btn ghost sm" data-a="r">↺ ${T({ar:'إعادة',en:'Reset'})}</button></div>
+     <div id="fPred"></div><div id="fFb" aria-live="polite"></div></div></div>
+   <p class="muted" style="font-size:.88rem">${T({ar:'هذه المعادلة هي النموذج المدرسي المعتمد في الدرس. وصف اللون: "أحمر أعمق" أو "أحمر أفتح" فقط.',en:'This equation is the lesson’s school-level model. Colour is described only as "deeper red" or "paler red".'})}</p>`);
+  const liq=root.querySelector('#fLiq'), fb=root.querySelector('#fFb'), pr=root.querySelector('#fPred');
+  root.querySelectorAll('[data-a]').forEach(b=>b.onclick=()=>{ const a=b.dataset.a;
+    if(a==='r'){lv=3;liq.setAttribute('fill',col(lv));fb.innerHTML='';pr.innerHTML='';return}
+    pr.innerHTML=`<div class="predict"><b>${T({ar:'توقّع: اللون هيبقى؟',en:'Predict: the colour will become?'})}</b><div class="ctrls"><button class="btn sm" style="background:#8c1013" data-p="d">${T({ar:'أحمر أعمق',en:'Deeper red'})}</button><button class="btn sm" style="background:#e9a27c" data-p="p">${T({ar:'أحمر أفتح',en:'Paler red'})}</button></div></div>`;
+    pr.querySelectorAll('[data-p]').forEach(p=>p.onclick=()=>{ const exp=a==='fe'?'d':'p', ok=p.dataset.p===exp;
+      lv=Math.max(0,Math.min(6,lv+(a==='fe'?1.3:-1.3))); liq.setAttribute('fill',col(lv)); pr.innerHTML='';
+      fb.innerHTML=`<div class="fb ${ok?'ok':'no'}">${ok?'✔ ':'✘ '}${a==='fe'?T({ar:'أضفنا متفاعلًا (FeCl₃) ← إزاحة طردية ← أحمر أعمق.',en:'Added a reactant (FeCl₃) → forward shift → deeper red.'}):T({ar:'أضفنا ناتجًا (NH₄Cl) ← إزاحة عكسية ← أحمر أفتح.',en:'Added a product (NH₄Cl) → backward shift → paler red.'})}</div>`;
+      logEv('sim',`fescn:${a}:${ok?'correct':'wrong'}`); }); });
+};
+
+/* ---------- 3. Kc builder ---------- */
+const KC_RX=[
+ {id:'r1',sp:[{f:'H2O',ph:'v',co:2,s:'R'},{f:'H2',ph:'g',co:2,s:'P'},{f:'O2',ph:'g',co:1,s:'P'}]},
+ {id:'r2',sp:[{f:'NH3',ph:'l',co:1,s:'R'},{f:'NH3',ph:'g',co:1,s:'P'}]},
+ {id:'r3',sp:[{f:'I2',ph:'s',co:3,s:'R'},{f:'H2O',ph:'l',co:3,s:'R'},{f:'I^{-}',ph:'aq',co:5,s:'P'},{f:'IO3^{-}',ph:'aq',co:1,s:'P'},{f:'H^{+}',ph:'aq',co:6,s:'P'}]},
+ {id:'r4',sp:[{f:'N2',ph:'g',co:1,s:'R'},{f:'H2',ph:'g',co:3,s:'R'},{f:'NH3',ph:'g',co:2,s:'P'}]},
+ {id:'r5',sp:[{f:'FeCl3',ph:'aq',co:1,s:'R'},{f:'NH4SCN',ph:'aq',co:3,s:'R'},{f:'Fe(SCN)3',ph:'aq',co:1,s:'P'},{f:'NH4Cl',ph:'aq',co:3,s:'P'}]}
+];
+function rxEq(r){const side=s=>r.sp.filter(x=>x.s===s).map(x=>(x.co>1?x.co:'')+x.f+'('+x.ph+')').join('+');return side('R')+'<=>'+side('P')}
+function term(x){return '['+x.f+']'+(x.co>1?'^{'+x.co+'}':'')}
+function kexpr(num,den){const n=num.map(term).join('')||'1';return den.length?'$K_{c}=«'+n+'|'+den.map(term).join('')+'»$':'$K_{c}='+n+'$'}
+SIMS.kc=(root)=>{
+  let cur=0;
+  root.innerHTML=simShell(T({ar:'مُنشئ تعبير ثابت الاتزان Kc',en:'Kc expression builder'}),`<div class="tabs" id="kTabs">${KC_RX.map((r,i)=>`<button data-i="${i}">${T({ar:'تفاعل',en:'Reaction'})} ${i+1}</button>`).join('')}</div><div id="kBody"></div>`);
+  root.querySelector('#kBody').addEventListener('change',e=>{if(e.target.tagName==='SELECT')preview()});
+  const opts=()=>`<option value="">—</option><option value="n">${T({ar:'في البسط',en:'Numerator'})}</option><option value="d">${T({ar:'في المقام',en:'Denominator'})}</option><option value="o">${T({ar:'لا يُكتب',en:'Omit'})}</option>`;
+  function show(i){cur=i; root.querySelectorAll('#kTabs button').forEach((b,j)=>b.classList.toggle('on',j===i)); const r=KC_RX[i];
+    root.querySelector('#kBody').innerHTML=`<div class="eqblock">${chem('$'+rxEq(r)+'$')}</div><p>${T({ar:'حدّد مكان كل مادة في التعبير:',en:'Place each substance in the expression:'})}</p>
+     ${r.sp.map((x,j)=>`<div class="kcrow"><span class="sp">${chem('$'+(x.co>1?x.co:'')+x.f+'('+x.ph+')$')}</span><select data-j="${j}" aria-label="${x.f}">${opts()}</select><span class="muted" id="kx${j}"></span></div>`).join('')}
+     <div class="eqblock" id="kPrev">${chem('$K_{c}=?$')}</div><div class="ctrls"><button class="btn purple sm" id="kChk">${T({ar:'تحقّق',en:'Check'})}</button></div><div id="kFb"></div>`;
+    root.querySelector('#kChk').onclick=check; }
+  function choices(){return [...root.querySelectorAll('#kBody select')].map(s=>s.value)}
+  function preview(){const r=KC_RX[cur],c=choices();root.querySelector('#kPrev').innerHTML=chem(kexpr(r.sp.filter((x,j)=>c[j]==='n'),r.sp.filter((x,j)=>c[j]==='d')))}
+  function check(){ const r=KC_RX[cur],c=choices(); let all=true;
+    r.sp.forEach((x,j)=>{ const right=(x.ph==='s'||x.ph==='l')?'o':(x.s==='P'?'n':'d'); const ok=c[j]===right; if(!ok)all=false;
+      const why = right==='o'?T({ar:(x.ph==='s'?'صلب نقي':'سائل نقي')+' — تركيزه ثابت فلا يُكتب',en:'pure '+(x.ph==='s'?'solid':'liquid')+' — constant, omitted'}):
+        right==='n'?T({ar:'ناتج'+(x.ph==='v'?' (بخار = غاز)':'')+' ← البسط، والأس = '+x.co,en:'product'+(x.ph==='v'?' (vapour = gas)':'')+' → numerator, power = '+x.co}):
+        T({ar:'متفاعل'+(x.ph==='v'?' (بخار = غاز يُكتب)':'')+' ← المقام، والأس = '+x.co,en:'reactant'+(x.ph==='v'?' (vapour = gas, included)':'')+' → denominator, power = '+x.co});
+      root.querySelector('#kx'+j).innerHTML=(ok?'✔ ':'✘ ')+why; root.querySelector('#kx'+j).style.color=ok?'#0d8a5b':'#c23a3f'; });
+    const corr=kexpr(r.sp.filter(x=>x.s==='P'&&!['s','l'].includes(x.ph)),r.sp.filter(x=>x.s==='R'&&!['s','l'].includes(x.ph)));
+    root.querySelector('#kFb').innerHTML=`<div class="fb ${all?'ok':'no'}">${all?T({ar:'✔ ممتاز! التعبير الصحيح:',en:'✔ Excellent! The correct expression:'}):T({ar:'راجع العلامات ✘ — التعبير الصحيح:',en:'Check the ✘ marks — correct expression:'})} <span>${chem(corr)}</span></div>`;
+    logEv('sim',`kc:${r.id}:${all?'correct':'wrong'}`); }
+  root.querySelectorAll('#kTabs button').forEach(b=>b.onclick=()=>show(+b.dataset.i)); show(0);
+};
+
+/* ---------- 4. NO2 / N2O4 temperature (3 positions) ---------- */
+SIMS.no2=(root)=>{
+  const S={0:{c:'#f6f1ea',d:{ar:'عديم اللون (حسب وصف المصدر)',en:'Colourless (as described in the source)'},rv:true},25:{c:'#ddb07c',d:{ar:'بني باهت',en:'Pale brown'}},100:{c:'#9c3a1d',d:{ar:'بني محمر',en:'Reddish-brown'}}};
+  let t=25, pred=null;
+  root.innerHTML=simShell(T({ar:'أثر درجة الحرارة على اتزان NO₂ / N₂O₄',en:'Temperature and the NO₂ / N₂O₄ equilibrium'}),`
+   <div class="eqblock">${chem('$2NO2(g)<=>N2O4(g)+Heat$')}</div>
+   <div style="display:flex;gap:24px;align-items:center;flex-wrap:wrap;justify-content:center">
+    <svg viewBox="0 0 90 220" width="90"><rect x="25" y="8" width="40" height="190" rx="20" fill="#f4f8ff" stroke="#9fb6d6" stroke-width="4"/><rect id="nGas" x="29" y="40" width="32" height="154" rx="16" fill="${S[25].c}" style="transition:fill .9s"/><rect x="20" y="4" width="50" height="12" rx="5" fill="#9fb6d6"/></svg>
+    <div style="flex:1;min-width:230px">
+     <div class="predict"><b>${T({ar:'توقّع: لو سخّنا الأنبوبة، اللون البني هيـ...؟',en:'Predict: if we heat the tube, the brown colour will...?'})}</b><div class="ctrls"><button class="btn ghost sm" data-p="up">${T({ar:'يغمق',en:'Deepen'})}</button><button class="btn ghost sm" data-p="down">${T({ar:'يفتح',en:'Fade'})}</button></div></div>
+     <div class="tabs" role="radiogroup">${[0,25,100].map(v=>`<button data-t="${v}" class="${v===25?'on':''}" role="radio">${v} °C</button>`).join('')}</div>
+     <div id="nDesc" style="font-weight:800;font-size:1.1rem"></div><div id="nFb"></div></div></div>`);
+  const upd=()=>{root.querySelector('#nGas').setAttribute('fill',S[t].c);root.querySelector('#nDesc').innerHTML=T({ar:'الملاحظة عند ',en:'Observation at '})+t+' °C: '+T(S[t].d)+(S[t].rv&&CONFIG.showReviewTags?' <span class="tag">'+T({ar:'بانتظار اعتماد المعلمة',en:'pending teacher approval'})+'</span>':'')};
+  root.querySelectorAll('[data-p]').forEach(b=>b.onclick=()=>{pred=b.dataset.p;root.querySelectorAll('[data-p]').forEach(x=>{x.classList.toggle('blue',x===b);x.classList.toggle('ghost',x!==b)})});
+  root.querySelectorAll('[data-t]').forEach(b=>b.onclick=()=>{ const nt=+b.dataset.t; if(nt===t)return; const dir=nt>t?'up':'down'; t=nt;
+    root.querySelectorAll('[data-t]').forEach(x=>x.classList.toggle('on',x===b)); upd();
+    let msg = dir==='up'?T({ar:'التسخين يُفضّل الاتجاه العكسي الماص للحرارة ← يتكوّن NO₂ أكثر ← اللون البني المحمر يزيد.',en:'Heating favours the endothermic reverse direction → more NO₂ → deeper reddish-brown.'}):T({ar:'التبريد يُفضّل الاتجاه الطردي الطارد للحرارة ← يتكوّن N₂O₄ أكثر ← اللون يفتح.',en:'Cooling favours the exothermic forward direction → more N₂O₄ → paler.'});
+    let cls='ok'; if(pred&&dir==='up'){const ok=pred==='up';cls=ok?'ok':'no';msg=(ok?'✔ ':'✘ ')+msg}
+    root.querySelector('#nFb').innerHTML=`<div class="fb ${cls}">${msg}</div>`; logEv('sim','no2:'+nt+(pred?':pred='+pred:'')); });
+  upd();
+};
+
+/* ---------- 5. Piston pressure lab ---------- */
+SIMS.piston=(root)=>{
+  const RX={nh3:{eq:'$N2(g)+3H2(g)<=>2NH3(g)$',L:4,Rm:2,R:[['N2',1],['H2',3]],P:[['NH3',2]],tgt:{L:.3,M:.5,S:.75}},
+            co:{eq:'$CO(g)+NO2(g)<=>CO2(g)+NO(g)$',L:2,Rm:2,R:[['CO',1],['NO2',1]],P:[['CO2',1],['NO',1]],tgt:{L:.5,M:.5,S:.5}}};
+  const COL={N2:['#2f7be6',7],H2:['#9fb0c8',4.5],NH3:['#15a46d',6.5],CO:['#5b6b82',6],NO2:['#a0522d',6.5],CO2:['#1c2a3f',6.5],NO:['#8a63e0',6]};
+  const VOL={L:1,M:.72,S:.45}; let rx='nh3', vol='M', parts=[], raf, acc=0, last=performance.now();
+  root.innerHTML=simShell(T({ar:'معمل المكبس: الضغط والحجم',en:'Piston lab: pressure and volume'}),`
+   <div class="tabs" id="pRx"><button data-r="nh3" class="on">${T({ar:'عدد مولات غير متساوٍ',en:'Unequal gas moles'})}</button><button data-r="co">${T({ar:'عدد مولات متساوٍ',en:'Equal gas moles'})}</button></div>
+   <div class="eqblock" id="pEq"></div>
+   <canvas id="pC" width="480" height="250"></canvas>
+   <div class="legend" id="pLeg" style="margin-top:6px"></div>
+   <div class="ctrls"><button class="btn ghost sm" data-v="L">${T({ar:'حجم كبير (ضغط أقل)',en:'Large volume (low P)'})}</button><button class="btn ghost sm" data-v="M">${T({ar:'حجم متوسط',en:'Medium volume'})}</button><button class="btn blue sm" data-v="S">${T({ar:'حجم صغير (ضغط أعلى)',en:'Small volume (high P)'})}</button></div>
+   <div class="counter"><div>${T({ar:'جزيئات المتفاعلات',en:'Reactant molecules'})}<br><span id="pR"></span></div><div>${T({ar:'جزيئات النواتج',en:'Product molecules'})}<br><span id="pP"></span></div><div>${T({ar:'تزاحم الغاز (نسبي)',en:'Gas crowding (relative)'})}<br><span id="pD"></span></div></div>
+   <div id="pFb"></div>`);
+  const G=fitCanvas(root.querySelector('#pC'));
+  const boxW=()=>30+(G.w-60)*VOL[vol];
+  const add=(f,x,y)=>parts.push({f,x:x??rnd(20,boxW()),y:y??rnd(20,G.h-20),vx:rnd(-1.2,1.2),vy:rnd(-1.2,1.2)});
+  function setup(){parts=[];const r=RX[rx];const U=10,p0=Math.round(U*r.tgt[vol]);for(let i=0;i<U;i++){(i<p0?r.P:r.R).forEach(([f,n])=>{for(let k=0;k<n;k++)add(f)})}
+    root.querySelector('#pEq').innerHTML=chem(r.eq)+` &nbsp; <bdi class="muted">(${r.L} ${T({ar:'مول غاز',en:'gas mol'})} → ${r.Rm})</bdi>`;
+    root.querySelector('#pLeg').innerHTML=[...r.R,...r.P].map(([f])=>`<span><i style="background:${COL[f][0]};border-radius:50%"></i>${chem('$'+f+'$')}</span>`).join('');}
+  function take(f,n,near){const idx=[];for(let i=0;i<parts.length&&idx.length<n;i++)if(parts[i].f===f)idx.push(i);if(idx.length<n)return null;const pos={x:parts[idx[0]].x,y:parts[idx[0]].y};idx.sort((a,b)=>b-a).forEach(i=>parts.splice(i,1));return pos}
+  function cnt(f){return parts.filter(p=>p.f===f).length}
+  function step(){ const r=RX[rx], t=r.tgt[vol], k=0.03; const units=f=>cnt(f[0][0])/f[0][1]; const nR=units(r.R), nP=units(r.P);
+    if(Math.random()<k*t*nR){ if(r.R.every(([f,n])=>cnt(f)>=n)){let pos;r.R.forEach(([f,n])=>{const p=take(f,n);pos=pos||p});r.P.forEach(([f,n])=>{for(let i=0;i<n;i++)add(f,pos.x+rnd(-6,6),pos.y+rnd(-6,6))})} }
+    if(Math.random()<k*(1-t)*nP){ if(r.P.every(([f,n])=>cnt(f)>=n)){let pos;r.P.forEach(([f,n])=>{const p=take(f,n);pos=pos||p});r.R.forEach(([f,n])=>{for(let i=0;i<n;i++)add(f,pos.x+rnd(-6,6),pos.y+rnd(-6,6))})} } }
+  function draw(){ const c=G.c,W=boxW(); c.clearRect(0,0,G.w,G.h);
+    const isR=document.documentElement.dir==='rtl';
+    c.fillStyle='#f4f8ff'; c.fillRect(10,10,W,G.h-20); c.strokeStyle='#9fb6d6'; c.lineWidth=3; c.strokeRect(10,10,W,G.h-20);
+    c.fillStyle='#c9d6ea'; c.fillRect(10+W,14,14,G.h-28); c.fillRect(24+W,G.h/2-6,G.w-W-30,12);
+    for(const p of parts){p.x+=p.vx;p.y+=p.vy;if(p.x<18){p.x=18;p.vx=Math.abs(p.vx)}if(p.x>W+2){p.x=W+2;p.vx=-Math.abs(p.vx)}if(p.y<18||p.y>G.h-18)p.vy*=-1;p.y=Math.max(18,Math.min(G.h-18,p.y));
+      const [col,rad]=COL[p.f];c.fillStyle=col;c.beginPath();c.arc(p.x,p.y,rad,0,7);c.fill()}
+    const r=RX[rx]; const nr=r.R.reduce((s,[f])=>s+cnt(f),0), np=r.P.reduce((s,[f])=>s+cnt(f),0);
+    root.querySelector('#pR').textContent=nr; root.querySelector('#pP').textContent=np; root.querySelector('#pD').textContent=((nr+np)/(VOL[vol]*40)).toFixed(1)+'×'; }
+  function loop(t){raf=requestAnimationFrame(loop);acc+=Math.min(t-last,100);last=t;while(acc>60){step();acc-=60}draw()}
+  root.querySelectorAll('[data-v]').forEach(b=>b.onclick=()=>{ const prev=vol; vol=b.dataset.v; root.querySelectorAll('[data-v]').forEach(x=>{x.classList.toggle('blue',x===b);x.classList.toggle('ghost',x!==b)});
+    if(prev===vol)return; const comp=VOL[vol]<VOL[prev];
+    const msg = rx==='nh3' ? (comp?T({ar:'قلّلنا الحجم ← زاد الضغط ← الاتزان يُزاح نحو الجانب ذي المولات الغازية الأقل (النشادر: 2 مول) لمقاومة زيادة الضغط. لاحظ أن التفاعلين ما زالا يحدثان.',en:'Smaller volume → higher pressure → shift toward fewer gas moles (NH₃: 2 mol) to oppose it. Both reactions still occur.'}):T({ar:'زوّدنا الحجم ← قلّ الضغط ← الاتزان يُزاح نحو الجانب ذي المولات الأكثر (المتفاعلات: 4 مولات).',en:'Larger volume → lower pressure → shift toward more gas moles (reactants: 4 mol).'}))
+      : T({ar:'عدد المولات الغازية متساوٍ (2 = 2) ← موضع الاتزان لا يُزاح. لكن لاحظ أن تزاحم الجزيئات (التركيز) '+(comp?'زاد':'قلّ')+' — "لا إزاحة" لا تعني "لا تغيير".',en:'Equal gas moles (2 = 2) → no shift in position. But crowding (concentration) '+(comp?'increased':'decreased')+' — "no shift" ≠ "no change".'});
+    root.querySelector('#pFb').innerHTML=`<div class="fb ok">${msg}</div>`; logEv('sim',`piston:${rx}:${prev}->${vol}`); });
+  root.querySelectorAll('[data-r]').forEach(b=>b.onclick=()=>{rx=b.dataset.r;root.querySelectorAll('[data-r]').forEach(x=>x.classList.toggle('on',x===b));setup();root.querySelector('#pFb').innerHTML=''});
+  setup(); raf=requestAnimationFrame(loop); root.querySelector('[data-v="M"]').click(); root.querySelector('#pFb').innerHTML='';
+  return ()=>cancelAnimationFrame(raf);
+};
+
+/* ---------- 6. Kp calculator (approved example only) ---------- */
+SIMS.kp=(root)=>{
+  root.innerHTML=`<div class="sim"><div class="simhead"><h3>${T({ar:'حاسبة Kp الموجّهة',en:'Guided Kp calculator'})}</h3></div>
+   <div class="eqblock">${chem('$N2(g)+2O2(g)<=>2NO2(g)$')}</div>
+   <p>${chem(T({ar:'المعطيات: $P_{N2}=0.2$ atm ، $P_{O2}=1$ atm ، $P_{NO2}=2$ atm',en:'Given: $P_{N2}=0.2$ atm, $P_{O2}=1$ atm, $P_{NO2}=2$ atm'}))}</p>
+   <p><b>1)</b> ${T({ar:'اكتب التعبير: النواتج في البسط، والمعاملات أُسس.',en:'Write the expression: products on top, coefficients as powers.'})}</p>
+   <div class="ctrls"><button class="btn ghost sm" id="kpShow">${T({ar:'اعرض التعبير',en:'Show expression'})}</button></div><div id="kpE"></div>
+   <p><b>2)</b> ${T({ar:'عوّض واحسب قيمة Kp:',en:'Substitute and calculate Kp:'})}</p>
+   <div class="ctrls"><input class="numin" id="kpIn" inputmode="decimal" aria-label="Kp"><button class="btn purple sm" id="kpChk">${T({ar:'تحقّق',en:'Check'})}</button></div><div id="kpFb"></div>
+   <hr style="border:0;border-top:1px solid var(--line);margin:14px 0">
+   <p><b>${T({ar:'الضغط الكلي:',en:'Total pressure:'})}</b> ${T({ar:'خليط ضغوطه الجزئية 2 و 5 و 7 atm. احسب الضغط الكلي (atm):',en:'A mixture with partial pressures 2, 5 and 7 atm. Total pressure (atm):'})}</p>
+   <div class="ctrls"><input class="numin" id="ptIn" inputmode="decimal" aria-label="P total"><button class="btn purple sm" id="ptChk">${T({ar:'تحقّق',en:'Check'})}</button></div><div id="ptFb"></div>
+   <p class="muted" style="font-size:.85rem">${T({ar:'ملحوظة: وحدات K وقواعد التقريب بانتظار اعتماد المعلمة، لذلك لا تُقيَّم الوحدة هنا.',en:'Note: K units and rounding rules await teacher approval, so units are not graded here.'})}</p></div>`;
+  const ex='$K_{p}=«(P_{NO2})^{2}|P_{N2}(P_{O2})^{2}»$';
+  root.querySelector('#kpShow').onclick=()=>root.querySelector('#kpE').innerHTML=`<div class="eqblock">${chem(ex)}</div>`;
+  const num=v=>parseFloat(String(v).replace(/[٠-٩]/g,d=>'٠١٢٣٤٥٦٧٨٩'.indexOf(d)).replace('٫','.').replace(',','.'));
+  root.querySelector('#kpChk').onclick=()=>{const v=num(root.querySelector('#kpIn').value),ok=Math.abs(v-20)<1e-9;
+    root.querySelector('#kpFb').innerHTML=`<div class="fb ${ok?'ok':'no'}">${ok?'✔ ':'✘ '}${chem('$K_{p}=«(2)^{2}|(0.2)(1)^{2}»=«4|0.2»=20$')}</div>`;logEv('sim','kp:'+(ok?'correct':'wrong:'+v))};
+  root.querySelector('#ptChk').onclick=()=>{const v=num(root.querySelector('#ptIn').value),ok=Math.abs(v-14)<1e-9;
+    root.querySelector('#ptFb').innerHTML=`<div class="fb ${ok?'ok':'no'}">${ok?'✔ ':'✘ '}${chem('$P_{total}=2+5+7=14 atm$')}</div>`;logEv('sim','ptotal:'+(ok?'correct':'wrong:'+v))};
+};
+
+/* ---------- 7. Catalyst energy profile ---------- */
+SIMS.cat=(root)=>{
+  let on=false, raf;
+  root.innerHTML=simShell(T({ar:'مستكشف منحنى الطاقة والعامل الحفاز',en:'Catalyst energy-profile explorer'}),`
+   <p class="muted">${T({ar:'تفاعل عام (توضيحي) — لم يُحدَّد تفاعل بعينه لهذه المحاكاة.',en:'Generic reaction (illustrative) — no specific reaction assigned to this simulation.'})}</p>
+   <div class="simgrid"><svg viewBox="0 0 420 260" style="background:#fff;border:1px solid var(--line);border-radius:14px;width:100%">
+     <line x1="40" y1="20" x2="40" y2="236" stroke="#9fb0c8" stroke-width="2"/><line x1="40" y1="236" x2="406" y2="236" stroke="#9fb0c8" stroke-width="2"/>
+     <text x="14" y="130" font-size="12" fill="#5b6b82" transform="rotate(-90 14 130)">${T({ar:'الطاقة',en:'Energy'})}</text>
+     <text x="330" y="252" font-size="12" fill="#5b6b82">${T({ar:'مسار التفاعل',en:'Reaction path'})}</text>
+     <path id="cU" d="M50 160 H110 C160 160 170 40 210 40 C250 40 260 190 310 190 H400" fill="none" stroke="#e0474c" stroke-width="3.5"/>
+     <path id="cK" d="M50 160 H110 C160 160 170 100 210 100 C250 100 260 190 310 190 H400" fill="none" stroke="#15a46d" stroke-width="3.5" stroke-dasharray="7 5" opacity=".25"/>
+     <text x="52" y="152" font-size="12" fill="#1c2a3f">${T({ar:'المتفاعلات',en:'Reactants'})}</text><text x="330" y="182" font-size="12" fill="#1c2a3f">${T({ar:'النواتج',en:'Products'})}</text>
+     <line x1="380" y1="160" x2="380" y2="190" stroke="#6a44c2" stroke-width="2"/><text x="352" y="210" font-size="12" fill="#6a44c2">ΔH</text>
+     <line x1="80" y1="160" x2="80" y2="40" stroke="#e0474c" stroke-width="1.5" stroke-dasharray="3 3"/><text x="84" y="70" font-size="11" fill="#e0474c">Ea</text>
+     <line id="cEa2" x1="96" y1="160" x2="96" y2="100" stroke="#15a46d" stroke-width="1.5" stroke-dasharray="3 3" opacity=".25"/><text id="cEa2t" x="100" y="120" font-size="11" fill="#15a46d" opacity=".25">Ea'</text>
+    </svg>
+    <div><div class="ctrls"><button class="btn green sm" id="cTog">${T({ar:'إضافة عامل حفاز',en:'Add catalyst'})}</button><button class="btn ghost sm" id="cRace">${T({ar:'▶ سباق الوصول للاتزان',en:'▶ Race to equilibrium'})}</button></div>
+     <div style="font-weight:700;margin-top:6px">${T({ar:'بدون حفاز',en:'Without catalyst'})}</div><div class="bar"><i id="cB1" style="width:0;background:#e0474c"></i></div>
+     <div style="font-weight:700;margin-top:8px">${T({ar:'مع حفاز',en:'With catalyst'})}</div><div class="bar"><i id="cB2" style="width:0;background:#15a46d"></i></div>
+     <p class="muted" style="font-size:.88rem">${T({ar:'طول الشريط = نسبة النواتج المتكوّنة (توضيحي). الحفاز يصل أسرع، لكن الاتنين بيقفوا عند نفس القيمة.',en:'Bar = product formed (illustrative). With catalyst it gets there sooner, but both stop at the same value.'})}</p>
+     <div id="cFb"></div></div></div>`);
+  root.querySelector('#cTog').onclick=()=>{ on=!on; ['#cK','#cEa2','#cEa2t'].forEach(s=>root.querySelector(s).setAttribute('opacity',on?1:.25)); root.querySelector('#cU').setAttribute('opacity',on?.45:1);
+    root.querySelector('#cTog').textContent=on?T({ar:'إزالة العامل الحفاز',en:'Remove catalyst'}):T({ar:'إضافة عامل حفاز',en:'Add catalyst'});
+    root.querySelector('#cFb').innerHTML=on?`<div class="fb ok">${T({ar:'المسار الجديد له طاقة تنشيط أقل (Ea\') للاتجاهين بنفس المقدار. مستوى المتفاعلات والنواتج وقيمة ΔH لم تتغير ← لا إزاحة للاتزان ولا تغيير في K.',en:'The new path has a lower barrier (Ea\') for both directions by the same amount. Reactant/product levels and ΔH unchanged → no shift, K unchanged.'})}</div>`:''; logEv('sim','cat:'+(on?'on':'off')); };
+  root.querySelector('#cRace').onclick=()=>{ cancelAnimationFrame(raf); const t0=performance.now(), F=65;
+    const f=(t,k)=>F*(1-Math.exp(-t*k)); (function an(t){ const dt=(t-t0)/1000; root.querySelector('#cB1').style.width=f(dt,.45)+'%'; root.querySelector('#cB2').style.width=f(dt,1.6)+'%'; if(dt<9)raf=requestAnimationFrame(an)})(t0); logEv('sim','cat:race'); };
+  return ()=>cancelAnimationFrame(raf);
+};
+
+/* ================= CONFIG ================= */
+const CONFIG = {
+  API_URL: 'https://script.google.com/macros/s/AKfycbyv4eO5Eu1nZmV9QefSlR0zHFT9HaJ9m-lG3OQNEtvn54QMyQu-SsBy_iT58mt9HGZN-A/exec', // Google Apps Script Web App (logging)
+  showReviewTags: true,      // show "pending teacher approval" tags (turn off before launch)
+  thresholds: { remedial: 49, support: 79 }, // 0–49 remedial · 50–79 support · 80–100 enrichment
+  teacher: { ar:'أ. أروى يوسف', en:'Miss Arwa Yousef' }
+};
+
+/* ================= CORE HELPERS ================= */
+let LANG = (()=>{try{return localStorage.getItem('cot:lang')||'ar'}catch(e){return 'ar'}})();
+const T = o => (o==null?'':typeof o==='string'?o:(o[LANG]??o.ar));
+const $ = (s,r=document)=>r.querySelector(s);
+const $$ = (s,r=document)=>[...r.querySelectorAll(s)];
+const store = { get(k,d){try{const v=localStorage.getItem(k);return v?JSON.parse(v):d}catch(e){return d}}, set(k,v){try{localStorage.setItem(k,JSON.stringify(v))}catch(e){}} };
+function fmt(x){
+  x=x.replace(/<=>/g,' ⇌ ').replace(/->/g,' → ');
+  x=x.replace(/([A-Za-z\)\]])(\d+)/g,'$1<sub>$2</sub>');
+  x=x.replace(/\^\{(.+?)\}/g,'<sup>$1</sup>').replace(/_\{(.+?)\}/g,'<sub>$1</sub>');
+  x=x.replace(/«(.+?)\|(.+?)»/g,'<span class="frac"><span>$1</span><span>$2</span></span>');
+  return x;
+}
+const chem = s => String(s).replace(/\$(.+?)\$/g,(m,x)=>'<span class="eq">'+fmt(x)+'</span>');
+const esc = s => String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+function toast(msg){let t=$('.toast');if(!t){t=document.createElement('div');t.className='toast';document.body.appendChild(t)}t.textContent=msg;t.classList.add('on');clearTimeout(t._h);t._h=setTimeout(()=>t.classList.remove('on'),2200)}
+const reviewTag = ()=> CONFIG.showReviewTags?` <span class="tag">${T({ar:'بانتظار اعتماد المعلمة',en:'Pending teacher approval'})}</span>`:'';
+
+/* ================= USER STATE ================= */
+let USER = store.get('cot:user', null);   // {email, phone}
+let S = USER ? store.get('cot:s:'+USER.email, {}) : {};
+const save = ()=> USER && store.set('cot:s:'+USER.email, S);
+
+/* ================= LOGGING → Google Sheet ================= */
+function post(payload){
+  if(!CONFIG.API_URL) return Promise.resolve(null);
+  return fetch(CONFIG.API_URL,{method:'POST',headers:{'Content-Type':'text/plain;charset=utf-8'},body:JSON.stringify(payload)}).then(r=>r.json()).catch(()=>null);
+}
+function logEv(event, details=''){
+  const p={action:'log', ts:new Date().toISOString(), email:USER?.email||'', phone:USER?.phone||'', event, details:String(details).slice(0,500), path:S.path||'', pre:S.pre?.score??'', post:S.post?.score??'', lang:LANG};
+  if(CONFIG.API_URL){ const q=store.get('cot:pending',[]); q.push(p); store.set('cot:pending',q.slice(-300)); flushLogs(); }
+  else { const l=store.get('cot:log',[]); l.push(p); store.set('cot:log',l.slice(-400)); }
+}
+let FLUSHING=false;
+async function flushLogs(){ if(FLUSHING) return; FLUSHING=true;
+  try{ let q=store.get('cot:pending',[]);
+    while(q.length){ const r=await post(q[0]); if(!r||!r.ok) break; q=store.get('cot:pending',[]); q.shift(); store.set('cot:pending',q); }
+  } finally { FLUSHING=false; } }
+setInterval(()=>{ if(store.get('cot:pending',[]).length) flushLogs(); }, 15000);
+
+/* ================= PATHS ================= */
+const PATHS = {
+ rem:{color:'blue', icon:'book', art:'books', name:{ar:'المسار العلاجي',en:'Remedial path'}, range:'0% – 49%',
+   desc:{ar:'هتدرس الوحدة كاملة من الأساس خطوة بخطوة، بالمحاكاة والمعامل الافتراضية واختبار قصير بعد كل درس.',en:'Study the whole unit from the foundations, step by step, with simulations, virtual labs and a short quiz after each lesson.'},
+   feats:[{ar:'جميع دروس الوحدة بالترتيب',en:'All lessons in order'},{ar:'محاكاة ومعامل افتراضية',en:'Simulations & virtual labs'},{ar:'كويز قصير بعد كل درس',en:'Short quiz after each lesson'}],
+   cta:{ar:'ابدأ من البداية',en:'Start from the beginning'}},
+ sup:{color:'green', icon:'cycle', art:'target', name:{ar:'المسار التصحيحي والداعم',en:'Corrective & support path'}, range:'50% – 79%',
+   desc:{ar:'لأنك محتاج دعم في بعض المفاهيم، هتنتقل مباشرة للدروس والأنشطة اللي تعالج نقاط ضعفك.',en:'You need support in some concepts, so you go straight to the lessons and activities that fix your weak points.'},
+   feats:[{ar:'تصحيح المفاهيم الخاطئة',en:'Correcting misconceptions'},{ar:'أنشطة ومحاكاة موجّهة',en:'Targeted activities & simulations'},{ar:'إعادة التقييم بعد المراجعة',en:'Reassessment after review'}],
+   cta:{ar:'ابدأ مسارك التصحيحي',en:'Start your support path'}},
+ enr:{color:'purple', icon:'star', art:'rocket', name:{ar:'المسار الإثرائي',en:'Enrichment path'}, range:'80% – 100%',
+   desc:{ar:'إجاباتك أظهرت إتقانك للمفاهيم الأساسية، يلا نتوسع بتحديات تفكير ناقد وحل مشكلات.',en:'You have mastered the basics — let’s go further with critical-thinking and problem-solving challenges.'},
+   feats:[{ar:'تحديات تفكير ناقد',en:'Critical-thinking challenges'},{ar:'حل مشكلات ومواقف جديدة',en:'Problem solving in new situations'},{ar:'معمل افتراضي مفتوح',en:'Open virtual lab'}],
+   cta:{ar:'ابدأ مسارك الإثرائي',en:'Start your enrichment path'}}
+};
+const pathFor = sc => sc<=CONFIG.thresholds.remedial?'rem':sc<=CONFIG.thresholds.support?'sup':'enr';
+const unitById = id => UNITS.find(u=>u.id===id);
+
+/* ================= LAYOUT ================= */
+function nav(){
+  return `<nav class="nav"><div class="brand">${ART.atom(44)}<span>${T({ar:'الاتزان الكيميائي',en:'Chemical Equilibrium'})}</span></div>
+  <div class="navlinks">${USER?`
+   <button onclick="go('dashboard')" aria-label="home">${ART.i.home}<span>${T({ar:'الرئيسية',en:'Home'})}</span></button>
+   <button onclick="go('report')" aria-label="results">${ART.i.chart}<span>${T({ar:'نتائجك',en:'Results'})}</span></button>
+   <button onclick="openChat()" aria-label="help">${ART.i.help}<span>${T({ar:'المساعدة',en:'Help'})}</span></button>`:''}
+   <button class="lang" onclick="toggleLang()" aria-label="language">${ART.i.globe}<span>${LANG==='ar'?'English':'العربية'}</span></button>
+   ${USER?`<button onclick="logout()" aria-label="logout">${ART.i.out}<span>${T({ar:'خروج',en:'Logout'})}</span></button>`:''}</div></nav>`;
+}
+function toggleLang(){ LANG=LANG==='ar'?'en':'ar'; try{localStorage.setItem('cot:lang',LANG)}catch(e){} applyDir(); render(); renderChat(); }
+function applyDir(){ document.documentElement.lang=LANG; document.documentElement.dir=LANG==='ar'?'rtl':'ltr'; }
+function logout(){ logEv('logout'); USER=null; S={}; store.set('cot:user',null); closeChat(); go('login'); }
+function go(r){ if(location.hash==='#'+r) render(); else location.hash=r; window.scrollTo(0,0); }
+
+/* ================= VIEWS ================= */
+let cleanups=[];
+function render(){
+  cleanups.forEach(f=>{try{f()}catch(e){}}); cleanups=[];
+  let r=(location.hash||'').slice(1)||'login';
+  if(!USER && r!=='login') r='login';
+  if(USER && r==='login') r=S.pre?'dashboard':'welcome';
+  if(USER && !S.pre && !['welcome','pretest'].includes(r)) r='welcome';
+  const V={login:vLogin, welcome:vWelcome, pretest:()=>vTest('pre'), posttest:()=>vTest('post'), dashboard:vDash, path:vPath, report:vReport};
+  const html = /^u[1-6]$/.test(r) ? vUnit(r) : (V[r]||vDash)();
+  $('#app').innerHTML = nav() + `<main class="wrap" id="main">${chem(html)}</main>`;
+  $('#fabWrap').style.display = USER?'':'none';
+  CUR_ROUTE=r;
+  AFTER.splice(0).forEach(f=>{try{f()}catch(e){console.error(e)}});
+}
+let AFTER=[], CUR_ROUTE='';
+window.addEventListener('hashchange',render);
+
+/* ---- LOGIN ---- */
+function vLogin(){
+  AFTER.push(()=>{ $('#lf').onsubmit=e=>{ e.preventDefault();
+    const em=$('#em').value.trim().toLowerCase(), ph=$('#ph').value.trim().replace(/[\s-]/g,'').replace(/[٠-٩]/g,d=>'٠١٢٣٤٥٦٧٨٩'.indexOf(d));
+    let err='';
+    if(!/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(em)) err=T({ar:'اكتب إيميل صحيح.',en:'Enter a valid email.'});
+    else if(!/^(\+?20)?0?1[0125]\d{8}$/.test(ph) && !/^\+?\d{9,15}$/.test(ph)) err=T({ar:'اكتب رقم تليفون صحيح.',en:'Enter a valid phone number.'});
+    else if(!$('#cs').checked) err=T({ar:'لازم توافق على تسجيل بياناتك عشان نكمل.',en:'Please agree to the data note to continue.'});
+    $('#lerr').textContent=err; if(err) return;
+    USER={email:em, phone:ph}; store.set('cot:user',USER); S=store.get('cot:s:'+em,{}); S.firstLogin=S.firstLogin||new Date().toISOString(); save();
+    logEv('login', S.pre?'returning':'new'); go(S.pre?'dashboard':'welcome'); }; });
+  return `<div class="login">
+   <div class="hero"><span class="tag ill">${T({ar:'الصف الثالث الثانوي · كيمياء',en:'Grade 12 (Egypt) · Chemistry'})}</span>
+    <h1>${T({ar:'الاتزان الكيميائي',en:'Chemical Equilibrium'})}</h1>
+    <p style="font-size:1.12rem;margin:0 0 10px">${T({ar:'كيف تدافع التفاعلات عن توازنها ضد الحرارة والضغط؟',en:'How do reactions defend their balance against heat and pressure?'})}</p>
+    <p class="muted">${T({ar:'رحلة إلى عالم الاتزان الكيميائي — اختبار تشخيصي، ثلاث مسارات تعلم، محاكاة تفاعلية، ومساعد ذكي يرافقك في كل خطوة.',en:'A journey into chemical equilibrium — a diagnostic test, three learning paths, interactive simulations and an AI assistant at every step.'})}</p>
+    <div style="display:flex;align-items:flex-end;justify-content:space-between;margin-top:18px">${ART.robot(120)}${ART.flasks()}</div></div>
+   <form class="card" id="lf" novalidate><h2 style="margin-top:0">${T({ar:'تسجيل الدخول',en:'Sign in'})}</h2>
+    <div class="field"><label for="em">${T({ar:'البريد الإلكتروني',en:'Email'})}</label><input id="em" type="email" autocomplete="email" dir="ltr" placeholder="name@example.com"></div>
+    <div class="field"><label for="ph">${T({ar:'رقم التليفون',en:'Phone number'})}</label><input id="ph" type="tel" autocomplete="tel" dir="ltr" placeholder="01xxxxxxxxx"></div>
+    <label class="consent"><input type="checkbox" id="cs"><span>${T({ar:'أوافق على تسجيل الإيميل ورقم التليفون ونتائجي ونشاطي في المنصة لدى المعلمة لمتابعة تقدّمي.',en:'I agree that my email, phone, results and activity are recorded for my teacher to follow my progress.'})}</span></label>
+    <div class="err" id="lerr" role="alert"></div>
+    <button class="btn blue" style="width:100%">${T({ar:'يلا نبدأ',en:"Let's start"})} ${ART.i.play}</button>
+    <p class="muted" style="font-size:.85rem;margin-bottom:0">${T({ar:'لو دخلت قبل كده بنفس الإيميل، هتكمّل من مكانك على نفس الجهاز.',en:'If you signed in before with this email, you continue where you left off on this device.'})}</p></form></div>`;
+}
+
+/* ---- WELCOME ---- */
+function vWelcome(){
+  const moods=[{k:'great',ar:'ممتاز',en:'Great'},{k:'good',ar:'كويس',en:'Good'},{k:'nervous',ar:'متوتر شوية',en:'A bit nervous'},{k:'tired',ar:'تعبان',en:'Tired'}];
+  AFTER.push(()=>{ $$('.moods button').forEach(b=>b.onclick=()=>{S.mood=b.dataset.k;save();$$('.moods button').forEach(x=>x.classList.toggle('on',x===b));
+    $('#moodR').textContent = T(['nervous','tired'].includes(b.dataset.k)?{ar:'ولا يهمك، هنمشي واحدة واحدة، و Acquire معاك في أي وقت.',en:'No worries — we’ll go step by step, and Acquire is always here.'}:{ar:'جميل! يلا نستغل الطاقة دي.',en:'Great! Let’s use that energy.'}); logEv('mood',b.dataset.k)}); });
+  const obj=[{ar:'تفسير الاتزان الديناميكي',en:'Explain dynamic equilibrium'},{ar:'تطبيق مبدأ لوشاتيليه',en:"Apply Le Chatelier's principle"},{ar:'كتابة واستخدام تعبيرات Kc و Kp',en:'Write and use Kc and Kp'},{ar:'تفسير أثر الحرارة والضغط على الاتزان و K',en:'Explain temperature and pressure effects on equilibrium and K'},{ar:'تفسير دور العامل الحفاز',en:'Explain the role of a catalyst'},{ar:'قراءة منحنيات المعدل والتركيز والطاقة',en:'Interpret rate, concentration and energy graphs'}];
+  const axes=[{c:'blue',h:{ar:'المحور 1: فهم الاتزان الكيميائي',en:'Axis 1: Understanding equilibrium'},b:{ar:'التفاعل الانعكاسي، الاتزان الديناميكي، قانون فعل الكتلة، و Kc.',en:'Reversible reactions, dynamic equilibrium, mass action, Kc.'}},
+    {c:'green',h:{ar:'المحور 2: مبدأ لوشاتيليه',en:"Axis 2: Le Chatelier's principle"},b:{ar:'التركيز، الحرارة، الضغط و Kp، والعامل الحفاز.',en:'Concentration, temperature, pressure & Kp, catalyst.'}},
+    {c:'purple',h:{ar:'المحور 3: البحث والتطبيق',en:'Axis 3: Investigation & application'},b:{ar:'محاكاة تفاعلية، توقّع، قراءة منحنيات، ومواقف جديدة.',en:'Simulations, prediction, graphs and new situations.'}}];
+  return `<div class="banner">${ART.spark()}<div><h1>${T({ar:'أهلًا بيك في رحلة الاتزان الكيميائي!',en:'Welcome to the chemical-equilibrium journey!'})}</h1><p>${T({ar:'عامل إيه النهارده؟',en:'How are you today?'})}</p>
+   <div class="moods" style="justify-content:center">${moods.map(m=>`<button data-k="${m.k}" class="${S.mood===m.k?'on':''}">${T(m)}</button>`).join('')}</div><div id="moodR" class="muted"></div></div></div>
+   <div class="card" style="margin-top:20px"><div style="display:flex;gap:18px;align-items:center;flex-wrap:wrap">${ART.robot(96)}<div style="flex:1;min-width:240px">
+    <h2 style="margin:0">${T({ar:'مهمتك: تحقيق في الاتزان الكيميائي',en:'Your mission: investigate chemical equilibrium'})}</h2>
+    <p>${T({ar:'التفاعل الكيميائي المتزن "متهم" بأنه بيقاوم أي تغيير يحصل له. مهمتك تحقق في القضية: هتشوف إزاي النظام المتزن بيرد لما نغير التركيز أو الحرارة أو الضغط، وفي الآخر تصدر حكمك العلمي.',en:'An equilibrium system is "accused" of resisting every change. Your job: investigate how it responds when we change concentration, temperature or pressure — then give your scientific verdict.'})}</p>
+    <p class="muted">${T({ar:'تحقق ← توقّع ← نمذجة ← حساب ← تطبيق ← تقييم ← الحكم',en:'Investigate → Predict → Model → Calculate → Apply → Assess → Verdict'})}</p></div></div>
+    <h3>${T({ar:'هتقدر في آخر الرحلة:',en:'By the end you will be able to:'})}</h3><ul class="kp">${obj.map(o=>`<li>${T(o)}</li>`).join('')}</ul>
+    <div class="axes">${axes.map(a=>`<div style="background:var(--${a.c}Soft)"><b>${T(a.h)}</b><div class="muted">${T(a.b)}</div></div>`).join('')}</div>
+    <div class="predict">${T({ar:'الخطوة الجاية: اختبار تشخيصي قصير (14 سؤال) عشان نعرف نقطة انطلاقك. مفيش درجات عليه — هو بس بيحدد المسار الأنسب ليك.',en:'Next: a short diagnostic (14 questions) to find your starting point. It is not graded — it only picks the best path for you.'})}</div>
+    <div style="text-align:center;margin-top:14px"><button class="btn blue" onclick="go('pretest')">${T({ar:'ابدأ الاختبار التشخيصي',en:'Start the diagnostic test'})} ${ART.i.play}</button></div></div>`;
+}
+
+/* ---- PRE / POST TEST (free navigation) ---- */
+function vTest(kind){
+  const qs = kind==='pre'?PRETEST:[...PRETEST].sort((a,b)=>((a.id.charCodeAt(2)*7)%11)-((b.id.charCodeAt(2)*7)%11));
+  let i=0; const ans={}, flag={};
+  const L=j=>LANG==='ar'?'أبجد'[j]:'ABCD'[j];
+  AFTER.push(()=>{ const box=$('#tq');
+    const navRow=()=>{ const n=Object.keys(ans).length; $('#tp').style.width=(n/qs.length*100)+'%';
+      $('#tn').textContent=T({ar:`${n} من ${qs.length} متجاوب`,en:`${n} of ${qs.length} answered`});
+      $('#qnav').innerHTML=qs.map((q,k)=>`<button class="qn ${ans[q.id]!=null?'a':''} ${k===i?'cur':''} ${flag[q.id]?'f':''}" data-k="${k}" aria-label="${T({ar:'سؤال',en:'Question'})} ${k+1}">${k+1}</button>`).join('');
+      $$('#qnav .qn').forEach(b=>b.onclick=()=>{i=+b.dataset.k;show()}); };
+    const show=()=>{ const q=qs[i]; $('#tsub').innerHTML='';
+      box.innerHTML=chem(`<div style="display:flex;justify-content:space-between;align-items:flex-start;gap:10px"><h2 style="font-size:1.2rem;margin-top:0">${i+1}. ${T(q.q)}</h2><button class="btn sm flagb ${flag[q.id]?'on':''}" id="tfl">⚑ ${flag[q.id]?T({ar:'مُعلَّم للمراجعة',en:'Marked for review'}):T({ar:'علّم للمراجعة',en:'Mark for review'})}</button></div>
+        ${q.o.map((o,j)=>`<button class="opt ${ans[q.id]===j?'sel':''}" data-j="${j}"><span class="k">${L(j)}</span><span>${T(o)}</span></button>`).join('')}
+        <div style="display:flex;justify-content:space-between;margin-top:14px"><button class="btn ghost sm" id="tb" ${i?'':'disabled'}>${T({ar:'السابق',en:'Back'})}</button><button class="btn blue sm" id="tnx" ${i===qs.length-1?'disabled':''}>${T({ar:'التالي',en:'Next'})}</button></div>`);
+      $$('.opt',box).forEach(b=>b.onclick=()=>{const j=+b.dataset.j; if(ans[q.id]===j){delete ans[q.id]}else ans[q.id]=j; $$('.opt',box).forEach(x=>x.classList.toggle('sel',+x.dataset.j===ans[q.id])); navRow()});
+      $('#tfl').onclick=()=>{flag[q.id]=!flag[q.id]; show()};
+      $('#tb').onclick=()=>{i--;show()}; $('#tnx').onclick=()=>{i++;show()}; navRow(); };
+    $('#tsend').onclick=()=>{ const miss=qs.map((q,k)=>ans[q.id]==null?k+1:0).filter(Boolean), fl=qs.map((q,k)=>flag[q.id]?k+1:0).filter(Boolean);
+      if(!miss.length && !fl.length) return finish();
+      $('#tsub').innerHTML=`<div class="predict"><b>${miss.length?T({ar:'فاضل أسئلة ماتجاوبتش: ',en:'Unanswered questions: '})+miss.join('، '):''}</b>${fl.length?`<div>${T({ar:'أسئلة معلّمة للمراجعة: ',en:'Marked for review: '})}${fl.join('، ')}</div>`:''}
+        ${miss.length?`<div class="muted">${T({ar:'الأسئلة المتروكة هتتحسب غلط.',en:'Unanswered questions count as wrong.'})}</div>`:''}
+        <div class="ctrls"><button class="btn blue sm" id="tgo">${T({ar:'ارجع لها',en:'Go back to them'})}</button><button class="btn ghost sm" id="tfin">${T({ar:'سلّم كده',en:'Submit anyway'})}</button></div></div>`;
+      $('#tgo').onclick=()=>{i=(miss[0]||fl[0])-1;show()}; $('#tfin').onclick=finish; $('#tsub').scrollIntoView({behavior:'smooth',block:'center'}); };
+    const finish=()=>{ let ok=0; const wrong=new Set();
+      PRETEST.forEach(q=>{ if(ans[q.id]===q.a) ok++; else wrong.add(q.c)});
+      const score=Math.round(ok/PRETEST.length*100), weak=[...wrong];
+      const skipped=PRETEST.filter(q=>ans[q.id]==null).map(q=>q.id);
+      const det=PRETEST.map(q=>q.id+':'+(ans[q.id]==null?'skipped':ans[q.id]===q.a?'1':'0')).join(',');
+      const sum=`score=${score}% | correct=${ok} | wrong=${PRETEST.length-ok-skipped.length} | skipped=${skipped.length}`;
+      if(kind==='pre'){ S.pre={score,ans,weak,skipped,at:new Date().toISOString()}; S.path=null; S.rec=pathFor(score); save(); logEv('pretest_complete',`${sum} | recommended=${S.rec} | weak=${weak.join(';')} | ${det}`); go('dashboard'); }
+      else { S.post={score,ans,weak,skipped,at:new Date().toISOString()}; save(); logEv('posttest_complete',`${sum} | pre=${S.pre.score}% | weak=${weak.join(';')} | ${det}`); go('report'); } };
+    show(); });
+  return `<div class="qwrap"><div class="card"><div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px">
+    <h1 style="margin:0;font-size:1.5rem">${kind==='pre'?T({ar:'الاختبار التشخيصي',en:'Diagnostic pre-test'}):T({ar:'الاختبار البعدي',en:'Post-test'})}</h1>
+    <span><b id="tn"></b> ${CONFIG.showReviewTags?`<span class="tag">${T({ar:'أسئلة مقترحة — بانتظار اعتماد المعلمة',en:'Draft items — pending teacher approval'})}</span>`:''}</span></div>
+    <div class="progress"><i id="tp"></i></div>
+    <div class="qnav" id="qnav" role="navigation"></div>
+    <p class="muted" style="font-size:.88rem;margin:4px 0 12px">${T({ar:'تقدر تتنقّل بين الأسئلة بأي ترتيب، وتغيّر إجابتك لحد ما تسلّم.',en:'Move between questions in any order and change answers until you submit.'})}</p>
+    <div id="tq"></div>
+    <div id="tsub"></div>
+    <div style="text-align:center;margin-top:16px;border-top:1px solid var(--line);padding-top:14px"><button class="btn green" id="tsend">${T({ar:'تسليم الاختبار',en:'Submit test'})}</button></div></div></div>`;
+}
+
+/* ---- DASHBOARD (reference design) ---- */
+function ring(p){ const r=62,c=2*Math.PI*r; return `<svg class="ring" width="160" height="160" viewBox="0 0 160 160"><circle cx="80" cy="80" r="${r}" fill="none" stroke="#e3eaf6" stroke-width="16"/><circle cx="80" cy="80" r="${r}" fill="none" stroke="#15a46d" stroke-width="16" stroke-linecap="round" stroke-dasharray="${c*p/100} ${c}" transform="rotate(-90 80 80)"/><text x="80" y="92" text-anchor="middle" font-size="34" font-weight="900" fill="#13284a" font-family="Inter">${p}%</text></svg>`; }
+function vDash(){
+  const pre=S.pre, rec=S.rec||pathFor(pre.score);
+  const card=k=>{const p=PATHS[k];return `<div class="path ${p.color} ${k===rec?'rec':''}">${k===rec?`<span class="recbadge" style="background:var(--${p.color}2)">${T({ar:'مناسب لك',en:'Recommended'})}</span>`:''}
+    <div class="pill ${p.color}">${ART.i[p.icon]} ${T(p.name)}</div>${ART[p.art]()}<p>${T(p.desc)}</p>
+    <div class="what ${p.color}">${T({ar:'ماذا ستجد هنا؟',en:'What will you find?'})}</div>
+    <ul class="feat">${p.feats.map(f=>`<li>${ART.check(`var(--${p.color}2)`.replace(/var\(--(\w+)\)/,(m,v)=>({blue2:'#2f7be6',green2:'#15a46d',purple2:'#8a63e0'})[v]))}${T(f)}</li>`).join('')}</ul>
+    <button class="btn ${p.color}" style="width:100%;margin-top:auto" onclick="choosePath('${k}')">${ART.i.play} ${T(p.cta)}</button><div class="range">${T({ar:'نسبة الاختبار القبلي',en:'Pre-test range'})}: <span dir="ltr">${p.range}</span></div></div>`};
+  return `<div class="dash"><div>
+    <div class="banner">${ART.spark()}<div><h1>${T({ar:'نتيجتك تحدد نقطة انطلاقك',en:'Your result sets your starting point'})}</h1><p>${T({ar:'بناءً على تحليل إجاباتك، يمكنك اختيار المسار الأنسب لاحتياجاتك التعليمية.',en:'Based on your answers, choose the path that best fits your learning needs.'})}</p></div>${ART.target().replace('class="ill"','width="110"')}</div>
+    <div class="paths">${['rem','sup','enr'].map(card).join('')}</div>
+    <div class="helpbar">${ART.robot(110)}<div class="bubble"><b>${T({ar:'عندك أي سؤال؟',en:'Any questions?'})}</b><br>${T({ar:'أنا Acquire، هنا عشان أساعدك في رحلتك لفهم أعمق للاتزان الكيميائي!',en:'I’m Acquire, here to help you understand chemical equilibrium more deeply!'})}</div><button class="btn blue" onclick="openChat()">${T({ar:'اسأل المساعد الذكي',en:'Ask the AI assistant'})}</button></div>
+   </div>
+   <aside class="side">
+    <div class="card scorebox"><h3>${T({ar:'نتيجتك في الاختبار التشخيصي',en:'Your diagnostic result'})}</h3>${ring(pre.score)}
+     <div style="text-align:center;font-weight:700">${ART.check()} ${T({ar:'من الإجابات صحيحة',en:'answers correct'})}</div>
+     <div style="padding:6px 18px 18px"><hr style="border:0;border-top:1px solid var(--line)"><b>${pre.weak.length?T({ar:'المفاهيم التي تحتاج إلى دعم:',en:'Concepts that need support:'}):T({ar:'أتقنت كل المفاهيم المقاسة!',en:'All measured concepts mastered!'})}</b>
+     <ul class="weak" style="list-style:none;padding:0;margin:6px 0 0">${pre.weak.map(c=>`<li><span class="dot r">!</span>${T(CONCEPTS[c])}</li>`).join('')}</ul></div></div>
+    <div class="card note" style="background:#eef4fd"><b>💡 ${T({ar:'ملاحظة مهمة:',en:'Important note:'})}</b><p style="margin:6px 0 0" class="muted">${T({ar:'المسار المميز هو المقترح لك، لكن تقدر تختار أي مسار. ابدأ من المسار المناسب لتحقيق أفضل استفادة.',en:'The highlighted path is recommended, but you may choose any path to get the most from the module.'})}</p></div>
+    <div class="flk" style="text-align:center">${ART.flasks()}</div>
+   </aside></div>`;
+}
+function choosePath(k){ S.path=k; save(); logEv('path_selected',`${k} (recommended=${S.rec})`); go('path'); }
+
+/* ---- PATH ---- */
+function unitDone(u){return !!S.units?.[u.id]?.done}
+function vPath(){
+  const k=S.path||S.rec, p=PATHS[k]; if(!S.path){S.path=k;save()}
+  const head=`<div class="banner" style="justify-content:space-between;text-align:start"><div><div class="pill ${p.color}" style="display:inline-flex;width:auto;padding:6px 18px">${ART.i[p.icon]} ${T(p.name)}</div><p>${T(p.desc)}</p></div>${ART[p.art]().replace('class="ill"','width="150"')}</div>`;
+  const ucard=u=>`<div class="ucard ${unitDone(u)?'done':''}"><div style="display:flex;gap:10px;align-items:center"><span class="n" style="background:var(--${u.color})">${u.n}</span><h3>${T(u.t)}</h3></div><div class="muted">${T(u.goal)}</div>
+     <div style="display:flex;justify-content:space-between;align-items:center;margin-top:auto"><span>${unitDone(u)?ART.check()+' '+T({ar:'تم',en:'Done'}):''}</span><button class="btn ${p.color} sm" onclick="go('${u.id}')">${unitDone(u)?T({ar:'مراجعة',en:'Review'}):T({ar:'ابدأ الدرس',en:'Start lesson'})}</button></div></div>`;
+  const postBtn=`<div class="card" style="margin-top:22px;display:flex;gap:14px;align-items:center;flex-wrap:wrap;justify-content:space-between"><div><b>${T({ar:'الحكم النهائي: الاختبار البعدي',en:'Final verdict: post-test'})}</b><div class="muted">${T({ar:'لما تخلّص، اعمل الاختبار البعدي عشان تشوف تقدّمك مقارنة بالبداية.',en:'When you finish, take the post-test to compare with your start.'})}</div></div><button class="btn ${p.color}" onclick="go('posttest')">${T({ar:'ابدأ الاختبار البعدي',en:'Start post-test'})}</button></div>`;
+  const switcher=`<p class="muted" style="text-align:center">${T({ar:'عايز تغيّر المسار؟',en:'Want another path?'})} <a href="#dashboard">${T({ar:'ارجع للوحة المسارات',en:'Back to paths'})}</a></p>`;
+  if(k==='rem'){ const d=UNITS.filter(unitDone).length;
+    return head+`<div class="section"><h2>${T({ar:'دروس الوحدة',en:'Unit lessons'})} — ${d}/6</h2><div class="progress"><i style="width:${d/6*100}%"></i></div><div class="ulist">${UNITS.map(ucard).join('')}</div></div>`+postBtn+switcher; }
+  if(k==='sup'){ const weak=S.pre.weak.length?S.pre.weak:Object.keys(CONCEPTS); const fixed=S.fixed||{}; const nf=weak.filter(c=>fixed[c]).length;
+    const items=weak.map(c=>{const u=unitById(CONCEPTS[c].u); const ms=UNITS.flatMap(x=>x.mis).filter(m=>m.c===c);
+      return `<div class="ucard ${fixed[c]?'done':''}"><div style="display:flex;gap:10px;align-items:center"><span class="dot ${fixed[c]?'g':'r'}">${fixed[c]?'✓':'!'}</span><h3>${T(CONCEPTS[c])}</h3></div>
+       ${ms.map(m=>`<div class="mis" style="grid-template-columns:1fr"><div class="w">✘ ${T(m.w)}</div><div class="r">✔ ${T(m.r)}</div></div>`).join('')}
+       <div class="muted">${T({ar:'الدرس:',en:'Lesson:'})} ${T(u.t)}</div>
+       <button class="btn green sm" style="margin-top:auto" onclick="go('${u.id}')">${fixed[c]?T({ar:'مراجعة',en:'Review'}):T({ar:'عالج المفهوم + أعد التقييم',en:'Fix it + reassess'})}</button></div>`}).join('');
+    return head+`<div class="section"><h2>${T({ar:'خطة الدعم الخاصة بيك',en:'Your support plan'})} — ${nf}/${weak.length}</h2><p class="muted">${T({ar:'دي المفاهيم اللي الاختبار التشخيصي أظهر إنك محتاج فيها دعم. لكل مفهوم: صحّح الفكرة الخاطئة، جرّب المحاكاة، وجاوب على أسئلة إعادة التقييم في آخر الدرس.',en:'These are the concepts the diagnostic flagged. For each: correct the misconception, try the simulation, and answer the reassessment at the end of the lesson.'})}</p><div class="progress"><i style="width:${nf/weak.length*100}%;background:var(--green2)"></i></div><div class="ulist">${items}</div></div>`
+      +(nf===weak.length?`<div class="fb ok">${T({ar:'برافو! صححت كل نقاط الضعف. تقدر تكمل باقي الدروس من المسار العلاجي أو تعمل الاختبار البعدي.',en:'Well done! All weak points fixed. Continue the full sequence or take the post-test.'})}</div>`:'')+postBtn+switcher; }
+  // enrichment
+  AFTER.push(()=>practice($('#chq'), CHALLENGES, 'chal'));
+  return head+`<div class="section"><h2>${T({ar:'تحديات التفكير الناقد وحل المشكلات',en:'Critical-thinking & problem-solving challenges'})}</h2><div class="card" id="chq"></div></div>
+    <div class="section"><h2>${T({ar:'المعمل الافتراضي المفتوح',en:'Open virtual lab'})}</h2><div class="ulist">${UNITS.map(ucard).join('')}</div></div>`+postBtn+switcher;
+}
+
+/* ---- practice quiz (immediate feedback + Acquire hints) ---- */
+const ALLQ = ()=>[...UNITS.flatMap(u=>u.quiz),...CHALLENGES];
+const qById = id => ALLQ().find(q=>q.id===id);
+function practice(box, qs, bucket, unit){
+  box.innerHTML = qs.map((q,qi)=>`<div class="section" data-q="${q.id}"><div style="display:flex;justify-content:space-between;gap:10px;align-items:flex-start"><b>${qi+1}. ${chem(T(q.q))}</b><button class="btn sm hintb" data-h="${q.id}">💡 ${T({ar:'تلميح',en:'Hint'})}</button></div>${q.o.map((o,j)=>`<button class="opt" data-j="${j}"><span class="k">${j+1}</span><span>${chem(T(o))}</span></button>`).join('')}<div class="qhint"></div><div class="qfb"></div></div>`).join('');
+  qs.forEach(q=>{ const sec=$(`[data-q="${q.id}"]`,box); let lvl=0;
+    $('.hintb',sec).onclick=()=>{ const H=HINTS[q.id]?.h||[]; lvl++;
+      const parts=H.slice(0,lvl).map((h,k)=>`<div><b>${T({ar:'تلميح',en:'Hint'})} ${k+1}:</b> ${chem(T(h))}</div>`);
+      if(lvl>H.length) parts.push(`<div><b>${T({ar:'الحل:',en:'Solution:'})}</b> ${chem(T(q.o[q.a]))} — ${chem(T(q.x))}</div>`);
+      $('.qhint',sec).innerHTML=`<div class="fb hint">${parts.join('')}${lvl<=H.length?`<div class="muted" style="font-size:.85rem">${lvl<H.length?T({ar:'لسه محتاج مساعدة؟ دوس تلميح تاني.',en:'Still stuck? Press Hint again.'}):T({ar:'دوس تلميح تاني لو عايز تشوف الحل.',en:'Press Hint again to see the solution.'})}</div>`:''}</div>`;
+      if(lvl>H.length) $('.hintb',sec).disabled=true;
+      logEv('hint',`${q.id}:level${Math.min(lvl,H.length+1)}${lvl>H.length?'(solution)':''}`); };
+    $$('.opt',sec).forEach(b=>b.onclick=()=>{ const j=+b.dataset.j, ok=j===q.a;
+      $$('.opt',sec).forEach((x,k)=>{x.classList.remove('ok','no'); if(k===j)x.classList.add(ok?'ok':'no')});
+      const why=HINTS[q.id]?.w?.[j];
+      $('.qfb',sec).innerHTML=`<div class="fb ${ok?'ok':'no'}">${ok?T({ar:'✔ إجابة صحيحة. ',en:'✔ Correct. '})+chem(T(q.x)):T({ar:'✘ مش دي. ',en:'✘ Not this one. '})+(why?chem(T(why)):'')+'<br>'+T({ar:'جرّب اختيار تاني، أو دوس 💡 تلميح.',en:'Try another option, or press 💡 Hint.'})}</div>`;
+      if(!ok){CTX.q=q.id; CTX.wrong={id:q.id,j};}
+      S[bucket]=S[bucket]||{}; if(unit){S.units=S.units||{};S.units[unit]=S.units[unit]||{};S.units[unit].q=S.units[unit].q||{};S.units[unit].q[q.id]=ok||S.units[unit].q[q.id]||false;}
+      else S[bucket][q.id]=ok||S[bucket][q.id]||false;
+      if(ok && S.pre?.weak.includes(q.c)){S.fixed=S.fixed||{}; if(!S.fixed[q.c]){S.fixed[q.c]=true; logEv('concept_fixed',q.c); toast(T({ar:'تم تصحيح مفهوم: ',en:'Concept fixed: '})+T(CONCEPTS[q.c]))}}
+      if(unit && qs.every(x=>S.units[unit].q[x.id]!==undefined) && !S.units[unit].done){S.units[unit].done=true; logEv('unit_complete',unit); toast(T({ar:'خلّصت الدرس 🎉',en:'Lesson complete 🎉'}))}
+      save(); logEv('quiz_answer',`${q.id}:${ok?'correct':'wrong'}:choice=${j}`); }); });
+}
+
+/* ---- UNIT ---- */
+function vUnit(id){
+  const u=unitById(id), k=S.path||S.rec, p=PATHS[k], idx=UNITS.indexOf(u);
+  S.units=S.units||{}; S.units[id]=S.units[id]||{}; if(!S.units[id].opened){S.units[id].opened=new Date().toISOString();save()}
+  logEv('unit_open',id); CTX.unit=id;
+  AFTER.push(()=>{ u.sims.forEach(s=>{const c=SIMS[s]($('#sim-'+s));if(typeof c==='function')cleanups.push(c)}); practice($('#uq'),u.quiz,'units',id); });
+  return `<div style="display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap"><button class="btn ghost sm" onclick="go('path')">${LANG==='ar'?'→':'←'} ${T(p.name)}</button><button class="btn ghost sm" onclick="askAbout()">${ART.i.help.replace('<svg','<svg width="18"')} ${T({ar:'اسأل Acquire عن الدرس ده',en:'Ask Acquire about this lesson'})}</button></div>
+   <div class="banner" style="margin-top:14px;justify-content:flex-start;text-align:start"><span class="n" style="background:var(--${u.color});color:#fff;width:52px;height:52px;border-radius:16px;display:inline-flex;align-items:center;justify-content:center;font-size:1.5rem;font-weight:900;flex:none">${u.n}</span><div><h1 style="font-size:1.6rem">${T(u.t)}</h1><p>${T(u.goal)}</p></div></div>
+   <div class="card" style="margin-top:18px">${u.sections.map(s=>`<div class="section"><h2>${T(s.h)}${s.review?reviewTag():''}</h2>${T(s.b)}</div>`).join('')}</div>
+   <div class="section"><h2>${T({ar:'جرّب بنفسك',en:'Try it yourself'})}</h2>${u.sims.map(s=>`<div id="sim-${s}"></div>`).join('')}</div>
+   <div class="card"><h2 style="margin-top:0">${T({ar:'انتبه من الأخطاء الشائعة',en:'Watch out for common misconceptions'})}</h2>${u.mis.map(m=>`<div class="mis"><div class="w">✘ ${T(m.w)}</div><div class="r">✔ ${T(m.r)}</div></div>`).join('')}</div>
+   <div class="card" style="margin-top:18px"><h2 style="margin-top:0">${k==='sup'?T({ar:'إعادة التقييم',en:'Reassessment'}):T({ar:'اختبر نفسك',en:'Check yourself'})}</h2><div id="uq"></div></div>
+   <div style="display:flex;justify-content:space-between;margin-top:18px">${idx>0?`<button class="btn ghost" onclick="go('${UNITS[idx-1].id}')">${T({ar:'الدرس السابق',en:'Previous'})}</button>`:'<span></span>'}${idx<5?`<button class="btn ${p.color}" onclick="go('${UNITS[idx+1].id}')">${T({ar:'الدرس التالي',en:'Next lesson'})}</button>`:`<button class="btn ${p.color}" onclick="go('path')">${T({ar:'رجوع للمسار',en:'Back to path'})}</button>`}</div>`;
+}
+
+/* ---- REPORT ---- */
+function vReport(){
+  const pre=S.pre, post=S.post; const done=UNITS.filter(unitDone);
+  const st=(t,c)=>!t?'—':(t.weak.includes(c)?`<span class="dot r">!</span>`:`<span class="dot g">✓</span>`);
+  const still=post?post.weak:pre.weak.filter(c=>!S.fixed?.[c]);
+  const chal=Object.values(S.chal||{}).filter(Boolean).length;
+  return `<div class="banner"><div><h1>${T({ar:'تقرير تقدّمك',en:'Your progress report'})}</h1><p>${T({ar:'الحكم في القضية: إزاي اتطور فهمك للاتزان الكيميائي؟',en:'The verdict: how has your understanding of equilibrium developed?'})}</p></div></div>
+   <div class="paths" style="grid-template-columns:repeat(auto-fit,minmax(220px,1fr))">
+    <div class="card" style="text-align:center"><b>${T({ar:'الاختبار القبلي',en:'Pre-test'})}</b>${ring(pre.score)}</div>
+    <div class="card" style="text-align:center"><b>${T({ar:'الاختبار البعدي',en:'Post-test'})}</b>${post?ring(post.score):`<p class="muted" style="margin:40px 0">${T({ar:'لسه ما اتعملش',en:'Not taken yet'})}</p><button class="btn blue sm" onclick="go('posttest')">${T({ar:'ابدأه دلوقتي',en:'Take it now'})}</button>`}</div>
+    <div class="card" style="text-align:center"><b>${T({ar:'التحسّن',en:'Improvement'})}</b><div style="font-size:2.6rem;font-weight:900;margin:34px 0;color:${post&&post.score>=pre.score?'#0d8a5b':'#5b6b82'}" dir="ltr">${post?(post.score-pre.score>=0?'+':'')+(post.score-pre.score)+'%':'—'}</div><div class="muted">${T(PATHS[S.path||S.rec].name)}</div></div></div>
+   <div class="card" style="margin-top:20px;overflow-x:auto"><h2 style="margin-top:0">${T({ar:'المفاهيم',en:'Concepts'})}</h2><table class="report"><tr><th>${T({ar:'المفهوم',en:'Concept'})}</th><th>${T({ar:'قبلي',en:'Pre'})}</th><th>${T({ar:'تصحيح أثناء المسار',en:'Fixed in path'})}</th><th>${T({ar:'بعدي',en:'Post'})}</th></tr>
+    ${Object.keys(CONCEPTS).map(c=>`<tr><td>${T(CONCEPTS[c])}</td><td>${st(pre,c)}</td><td>${S.fixed?.[c]?'<span class="dot g">✓</span>':'—'}</td><td>${st(post,c)}</td></tr>`).join('')}</table></div>
+   <div class="card" style="margin-top:20px"><h2 style="margin-top:0">${T({ar:'نشاطك',en:'Your activity'})}</h2><p>${T({ar:'دروس مكتملة:',en:'Lessons completed:'})} <b>${done.length}/6</b> · ${T({ar:'تحديات محلولة:',en:'Challenges solved:'})} <b>${chal}/${CHALLENGES.length}</b></p>
+    <h3>${T({ar:'الخطوات الجاية المقترحة',en:'Suggested next steps'})}</h3>${still.length?`<ul class="kp">${still.map(c=>`<li>${T({ar:'راجع',en:'Review'})} <a href="#${CONCEPTS[c].u}">${T(CONCEPTS[c])}</a></li>`).join('')}</ul>`:`<p>${T({ar:'ممتاز! جرّب تحديات المسار الإثرائي.',en:'Excellent! Try the enrichment challenges.'})}</p>`}
+    <p class="muted" style="font-size:.88rem">${T({ar:'الدرجة مؤشر واحد فقط، ولا تقيس كل ما تعلمته.',en:'A score is only one indicator; it does not measure everything you learned.'})}</p></div>`;
+}
+
+/* ================= ACQUIRE (free, content-based assistant) ================= */
+const CTX={unit:null,q:null,wrong:null,lvl:{}}; let CHAT=[];
+const norm=s=>String(s).toLowerCase().replace(/[ً-ْـ]/g,'').replace(/[أإآ]/g,'ا').replace(/ة/g,'ه').replace(/ى/g,'ي').replace(/[₀-₉]/g,d=>'0123456789'['₀₁₂₃₄₅₆₇₈₉'.indexOf(d)]);
+const STARTERS=[{k:'simple',ar:'اشرح لي مفهوم بطريقة أبسط',en:'Explain a concept more simply'},{k:'hint',ar:'ساعدني في السؤال من غير ما تقول الإجابة',en:'Help me without giving the answer'},{k:'why',ar:'وضّح لي سبب خطأ إجابتي',en:'Why was my answer wrong?'},{k:'cmp',ar:'الفرق بين الحرارة والعامل الحفاز؟',en:'Temperature vs catalyst?'},{k:'act',ar:'رشّح لي نشاط لنقطة ضعفي',en:'Suggest an activity for my weak point'}];
+function renderChat(){
+  $('#fabWrap').innerHTML=`<button class="fab" onclick="toggleChat()" aria-label="Acquire">${ART.robot(42)}<span>${T({ar:'اسأل Acquire',en:'Ask Acquire'})}</span></button>
+  <section class="chat" id="chat" aria-label="Acquire"><header>${ART.robot(38)}<b>Acquire — ${T({ar:'المساعد الذكي للكيمياء',en:'Chemistry assistant'})}</b><button onclick="closeChat()" aria-label="close">×</button></header>
+   <div class="mode live">${T({ar:'بيساعدك من محتوى دروس الاتزان الكيميائي',en:'Helps you using the chemical-equilibrium lessons'})}</div>
+   <div class="msgs" id="msgs" aria-live="polite"></div>
+   <div class="starters">${STARTERS.map(s=>`<button data-k="${s.k}">${T(s)}</button>`).join('')}</div>
+   <form class="chatin" id="chf"><input id="chi" placeholder="${T({ar:'اكتب سؤالك بالعربي أو بالإنجليزي...',en:'Ask in Arabic or English...'})}" aria-label="message"><button class="btn blue sm" aria-label="send">${ART.i.send}</button></form></section>`;
+  $$('.starters button').forEach(b=>b.onclick=()=>{const s=STARTERS.find(x=>x.k===b.dataset.k); userSay(T(s)); botDo(b.dataset.k)});
+  $('#chf').onsubmit=e=>{e.preventDefault();const v=$('#chi').value.trim();if(v){$('#chi').value='';userSay(v);botDo('text',v)}};
+  $('#msgs').addEventListener('click',e=>{const b=e.target.closest('[data-act]');if(!b)return;const [act,arg]=b.dataset.act.split(':');
+    if(act==='go'){closeChat();go(arg)} else if(act==='concept'){userSay(T(CONCEPTS[arg]));botDo('concept',arg)} else if(act==='hint'){botDo('hint',arg)} else if(act==='why'){botDo('why')}});
+  drawMsgs();
+}
+function drawMsgs(){ const m=$('#msgs'); if(!m)return;
+  const hello=T({ar:'أهلًا! أنا Acquire 👋 معاك في كل صفحة. أقدر أشرحلك أي مفهوم في الدروس بطريقة أبسط، وأديك تلميحات في الأسئلة، وأوضّحلك ليه إجابتك غلط.',en:'Hi! I’m Acquire 👋 — with you on every page. I can explain any concept in the lessons more simply, give hints, and explain why an answer was wrong.'});
+  m.innerHTML=`<div class="m bot">${hello}</div>`+CHAT.map(x=>`<div class="m ${x.me?'me':'bot'}" dir="${x.me?'auto':x.dir}">${x.me?esc(x.t):x.t}</div>`).join(''); m.scrollTop=m.scrollHeight; }
+function userSay(t){CHAT.push({me:true,t});drawMsgs();logEv('chat_question',t)}
+function botSay(html){CHAT.push({me:false,t:chem(html),dir:LANG==='en'?'ltr':'rtl'});drawMsgs()}
+const actBtn=(act,label)=>`<button class="btn ghost sm chatact" data-act="${act}">${label}</button>`;
+const conceptChips=list=>`<div class="ctrls">${list.map(c=>actBtn('concept:'+c,T(CONCEPTS[c]))).join('')}</div>`;
+function openChat(){ $('#chat').classList.add('open'); setTimeout(()=>$('#chi')?.focus(),50); logEv('chat_open',CUR_ROUTE); }
+function closeChat(){ $('#chat')?.classList.remove('open'); }
+function toggleChat(){ $('#chat').classList.contains('open')?closeChat():openChat(); }
+function askAbout(qid){ openChat(); if(qid){CTX.q=qid; const q=qById(qid); botSay(T({ar:'خلّينا نفكر سوا في السؤال ده:',en:'Let’s think about this question together:'})+`<br><i>${T(q.q)}</i><div class="ctrls">${actBtn('hint:'+qid,'💡 '+T({ar:'تلميح',en:'Hint'}))}</div>`)} else if(/^u[1-6]$/.test(CUR_ROUTE)) botDo('simple'); }
+function inTest(){return ['pretest','posttest'].includes(CUR_ROUTE)}
+function currentConcepts(){ const u=/^u[1-6]$/.test(CUR_ROUTE)?CUR_ROUTE:null; return u?Object.keys(CONCEPTS).filter(c=>CONCEPTS[c].u===u):Object.keys(CONCEPTS); }
+function explain(c){ const e=EXPLAIN[c], u=unitById(CONCEPTS[c].u);
+  botSay(`<b>${T(CONCEPTS[c])}</b><br>${T(e.s)}<br><br>${T(e.q)}<div class="ctrls">${CUR_ROUTE!==u.id?actBtn('go:'+u.id,T({ar:'افتح الدرس ',en:'Open lesson '})+u.n+' ←'):''}</div>`); logEv('acquire_explain',c); }
+function giveHint(qid){ const q=qById(qid), H=HINTS[qid]?.h||[]; const l=(CTX.lvl[qid]||0)+1; CTX.lvl[qid]=l;
+  if(l<=H.length) botSay(`<b>${T({ar:'تلميح',en:'Hint'})} ${l}:</b> ${T(H[l-1])}<div class="ctrls">${actBtn('hint:'+qid,l<H.length?'💡 '+T({ar:'تلميح تاني',en:'Another hint'}):'👀 '+T({ar:'اعرض الحل',en:'Show solution'}))}</div>`);
+  else botSay(`<b>${T({ar:'الحل:',en:'Solution:'})}</b> ${T(q.o[q.a])}<br>${T(q.x)}<br>${T({ar:'جرّب تشرح لنفسك ليه ده الصح قبل ما تكمل 👌',en:'Try explaining to yourself why this is right before moving on 👌'})}`);
+  logEv('hint',`${qid}:level${Math.min(l,H.length+1)}`); }
+function botDo(kind,arg){
+  setTimeout(()=>{ const sv=LANG; if(kind==='text' && !/[\u0600-\u06FF]/.test(arg) && /[a-z]/i.test(arg)) LANG='en'; else if(kind==='text' && /[\u0600-\u06FF]/.test(arg)) LANG='ar';
+    try{ botInner(kind,arg) } finally { LANG=sv } },250);
+}
+function botInner(kind,arg){
+  if(inTest() && ['hint','why','text'].includes(kind) && !(kind==='text' && /شكر|thank/.test(norm(arg)))){ botSay(T({ar:'أثناء الاختبار مش هقدر أساعدك في الإجابات، عشان نعرف مستواك الحقيقي ونختارلك المسار الصح 🙂 بالتوفيق! بعد ما تسلّم هكون معاك في كل درس.',en:'During the test I can’t help with answers, so we find your real level and the right path 🙂 Good luck! After you submit I’ll be with you in every lesson.'})); return; }
+  if(kind==='concept') return explain(arg);
+  if(kind==='simple') return botSay(T({ar:'أكيد! اختار المفهوم:',en:'Sure! Pick a concept:'})+conceptChips(currentConcepts()));
+  if(kind==='hint'){ const id=arg||CTX.q; if(id) return giveHint(id); return botSay(T({ar:'افتح أي سؤال في الدروس ودوس 💡 تلميح جنبه، أو دوس "اطلب مساعدة Acquire" تحت السؤال، وأنا هديك تلميحات خطوة بخطوة.',en:'Open any lesson question and press 💡 Hint next to it, and I’ll guide you step by step.'})); }
+  if(kind==='why'){ const w=CTX.wrong; if(!w) return botSay(T({ar:'لما تجاوب غلط على سؤال في الدروس، اسألني هنا وأنا هوضحلك الفكرة اللي وراه.',en:'When you answer a lesson question wrongly, ask me here and I’ll explain the idea behind it.'}));
+    const q=qById(w.id), why=HINTS[w.id]?.w?.[w.j]; return botSay(`${T({ar:'اخترت:',en:'You chose:'})} <i>${T(q.o[w.j])}</i><br>${why?T(why):T({ar:'الاختيار ده مش متوافق مع القاعدة.',en:'That option does not fit the rule.'})}<div class="ctrls">${actBtn('hint:'+w.id,'💡 '+T({ar:'عايز تلميح للصح',en:'Hint toward the right answer'}))}</div>`); }
+  if(kind==='cmp') return botSay(T({ar:'سؤال حلو!<br>• <b>الحرارة:</b> بتزيح الاتزان (التسخين ناحية الاتجاه الماص)، وبتغيّر قيمة K، وكمان بتسرّع التفاعلين.<br>• <b>العامل الحفاز:</b> بيسرّع التفاعلين بنفس القدر بس — لا بيزيح الاتزان ولا بيغيّر K ولا ΔH.<br><br>سؤال ليك: لو عايز تزوّد ناتج النشادر عند الاتزان، هتبرّد ولا تضيف حفاز؟',en:'Great question!<br>• <b>Temperature:</b> shifts equilibrium (heating → endothermic direction), changes K, and speeds both reactions.<br>• <b>Catalyst:</b> only speeds both reactions equally — no shift, K and ΔH unchanged.<br><br>Your turn: to raise the equilibrium yield of ammonia, would you cool it or add a catalyst?'})+`<div class="ctrls">${actBtn('go:u4',T({ar:'درس الحرارة',en:'Temperature lesson'}))}${actBtn('go:u6',T({ar:'درس الحفاز',en:'Catalyst lesson'}))}</div>`);
+  if(kind==='act'){ const weak=(S.pre?.weak||[]).filter(c=>!S.fixed?.[c]);
+    if(!weak.length) return botSay(T({ar:'مفيش نقاط ضعف مفتوحة عندك 👏 جرّب تحديات المسار الإثرائي أو معمل المكبس في الدرس 5.',en:'No open weak points 👏 Try the enrichment challenges or the piston lab in Unit 5.'})+`<div class="ctrls">${actBtn('go:u5',T({ar:'الدرس 5',en:'Unit 5'}))}</div>`);
+    const c=weak[0], u=unitById(CONCEPTS[c].u); return botSay(T({ar:`نقطة الضعف اللي نبدأ بيها: <b>${T(CONCEPTS[c])}</b>. افتح الدرس ${u.n}، جرّب المحاكاة وتوقّع قبل كل زرار، وبعدين جاوب أسئلة آخر الدرس.`,en:`Let’s start with: <b>${T(CONCEPTS[c])}</b>. Open Unit ${u.n}, try the simulation and predict before each action, then answer the questions at the end.`})+`<div class="ctrls">${actBtn('go:'+u.id,T({ar:'افتح الدرس ',en:'Open Unit '})+u.n)}</div>`+(weak.length>1?`<div class="muted">${T({ar:'نقاط تانية: ',en:'Others: '})}${weak.slice(1).map(x=>T(CONCEPTS[x])).join('، ')}</div>`:'')); }
+  // free text
+  const t=norm(arg||'');
+  if(/^(اهلا|هاي|السلام|سلام|مرحبا|hi|hello|hey)/.test(t)) return botSay(T({ar:'أهلًا بيك! تحب أشرحلك مفهوم، ولا عندك سؤال واقف فيه؟',en:'Hi! Want a concept explained, or are you stuck on a question?'})+conceptChips(currentConcepts().slice(0,4)));
+  if(/شكر|تسلم|thank/.test(t)) return botSay(T({ar:'العفو! أنا هنا في أي وقت 🙌',en:'You’re welcome! I’m here anytime 🙌'}));
+  if(/(حراره|temperature|heat).*(حفاز|catalyst)|(حفاز|catalyst).*(حراره|temperature|heat)/.test(t)) return botInner('cmp');
+  if(/تلميح|hint|ساعدني|مش عارف|مش فاهم السؤال|help/.test(t) && CTX.q) return botInner('hint');
+  if(/غلط|خطا|wrong/.test(t)) return botInner('why');
+  if(/نشاط|ضعف|activity|weak/.test(t)) return botInner('act');
+  const score={}; Object.entries(KEYS).forEach(([c,ks])=>ks.forEach(k=>{if(t.includes(norm(k)))score[c]=(score[c]||0)+k.length}));
+  const best=Object.entries(score).sort((a,b)=>b[1]-a[1]);
+  if(best.length){ explain(best[0][0]); if(best[1]&&best[1][1]>=best[0][1]*.6) botSay(T({ar:'ممكن كمان يهمك:',en:'You may also want:'})+conceptChips([best[1][0]])); return; }
+  if(/اشرح|ابسط|مش فاهم|explain|simpl|understand/.test(t)) return botInner('simple');
+  botSay(T({ar:'السؤال ده برّه دروس الاتزان الكيميائي اللي أقدر أساعد فيها، أو مافهمتهوش كويس 🤔 لو برّه المنهج اسأل معلمتك. ولو عن الدروس، اختار المفهوم:',en:'That seems outside the chemical-equilibrium lessons I can help with, or I didn’t understand it 🤔 If it’s off-syllabus, ask your teacher. Otherwise pick a concept:'})+conceptChips(Object.keys(CONCEPTS)));
+  logEv('acquire_unmatched',arg||'');
+}
+
+/* ================= BOOT ================= */
+applyDir(); renderChat(); render();
+</script>
+</body>
+</html>
