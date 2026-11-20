@@ -278,6 +278,16 @@ function vTest(kind){
   if(Object.keys(ans).length) setTimeout(()=>toast(T({ar:'رجّعنالك إجاباتك اللي فاتت 💾',en:'Your earlier answers were restored 💾'})),300);
   const L=j=>LANG==='ar'?'أبجد'[j]:'ABCD'[j];
   AFTER.push(()=>{ const box=$('#tq');
+    const N=qs.length, done=()=>Object.keys(ans).length, gapBefore=k=>{ for(let x=0;x<k;x++) if(ans[qs[x].id]==null) return x+1; return 0; };
+    let idle=null; const idleArm=()=>{ clearTimeout(idle); idle=setTimeout(()=>{ if(CUR_ROUTE.endsWith('test')) COACH.say(T({ar:'أنا موجود هنا لمساعدتك 🤖 خد وقتك وفكّر براحتك',en:'I’m right here to help you 🤖 Take your time and think it through'}),5000); },25000); };
+    cleanups.push(()=>{ clearTimeout(idle); COACH.hide(); });
+    const progressLine=()=>{ const n=done(), m=N-n;
+      if(m===0){ $('#tsend').classList.add('glow'); return T({ar:'جاوبت على كل الأسئلة 🎉 تقدر دلوقتي تسلّم الاختبار',en:'You answered every question 🎉 You can submit the test now'}); }
+      $('#tsend').classList.remove('glow');
+      let s = n===1 ? T({ar:`حلّيت سؤال، فاضلك ${m} 💪`,en:`1 done, ${m} to go 💪`}) : T({ar:`حلّيت ${n}، فاضلك ${m} 💪`,en:`${n} done, ${m} to go 💪`});
+      const g=gapBefore(i); if(g) s+=T({ar:` — بس إنت ناسي سؤال رقم ${g}، افتكر ترجعله 😉`,en:` — but you skipped question ${g}, remember to go back 😉`});
+      return s; };
+    COACH.say(T({ar:`أنا موجود هنا لمساعدتك 🤖 جاوب براحتك، وأنا هقولك فاضلك كام سؤال`,en:`I’m here to help you 🤖 Answer at your pace and I’ll tell you how many are left`}),6000);
     const navRow=()=>{ const n=Object.keys(ans).length; $('#tp').style.width=(n/qs.length*100)+'%';
       $('#tn').textContent=T({ar:`${n} من ${qs.length} متجاوب`,en:`${n} of ${qs.length} answered`});
       $('#qnav').innerHTML=qs.map((q,k)=>`<button class="qn ${ans[q.id]!=null?'a':''} ${k===i?'cur':''} ${flag[q.id]?'f':''}" data-k="${k}" aria-label="${T({ar:'سؤال',en:'Question'})} ${k+1}">${k+1}</button>`).join('');
@@ -286,11 +296,13 @@ function vTest(kind){
       box.innerHTML=chem(`<div style="display:flex;justify-content:space-between;align-items:flex-start;gap:10px"><h2 style="font-size:1.2rem;margin-top:0">${i+1}. ${T(q.q)}</h2><button class="btn sm flagb ${flag[q.id]?'on':''}" id="tfl">⚑ ${flag[q.id]?T({ar:'مُعلَّم للمراجعة',en:'Marked for review'}):T({ar:'علّم للمراجعة',en:'Mark for review'})}</button></div>
         ${q.o.map((o,j)=>`<button class="opt ${ans[q.id]===j?'sel':''}" data-j="${j}"><span class="k">${L(j)}</span><span>${T(o)}</span></button>`).join('')}
         <div style="display:flex;justify-content:space-between;margin-top:14px"><button class="btn ghost sm" id="tb" ${i?'':'disabled'}>${T({ar:'السابق',en:'Back'})}</button><button class="btn blue sm" id="tnx" ${i===qs.length-1?'disabled':''}>${T({ar:'التالي',en:'Next'})}</button></div>`);
-      $$('.opt',box).forEach(b=>b.onclick=()=>{const j=+b.dataset.j; if(ans[q.id]===j){delete ans[q.id]}else ans[q.id]=j; $$('.opt',box).forEach(x=>x.classList.toggle('sel',+x.dataset.j===ans[q.id])); navRow(); keep()});
+      $$('.opt',box).forEach(b=>b.onclick=()=>{const j=+b.dataset.j; const was=ans[q.id]; if(ans[q.id]===j){delete ans[q.id]}else ans[q.id]=j; $$('.opt',box).forEach(x=>x.classList.toggle('sel',+x.dataset.j===ans[q.id])); navRow(); keep(); idleArm();
+        if(was==null && ans[q.id]!=null) COACH.say(progressLine(),done()===N?9000:3500); else if(ans[q.id]==null){ COACH.hide(); $('#tsend').classList.remove('glow'); } });
       $('#tfl').onclick=()=>{flag[q.id]=!flag[q.id]; keep(); show()};
-      $('#tb').onclick=()=>{i--;show()}; $('#tnx').onclick=()=>{i++;show()}; navRow(); };
+      $('#tb').onclick=()=>{i--;show()}; $('#tnx').onclick=()=>{ const left=ans[q.id]==null; i++; show(); if(left) COACH.say(T({ar:`إنت ناسي سؤال رقم ${i}، افتكر ترجعله 😉`,en:`You skipped question ${i} — remember to come back 😉`}),4500); }; navRow(); idleArm(); };
     $('#tsend').onclick=()=>{ const miss=qs.map((q,k)=>ans[q.id]==null?k+1:0).filter(Boolean), fl=qs.map((q,k)=>flag[q.id]?k+1:0).filter(Boolean);
       if(!miss.length && !fl.length) return finish();
+      COACH.say(miss.length?T({ar:`فاضلك ${miss.length} ${miss.length===1?'سؤال':'أسئلة'} ماجاوبتهمش: ${miss.join('، ')} — تحب ترجعلهم؟`,en:`${miss.length} unanswered: ${miss.join(', ')} — want to go back?`}):T({ar:'جاوبت على كل الأسئلة 🎉 راجع اللي معلّمه لو حابب، وبعدين سلّم',en:'All answered 🎉 Review your marked ones if you like, then submit'}),7000);
       $('#tsub').innerHTML=`<div class="predict"><b>${miss.length?T({ar:'فاضل أسئلة ماتجاوبتش: ',en:'Unanswered questions: '})+miss.join('، '):''}</b>${fl.length?`<div>${T({ar:'أسئلة معلّمة للمراجعة: ',en:'Marked for review: '})}${fl.join('، ')}</div>`:''}
         ${miss.length?`<div class="muted">${T({ar:'الأسئلة المتروكة هتتحسب غلط.',en:'Unanswered questions count as wrong.'})}</div>`:''}
         <div class="ctrls"><button class="btn blue sm" id="tgo">${T({ar:'ارجع لها',en:'Go back to them'})}</button><button class="btn ghost sm" id="tfin">${T({ar:'سلّم كده',en:'Submit anyway'})}</button></div></div>`;
@@ -426,6 +438,15 @@ function vReport(){
 const CTX={unit:null,q:null,wrong:null,lvl:{}}; let CHAT=[];
 const norm=s=>String(s).toLowerCase().replace(/[ً-ْـ]/g,'').replace(/[أإآ]/g,'ا').replace(/ة/g,'ه').replace(/ى/g,'ي').replace(/[₀-₉]/g,d=>'0123456789'['₀₁₂₃₄₅₆₇₈₉'.indexOf(d)]);
 const STARTERS=[{k:'simple',ar:'اشرح لي مفهوم بطريقة أبسط',en:'Explain a concept more simply'},{k:'hint',ar:'ساعدني في السؤال من غير ما تقول الإجابة',en:'Help me without giving the answer'},{k:'why',ar:'وضّح لي سبب خطأ إجابتي',en:'Why was my answer wrong?'},{k:'cmp',ar:'الفرق بين الحرارة والعامل الحفاز؟',en:'Temperature vs catalyst?'},{k:'act',ar:'رشّح لي نشاط لنقطة ضعفي',en:'Suggest an activity for my weak point'}];
+/* Acquire coach bubble beside the floating button (used during tests: progress only, never right/wrong) */
+const COACH=(()=>{ let t=null;
+  function el(){ let b=document.getElementById('coachBub'); if(!b){ b=document.createElement('div'); b.id='coachBub'; b.className='coach-bub'; b.setAttribute('role','status'); b.setAttribute('aria-live','polite'); document.body.appendChild(b);} return b; }
+  function say(text,ms=4500){ const b=el(); b.textContent=text; b.classList.remove('show'); void b.offsetWidth; b.classList.add('show');
+    const f=document.querySelector('.fab'); if(f){ f.classList.remove('talk'); void f.offsetWidth; f.classList.add('talk'); }
+    clearTimeout(t); t=setTimeout(hide,ms); }
+  function hide(){ clearTimeout(t); document.getElementById('coachBub')?.classList.remove('show'); document.querySelector('.fab')?.classList.remove('talk'); }
+  return {say,hide};
+})();
 function renderChat(){
   $('#fabWrap').innerHTML=`<button class="fab" onclick="toggleChat()" aria-label="Acquire">${ART.robot(42)}<span>${T({ar:'اسأل Acquire',en:'Ask Acquire'})}</span></button>
   <section class="chat" id="chat" aria-label="Acquire"><header>${ART.robot(38)}<b>Acquire — ${T({ar:'المساعد الذكي للكيمياء',en:'Chemistry assistant'})}</b><button onclick="closeChat()" aria-label="close">×</button></header>

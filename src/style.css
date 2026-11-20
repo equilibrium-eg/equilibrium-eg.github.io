@@ -149,6 +149,14 @@ input.glow{border-color:var(--blue2)!important}
 @keyframes shiver{from{transform:translateX(-1.5px)}to{transform:translateX(1.5px)}}
 @keyframes zz{0%,100%{transform:translateY(0);opacity:.6}50%{transform:translateY(-4px);opacity:1}}
 .offline-note{max-width:520px;margin:12px auto 0;font-size:.9rem;color:#0b5b3d;background:#e6f8ef;border:1px solid #bfe9d3;border-radius:14px;padding:8px 14px}
+.coach-bub{position:fixed;bottom:84px;inset-inline-end:20px;z-index:44;max-width:min(320px,calc(100vw - 32px));background:#fff;border:2px solid #cfe0f7;border-radius:18px;padding:10px 14px;font-weight:800;color:#13284a;line-height:1.6;
+  box-shadow:0 10px 30px rgba(29,95,194,.2);opacity:0;transform:translateY(10px) scale(.95);pointer-events:none;transition:opacity .25s,transform .25s}
+.coach-bub.show{opacity:1;transform:none}
+.coach-bub:after{content:"";position:absolute;top:100%;inset-inline-end:34px;border:9px solid transparent;border-top-color:#fff}
+.fab.talk svg{animation:rbJump .6s ease 2}
+@media (max-width:640px){
+  .eq{white-space:normal;overflow-wrap:anywhere}
+  html,body{overflow-x:clip}.coach-bub{bottom:76px;inset-inline-end:12px}}
 /* DASHBOARD */
 .dash{display:grid;grid-template-columns:1fr 290px;gap:22px}
 html[dir=rtl] .dash{grid-template-columns:1fr 290px}
