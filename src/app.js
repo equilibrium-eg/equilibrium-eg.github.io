@@ -91,7 +91,7 @@ function render(){
   const html = /^u[1-6]$/.test(r) ? vUnit(r) : (V[r]||vDash)();
   $('#app').innerHTML = nav() + `<main class="wrap" id="main">${chem(html)}</main>`;
   $('#fabWrap').style.display = USER?'':'none';
-  CUR_ROUTE=r;
+  CUR_ROUTE=r; document.body.dataset.route=r;
   AFTER.splice(0).forEach(f=>{try{f()}catch(e){console.error(e)}});
   if(!/test$/.test(r)) COACH.hide();
   try{ COMPANION.onRoute(r); }catch(e){ console.error(e); }

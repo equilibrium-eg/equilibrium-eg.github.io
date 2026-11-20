@@ -64,7 +64,7 @@ robotBig:()=>`<svg id="rbSvg" viewBox="0 0 260 280" class="rb-svg" aria-hidden="
   </g>
  </g>
 </svg>`,
-atom:(s=56)=>`<svg viewBox="0 0 64 64" width="${s}" height="${s}" aria-hidden="true"><g fill="none" stroke="#fff" stroke-width="3"><ellipse cx="32" cy="32" rx="28" ry="11"/><ellipse cx="32" cy="32" rx="28" ry="11" transform="rotate(60 32 32)"/><ellipse cx="32" cy="32" rx="28" ry="11" transform="rotate(120 32 32)"/></g><circle cx="32" cy="32" r="5" fill="#fff"/></svg>`,
+atom:(s=56)=>`<svg viewBox="0 0 64 64" width="${s}" height="${s}" aria-hidden="true"><g fill="none" stroke="#fff" stroke-width="3"><ellipse cx="32" cy="32" rx="28" ry="11"/><ellipse cx="32" cy="32" rx="28" ry="11" transform="rotate(60 32 32)"/><ellipse cx="32" cy="32" rx="28" ry="11" transform="rotate(120 32 32)"/></g><circle cx="32" cy="32" r="5" fill="#fff"/><g class="atom-e"><g transform="rotate(0 32 32)"><circle r="4" fill="#ff3b3b"><animateMotion dur="2.4s" begin="0s" repeatCount="indefinite" path="M4 32a28 11 0 1 0 56 0a28 11 0 1 0 -56 0"/></circle></g><g transform="rotate(60 32 32)"><circle r="4" fill="#ff3b3b"><animateMotion dur="2.4s" begin="-0.8s" repeatCount="indefinite" path="M4 32a28 11 0 1 0 56 0a28 11 0 1 0 -56 0"/></circle></g><g transform="rotate(120 32 32)"><circle r="4" fill="#ff3b3b"><animateMotion dur="2.4s" begin="-1.6s" repeatCount="indefinite" path="M4 32a28 11 0 1 0 56 0a28 11 0 1 0 -56 0"/></circle></g></g></svg>`,
 books:()=>`<svg viewBox="0 0 200 140" class="ill" aria-hidden="true">
  <ellipse cx="100" cy="128" rx="78" ry="9" fill="#d9e4f5"/>
  <g><rect x="38" y="88" width="128" height="30" rx="7" fill="#1d5fc2"/><rect x="44" y="92" width="116" height="12" rx="3" fill="#fff"/><rect x="38" y="104" width="128" height="14" rx="5" fill="#2f7be6"/></g>
