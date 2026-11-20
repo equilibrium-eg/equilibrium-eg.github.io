@@ -279,7 +279,7 @@ html[dir=ltr] .fab{padding:8px 10px 8px 18px}
 .bar>i{display:block;height:100%}
 .moods{display:flex;gap:10px;flex-wrap:wrap;margin:10px 0}
 .moods button{border:1.5px solid var(--line);background:#fff;border-radius:16px;padding:12px 24px;font-weight:800;font-size:1.05rem;color:var(--blue)}
-.banner .moods{margin-top:104px;gap:14px}
+.banner .moods{margin-top:150px;gap:14px}
 .moods button.on{border-color:var(--blue2);background:#eaf2ff}
 .axes{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin:14px 0}
 .axes>div{border-radius:18px;padding:14px;border:1px solid var(--line)}
@@ -313,7 +313,7 @@ html[dir=ltr] .fab{padding:8px 10px 8px 18px}
   .banner{padding:16px}
   .banner h1{font-size:1.4rem}
   .banner .spark{display:none}
-  .banner .moods{flex-wrap:nowrap;gap:6px;margin-top:96px}
+  .banner .moods{flex-wrap:nowrap;gap:6px;margin-top:150px}
   .banner .moods button{padding:10px 10px;font-size:.92rem;white-space:nowrap;flex:1 1 auto}
   .side{grid-template-columns:1fr}
   .side .note,.side .flk{display:none}
@@ -1279,7 +1279,7 @@ const WALKER = (()=>{
   function make(){ el?.remove(); el=document.createElement('div'); el.className='walker'; el.innerHTML=`<div class="wb-bub" aria-hidden="true"></div><div class="wb-body">${ART.robotMini()}</div>`; document.body.appendChild(el); size(); }
   function size(){ if(!el) return; const h=sizeFor(); el.style.width=Math.round(h*100/132)+'px'; el.style.height=h+'px'; }
   const page=r=>({x:r.left+scrollX, y:r.top+scrollY, w:r.width, h:r.height});
-  function spotOn(btn){ const r=page(btn.getBoundingClientRect()), w=el.offsetWidth, h=el.offsetHeight; return {x:r.x+r.w/2-w/2, y:r.y-h+6}; }
+  function spotOn(btn){ const r=page(btn.getBoundingClientRect()), w=el.offsetWidth, h=el.offsetHeight; return {x:r.x+r.w/2-w/2, y:r.y-h+12}; }
   function spotHome(){ const r=page(document.querySelector('#wbHome').getBoundingClientRect()), w=el.offsetWidth, h=el.offsetHeight; return {x:r.x+r.w/2-w/2, y:r.y+r.h-h}; }
   function place(p){ pos=p; el.style.transform=`translate(${p.x}px,${p.y}px)`; }
   function mood(m){ el.className='walker'+(m?' m-'+m:''); current=m; }

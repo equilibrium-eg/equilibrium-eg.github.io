@@ -226,7 +226,7 @@ const WALKER = (()=>{
   function make(){ el?.remove(); el=document.createElement('div'); el.className='walker'; el.innerHTML=`<div class="wb-bub" aria-hidden="true"></div><div class="wb-body">${ART.robotMini()}</div>`; document.body.appendChild(el); size(); }
   function size(){ if(!el) return; const h=sizeFor(); el.style.width=Math.round(h*100/132)+'px'; el.style.height=h+'px'; }
   const page=r=>({x:r.left+scrollX, y:r.top+scrollY, w:r.width, h:r.height});
-  function spotOn(btn){ const r=page(btn.getBoundingClientRect()), w=el.offsetWidth, h=el.offsetHeight; return {x:r.x+r.w/2-w/2, y:r.y-h+6}; }
+  function spotOn(btn){ const r=page(btn.getBoundingClientRect()), w=el.offsetWidth, h=el.offsetHeight; return {x:r.x+r.w/2-w/2, y:r.y-h+12}; }
   function spotHome(){ const r=page(document.querySelector('#wbHome').getBoundingClientRect()), w=el.offsetWidth, h=el.offsetHeight; return {x:r.x+r.w/2-w/2, y:r.y+r.h-h}; }
   function place(p){ pos=p; el.style.transform=`translate(${p.x}px,${p.y}px)`; }
   function mood(m){ el.className='walker'+(m?' m-'+m:''); current=m; }
