@@ -36,6 +36,17 @@ body[data-route=login] .brand .atom-e,body[data-route=welcome] .brand .atom-e,bo
 .navlinks button:hover{background:rgba(255,255,255,.1)}
 .navlinks svg{width:20px;height:20px}
 .lang{border:1px solid rgba(255,255,255,.35)!important}
+.navlinks{position:relative}
+.hamb{width:44px;height:44px;justify-content:center;background:rgba(255,255,255,.12)!important;padding:0!important}
+.hamb .hb-i{display:inline!important;font-size:1.45rem;line-height:1}
+.navmenu{position:absolute;top:calc(100% + 10px);inset-inline-end:0;min-width:220px;background:#fff;border-radius:16px;box-shadow:0 14px 40px rgba(15,35,75,.25);padding:8px;display:none;flex-direction:column;z-index:60}
+.navmenu.open{display:flex;animation:bubIn .18s ease-out}
+.navlinks .navmenu button{color:#1b3358;width:100%;justify-content:flex-start;padding:11px 14px;font-size:1rem}
+.navlinks .navmenu button span{display:inline!important}
+.navlinks .navmenu button:hover{background:#eef3fb}
+.navmenu svg{color:#5b6b82}
+.navmenu hr{border:0;border-top:1px solid #e3eaf5;margin:6px 4px}
+.navlinks .navmenu button.out,.navmenu .out svg{color:#d93636}
 
 .wrap{max-width:1240px;margin:0 auto;padding:24px 22px 120px}
 .card{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);box-shadow:var(--shadow);padding:22px}
@@ -318,7 +329,7 @@ html[dir=ltr] .fab{padding:8px 10px 8px 18px}
 }
 @media (max-width:640px){
   .nav{padding:8px 12px;gap:8px}
-  .navlinks button span{display:none}
+  .navlinks button:not(.lang) span{display:none}
   .brand{font-size:.98rem}
   .brand svg{width:34px;height:34px}
   .wrap{padding:14px 12px 110px}

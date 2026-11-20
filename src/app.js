@@ -67,13 +67,21 @@ const unitById = id => UNITS.find(u=>u.id===id);
 /* ================= LAYOUT ================= */
 function nav(){
   return `<nav class="nav"><div class="brand">${ART.atom(44)}<span>${T({ar:'الاتزان الكيميائي',en:'Chemical Equilibrium'})}</span></div>
-  <div class="navlinks">${USER?`
-   <button onclick="go('dashboard')" aria-label="home">${ART.i.home}<span>${T({ar:'الرئيسية',en:'Home'})}</span></button>
-   <button onclick="go('report')" aria-label="results">${ART.i.chart}<span>${T({ar:'نتائجك',en:'Results'})}</span></button>
-   <button onclick="openChat()" aria-label="help">${ART.i.help}<span>${T({ar:'المساعدة',en:'Help'})}</span></button>`:''}
-   <button class="lang" onclick="toggleLang()" aria-label="language">${ART.i.globe}<span>${LANG==='ar'?'English':'العربية'}</span></button>
-   ${USER?`<button onclick="logout()" aria-label="logout">${ART.i.out}<span>${T({ar:'خروج',en:'Logout'})}</span></button>`:''}</div></nav>`;
+  <div class="navlinks">${USER?`<button class="hamb" id="hamb" onclick="toggleMenu(event)" aria-label="menu" aria-expanded="false" aria-controls="navmenu"><span class="hb-i">☰</span></button>
+   <div class="navmenu" id="navmenu" role="menu">
+    <button role="menuitem" onclick="menuGo(()=>go('dashboard'))">${ART.i.home}<span>${T({ar:'الرئيسية',en:'Home'})}</span></button>
+    <button role="menuitem" onclick="menuGo(()=>go('report'))">${ART.i.chart}<span>${T({ar:'نتائجك',en:'Results'})}</span></button>
+    <button role="menuitem" onclick="menuGo(openChat)">${ART.i.help}<span>${T({ar:'المساعدة',en:'Help'})}</span></button>
+    <button role="menuitem" onclick="menuGo(toggleLang)">${ART.i.globe}<span>${LANG==='ar'?'English':'العربية'}</span></button>
+    <hr>
+    <button role="menuitem" class="out" onclick="menuGo(logout)">${ART.i.out}<span>${T({ar:'خروج',en:'Logout'})}</span></button>
+   </div>`:`<button class="lang" onclick="toggleLang()" aria-label="language">${ART.i.globe}<span>${LANG==='ar'?'English':'العربية'}</span></button>`}</div></nav>`;
 }
+function toggleMenu(ev){ ev&&ev.stopPropagation(); const m=document.getElementById('navmenu'), b=document.getElementById('hamb'); if(!m) return; const o=!m.classList.contains('open'); m.classList.toggle('open',o); b.setAttribute('aria-expanded',o); b.querySelector('.hb-i').textContent=o?'✕':'☰'; }
+function closeMenu(){ const m=document.getElementById('navmenu'); if(m&&m.classList.contains('open')) toggleMenu(); }
+function menuGo(f){ closeMenu(); f(); }
+document.addEventListener('click',e=>{ if(!e.target.closest('#navmenu')) closeMenu(); });
+document.addEventListener('keydown',e=>{ if(e.key==='Escape') closeMenu(); });
 function toggleLang(){ LANG=LANG==='ar'?'en':'ar'; try{localStorage.setItem('cot:lang',LANG)}catch(e){} applyDir(); render(); renderChat(); }
 function applyDir(){ document.documentElement.lang=LANG; document.documentElement.dir=LANG==='ar'?'rtl':'ltr'; }
 function logout(){ logEv('logout'); USER=null; S={}; store.set('cot:user',null); try{sessionStorage.removeItem('cot:greet')}catch(e){} COACH.hide(); closeChat(); go('login'); }

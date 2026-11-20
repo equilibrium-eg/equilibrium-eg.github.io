@@ -44,6 +44,17 @@ body[data-route=login] .brand .atom-e,body[data-route=welcome] .brand .atom-e,bo
 .navlinks button:hover{background:rgba(255,255,255,.1)}
 .navlinks svg{width:20px;height:20px}
 .lang{border:1px solid rgba(255,255,255,.35)!important}
+.navlinks{position:relative}
+.hamb{width:44px;height:44px;justify-content:center;background:rgba(255,255,255,.12)!important;padding:0!important}
+.hamb .hb-i{display:inline!important;font-size:1.45rem;line-height:1}
+.navmenu{position:absolute;top:calc(100% + 10px);inset-inline-end:0;min-width:220px;background:#fff;border-radius:16px;box-shadow:0 14px 40px rgba(15,35,75,.25);padding:8px;display:none;flex-direction:column;z-index:60}
+.navmenu.open{display:flex;animation:bubIn .18s ease-out}
+.navlinks .navmenu button{color:#1b3358;width:100%;justify-content:flex-start;padding:11px 14px;font-size:1rem}
+.navlinks .navmenu button span{display:inline!important}
+.navlinks .navmenu button:hover{background:#eef3fb}
+.navmenu svg{color:#5b6b82}
+.navmenu hr{border:0;border-top:1px solid #e3eaf5;margin:6px 4px}
+.navlinks .navmenu button.out,.navmenu .out svg{color:#d93636}
 
 .wrap{max-width:1240px;margin:0 auto;padding:24px 22px 120px}
 .card{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);box-shadow:var(--shadow);padding:22px}
@@ -326,7 +337,7 @@ html[dir=ltr] .fab{padding:8px 10px 8px 18px}
 }
 @media (max-width:640px){
   .nav{padding:8px 12px;gap:8px}
-  .navlinks button span{display:none}
+  .navlinks button:not(.lang) span{display:none}
   .brand{font-size:.98rem}
   .brand svg{width:34px;height:34px}
   .wrap{padding:14px 12px 110px}
@@ -1140,13 +1151,21 @@ const unitById = id => UNITS.find(u=>u.id===id);
 /* ================= LAYOUT ================= */
 function nav(){
   return `<nav class="nav"><div class="brand">${ART.atom(44)}<span>${T({ar:'الاتزان الكيميائي',en:'Chemical Equilibrium'})}</span></div>
-  <div class="navlinks">${USER?`
-   <button onclick="go('dashboard')" aria-label="home">${ART.i.home}<span>${T({ar:'الرئيسية',en:'Home'})}</span></button>
-   <button onclick="go('report')" aria-label="results">${ART.i.chart}<span>${T({ar:'نتائجك',en:'Results'})}</span></button>
-   <button onclick="openChat()" aria-label="help">${ART.i.help}<span>${T({ar:'المساعدة',en:'Help'})}</span></button>`:''}
-   <button class="lang" onclick="toggleLang()" aria-label="language">${ART.i.globe}<span>${LANG==='ar'?'English':'العربية'}</span></button>
-   ${USER?`<button onclick="logout()" aria-label="logout">${ART.i.out}<span>${T({ar:'خروج',en:'Logout'})}</span></button>`:''}</div></nav>`;
+  <div class="navlinks">${USER?`<button class="hamb" id="hamb" onclick="toggleMenu(event)" aria-label="menu" aria-expanded="false" aria-controls="navmenu"><span class="hb-i">☰</span></button>
+   <div class="navmenu" id="navmenu" role="menu">
+    <button role="menuitem" onclick="menuGo(()=>go('dashboard'))">${ART.i.home}<span>${T({ar:'الرئيسية',en:'Home'})}</span></button>
+    <button role="menuitem" onclick="menuGo(()=>go('report'))">${ART.i.chart}<span>${T({ar:'نتائجك',en:'Results'})}</span></button>
+    <button role="menuitem" onclick="menuGo(openChat)">${ART.i.help}<span>${T({ar:'المساعدة',en:'Help'})}</span></button>
+    <button role="menuitem" onclick="menuGo(toggleLang)">${ART.i.globe}<span>${LANG==='ar'?'English':'العربية'}</span></button>
+    <hr>
+    <button role="menuitem" class="out" onclick="menuGo(logout)">${ART.i.out}<span>${T({ar:'خروج',en:'Logout'})}</span></button>
+   </div>`:`<button class="lang" onclick="toggleLang()" aria-label="language">${ART.i.globe}<span>${LANG==='ar'?'English':'العربية'}</span></button>`}</div></nav>`;
 }
+function toggleMenu(ev){ ev&&ev.stopPropagation(); const m=document.getElementById('navmenu'), b=document.getElementById('hamb'); if(!m) return; const o=!m.classList.contains('open'); m.classList.toggle('open',o); b.setAttribute('aria-expanded',o); b.querySelector('.hb-i').textContent=o?'✕':'☰'; }
+function closeMenu(){ const m=document.getElementById('navmenu'); if(m&&m.classList.contains('open')) toggleMenu(); }
+function menuGo(f){ closeMenu(); f(); }
+document.addEventListener('click',e=>{ if(!e.target.closest('#navmenu')) closeMenu(); });
+document.addEventListener('keydown',e=>{ if(e.key==='Escape') closeMenu(); });
 function toggleLang(){ LANG=LANG==='ar'?'en':'ar'; try{localStorage.setItem('cot:lang',LANG)}catch(e){} applyDir(); render(); renderChat(); }
 function applyDir(){ document.documentElement.lang=LANG; document.documentElement.dir=LANG==='ar'?'rtl':'ltr'; }
 function logout(){ logEv('logout'); USER=null; S={}; store.set('cot:user',null); try{sessionStorage.removeItem('cot:greet')}catch(e){} COACH.hide(); closeChat(); go('login'); }
