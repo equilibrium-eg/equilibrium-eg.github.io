@@ -149,9 +149,15 @@ input.glow{border-color:var(--blue2)!important}
 @keyframes shiver{from{transform:translateX(-1.5px)}to{transform:translateX(1.5px)}}
 @keyframes zz{0%,100%{transform:translateY(0);opacity:.6}50%{transform:translateY(-4px);opacity:1}}
 .offline-note{max-width:520px;margin:12px auto 0;font-size:.9rem;color:#0b5b3d;background:#e6f8ef;border:1px solid #bfe9d3;border-radius:14px;padding:8px 14px}
-.coach-bub{position:fixed;bottom:84px;inset-inline-end:20px;z-index:44;max-width:min(320px,calc(100vw - 32px));background:#fff;border:2px solid #cfe0f7;border-radius:18px;padding:10px 14px;font-weight:800;color:#13284a;line-height:1.6;
+.coach-bub{position:fixed;bottom:96px;inset-inline-end:20px;z-index:44;max-width:min(320px,calc(100vw - 32px));background:#fff;border:2px solid #cfe0f7;border-radius:18px;padding:10px 14px;font-weight:800;color:#13284a;line-height:1.6;
   box-shadow:0 10px 30px rgba(29,95,194,.2);opacity:0;transform:translateY(10px) scale(.95);pointer-events:none;transition:opacity .25s,transform .25s}
-.coach-bub.show{opacity:1;transform:none}
+.coach-bub.show{opacity:1;transform:none;pointer-events:auto}
+.coach-bub .cb-x{position:absolute;top:4px;inset-inline-end:8px;background:none;border:0;color:#8a99b2;font-size:1rem;padding:2px 4px}
+.coach-bub .cb-t{padding-inline-end:22px}
+.coach-bub .cb-a{gap:8px;flex-wrap:wrap;margin-top:8px}
+.coach-bub .cb-m{display:block;margin-top:8px;background:#f2f6fd;border:1px solid #dbe6f5;border-radius:999px;padding:2px 12px;font-size:.8rem;font-weight:700;color:#5b6b82}
+.mute-badge{position:fixed;bottom:30px;inset-inline-end:270px;z-index:44;background:#fff;border:1.5px solid #dbe6f5;border-radius:999px;padding:6px 14px;font-weight:800;font-size:.85rem;color:#1b3358;box-shadow:0 6px 18px rgba(20,40,80,.15)}
+@media (max-width:640px){.mute-badge{inset-inline-end:84px;bottom:28px;font-size:.78rem;padding:5px 10px}}
 .coach-bub:after{content:"";position:absolute;top:100%;inset-inline-end:34px;border:9px solid transparent;border-top-color:#fff}
 .fab.talk svg{animation:rbJump .6s ease 2}
 @media (max-width:640px){

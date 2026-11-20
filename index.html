@@ -157,9 +157,15 @@ input.glow{border-color:var(--blue2)!important}
 @keyframes shiver{from{transform:translateX(-1.5px)}to{transform:translateX(1.5px)}}
 @keyframes zz{0%,100%{transform:translateY(0);opacity:.6}50%{transform:translateY(-4px);opacity:1}}
 .offline-note{max-width:520px;margin:12px auto 0;font-size:.9rem;color:#0b5b3d;background:#e6f8ef;border:1px solid #bfe9d3;border-radius:14px;padding:8px 14px}
-.coach-bub{position:fixed;bottom:84px;inset-inline-end:20px;z-index:44;max-width:min(320px,calc(100vw - 32px));background:#fff;border:2px solid #cfe0f7;border-radius:18px;padding:10px 14px;font-weight:800;color:#13284a;line-height:1.6;
+.coach-bub{position:fixed;bottom:96px;inset-inline-end:20px;z-index:44;max-width:min(320px,calc(100vw - 32px));background:#fff;border:2px solid #cfe0f7;border-radius:18px;padding:10px 14px;font-weight:800;color:#13284a;line-height:1.6;
   box-shadow:0 10px 30px rgba(29,95,194,.2);opacity:0;transform:translateY(10px) scale(.95);pointer-events:none;transition:opacity .25s,transform .25s}
-.coach-bub.show{opacity:1;transform:none}
+.coach-bub.show{opacity:1;transform:none;pointer-events:auto}
+.coach-bub .cb-x{position:absolute;top:4px;inset-inline-end:8px;background:none;border:0;color:#8a99b2;font-size:1rem;padding:2px 4px}
+.coach-bub .cb-t{padding-inline-end:22px}
+.coach-bub .cb-a{gap:8px;flex-wrap:wrap;margin-top:8px}
+.coach-bub .cb-m{display:block;margin-top:8px;background:#f2f6fd;border:1px solid #dbe6f5;border-radius:999px;padding:2px 12px;font-size:.8rem;font-weight:700;color:#5b6b82}
+.mute-badge{position:fixed;bottom:30px;inset-inline-end:270px;z-index:44;background:#fff;border:1.5px solid #dbe6f5;border-radius:999px;padding:6px 14px;font-weight:800;font-size:.85rem;color:#1b3358;box-shadow:0 6px 18px rgba(20,40,80,.15)}
+@media (max-width:640px){.mute-badge{inset-inline-end:84px;bottom:28px;font-size:.78rem;padding:5px 10px}}
 .coach-bub:after{content:"";position:absolute;top:100%;inset-inline-end:34px;border:9px solid transparent;border-top-color:#fff}
 .fab.talk svg{animation:rbJump .6s ease 2}
 @media (max-width:640px){
@@ -1140,7 +1146,7 @@ function nav(){
 }
 function toggleLang(){ LANG=LANG==='ar'?'en':'ar'; try{localStorage.setItem('cot:lang',LANG)}catch(e){} applyDir(); render(); renderChat(); }
 function applyDir(){ document.documentElement.lang=LANG; document.documentElement.dir=LANG==='ar'?'rtl':'ltr'; }
-function logout(){ logEv('logout'); USER=null; S={}; store.set('cot:user',null); closeChat(); go('login'); }
+function logout(){ logEv('logout'); USER=null; S={}; store.set('cot:user',null); try{sessionStorage.removeItem('cot:greet')}catch(e){} COACH.hide(); closeChat(); go('login'); }
 function go(r){ if(location.hash==='#'+r) render(); else location.hash=r; window.scrollTo(0,0); }
 
 /* ================= VIEWS ================= */
@@ -1157,6 +1163,8 @@ function render(){
   $('#fabWrap').style.display = USER?'':'none';
   CUR_ROUTE=r;
   AFTER.splice(0).forEach(f=>{try{f()}catch(e){console.error(e)}});
+  if(!/test$/.test(r)) COACH.hide();
+  try{ COMPANION.onRoute(r); }catch(e){ console.error(e); }
 }
 let AFTER=[], CUR_ROUTE='';
 window.addEventListener('hashchange',render);
@@ -1377,7 +1385,7 @@ function vTest(kind){
       const skipped=PRETEST.filter(q=>ans[q.id]==null).map(q=>q.id);
       const det=PRETEST.map(q=>q.id+':'+(ans[q.id]==null?'skipped':ans[q.id]===q.a?'1':'0')).join(',');
       const sum=`score=${score}% | correct=${ok} | wrong=${PRETEST.length-ok-skipped.length} | skipped=${skipped.length}`;
-      if(kind==='pre'){ S.pre={score,ans,weak,skipped,at:new Date().toISOString()}; S.path=null; S.rec=pathFor(score); save(); logEv('pretest_complete',`${sum} | recommended=${S.rec} | weak=${weak.join(';')} | ${det}`); go('dashboard'); }
+      if(kind==='pre'){ S.pre={score,ans,weak,skipped,at:new Date().toISOString()}; S.path=null; S.justPre=true; S.rec=pathFor(score); save(); logEv('pretest_complete',`${sum} | recommended=${S.rec} | weak=${weak.join(';')} | ${det}`); go('dashboard'); }
       else { S.post={score,ans,weak,skipped,at:new Date().toISOString()}; save(); logEv('posttest_complete',`${sum} | pre=${S.pre.score}% | weak=${weak.join(';')} | ${det}`); go('report'); } };
     show(); });
   return `<div class="qwrap"><div class="card"><div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px">
@@ -1457,18 +1465,18 @@ function practice(box, qs, bucket, unit){
       $$('.opt',sec).forEach((x,k)=>{x.classList.remove('ok','no'); if(k===j)x.classList.add(ok?'ok':'no')});
       const why=HINTS[q.id]?.w?.[j];
       $('.qfb',sec).innerHTML=`<div class="fb ${ok?'ok':'no'}">${ok?T({ar:'✔ إجابة صحيحة. ',en:'✔ Correct. '})+chem(T(q.x)):T({ar:'✘ مش دي. ',en:'✘ Not this one. '})+(why?chem(T(why)):'')+'<br>'+T({ar:'جرّب اختيار تاني، أو دوس 💡 تلميح.',en:'Try another option, or press 💡 Hint.'})}</div>`;
-      if(!ok){CTX.q=q.id; CTX.wrong={id:q.id,j};}
+      if(!ok){CTX.q=q.id; CTX.wrong={id:q.id,j}; COMPANION.wrong();}
       S[bucket]=S[bucket]||{}; if(unit){S.units=S.units||{};S.units[unit]=S.units[unit]||{};S.units[unit].q=S.units[unit].q||{};S.units[unit].q[q.id]=ok||S.units[unit].q[q.id]||false;}
-      else S[bucket][q.id]=ok||S[bucket][q.id]||false;
-      if(ok && S.pre?.weak.includes(q.c)){S.fixed=S.fixed||{}; if(!S.fixed[q.c]){S.fixed[q.c]=true; logEv('concept_fixed',q.c); toast(T({ar:'تم تصحيح مفهوم: ',en:'Concept fixed: '})+T(CONCEPTS[q.c]))}}
-      if(unit && qs.every(x=>S.units[unit].q[x.id]!==undefined) && !S.units[unit].done){S.units[unit].done=true; logEv('unit_complete',unit); toast(T({ar:'خلّصت الدرس 🎉',en:'Lesson complete 🎉'}))}
+      else { const before=S[bucket][q.id]; S[bucket][q.id]=ok||S[bucket][q.id]||false; if(bucket==='chal'&&ok&&!before){ save(); COMPANION.chal(); } }
+      if(ok && S.pre?.weak.includes(q.c)){S.fixed=S.fixed||{}; if(!S.fixed[q.c]){S.fixed[q.c]=true; logEv('concept_fixed',q.c); toast(T({ar:'تم تصحيح مفهوم: ',en:'Concept fixed: '})+T(CONCEPTS[q.c])); COMPANION.fixed(q.c);}}
+      if(unit && qs.every(x=>S.units[unit].q[x.id]!==undefined) && !S.units[unit].done){S.units[unit].done=true; logEv('unit_complete',unit); toast(T({ar:'خلّصت الدرس 🎉',en:'Lesson complete 🎉'})); save(); COMPANION.unitDone(unit);}
       save(); logEv('quiz_answer',`${q.id}:${ok?'correct':'wrong'}:choice=${j}`); }); });
 }
 
 /* ---- UNIT ---- */
 function vUnit(id){
   const u=unitById(id), k=S.path||S.rec, p=PATHS[k], idx=UNITS.indexOf(u);
-  S.units=S.units||{}; S.units[id]=S.units[id]||{}; if(!S.units[id].opened){S.units[id].opened=new Date().toISOString();save()}
+  S.units=S.units||{}; S.units[id]=S.units[id]||{}; if(!S.units[id].opened){S.units[id].opened=new Date().toISOString()} S.lastUnit=id; save();
   logEv('unit_open',id); CTX.unit=id;
   AFTER.push(()=>{ u.sims.forEach(s=>{const c=SIMS[s]($('#sim-'+s));if(typeof c==='function')cleanups.push(c)}); practice($('#uq'),u.quiz,'units',id); });
   return `<div style="display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap"><button class="btn ghost sm" onclick="go('path')">${LANG==='ar'?'→':'←'} ${T(p.name)}</button><button class="btn ghost sm" onclick="askAbout()">${ART.i.help.replace('<svg','<svg width="18"')} ${T({ar:'اسأل Acquire عن الدرس ده',en:'Ask Acquire about this lesson'})}</button></div>
@@ -1502,14 +1510,88 @@ function vReport(){
 const CTX={unit:null,q:null,wrong:null,lvl:{}}; let CHAT=[];
 const norm=s=>String(s).toLowerCase().replace(/[ً-ْـ]/g,'').replace(/[أإآ]/g,'ا').replace(/ة/g,'ه').replace(/ى/g,'ي').replace(/[₀-₉]/g,d=>'0123456789'['₀₁₂₃₄₅₆₇₈₉'.indexOf(d)]);
 const STARTERS=[{k:'simple',ar:'اشرح لي مفهوم بطريقة أبسط',en:'Explain a concept more simply'},{k:'hint',ar:'ساعدني في السؤال من غير ما تقول الإجابة',en:'Help me without giving the answer'},{k:'why',ar:'وضّح لي سبب خطأ إجابتي',en:'Why was my answer wrong?'},{k:'cmp',ar:'الفرق بين الحرارة والعامل الحفاز؟',en:'Temperature vs catalyst?'},{k:'act',ar:'رشّح لي نشاط لنقطة ضعفي',en:'Suggest an activity for my weak point'}];
-/* Acquire coach bubble beside the floating button (used during tests: progress only, never right/wrong) */
-const COACH=(()=>{ let t=null;
-  function el(){ let b=document.getElementById('coachBub'); if(!b){ b=document.createElement('div'); b.id='coachBub'; b.className='coach-bub'; b.setAttribute('role','status'); b.setAttribute('aria-live','polite'); document.body.appendChild(b);} return b; }
-  function say(text,ms=4500){ const b=el(); b.textContent=text; b.classList.remove('show'); void b.offsetWidth; b.classList.add('show');
+/* Acquire coach bubble beside the floating button: text + optional action buttons, close (✕) and "mute for a while" */
+const COACH=(()=>{ let t=null, last=0;
+  const muted=()=>!!store.get('cot:mute',false);
+  function el(){ let b=document.getElementById('coachBub');
+    if(!b){ b=document.createElement('div'); b.id='coachBub'; b.className='coach-bub'; b.setAttribute('role','status'); b.setAttribute('aria-live','polite');
+      b.innerHTML=`<button class="cb-x" aria-label="close">✕</button><div class="cb-t"></div><div class="cb-a"></div><button class="cb-m"></button>`;
+      document.body.appendChild(b);
+      b.querySelector('.cb-x').onclick=()=>hide();
+      b.querySelector('.cb-m').onclick=()=>setMute(true); }
+    b.querySelector('.cb-m').textContent='🤫 '+T({ar:'اسكت شوية',en:'Quiet for now'});
+    return b; }
+  function say(text,ms=4500,opt={}){ if(muted() || !USER) return; if(!opt.force && Date.now()-last<(opt.gap??0)) return; last=Date.now();
+    const b=el(); b.querySelector('.cb-t').textContent=text;
+    const a=b.querySelector('.cb-a'); a.innerHTML='';
+    (opt.actions||[]).forEach(x=>{ const k=document.createElement('button'); k.className='btn sm '+(x.primary?'blue':'ghost'); k.textContent=x.label; k.onclick=()=>{ hide(); logEv('acquire_action',x.label); x.fn(); }; a.appendChild(k); });
+    a.style.display=(opt.actions||[]).length?'flex':'none';
+    if((opt.actions||[]).length) ms=Math.max(ms,15000);
+    b.classList.remove('show'); void b.offsetWidth; b.classList.add('show');
     const f=document.querySelector('.fab'); if(f){ f.classList.remove('talk'); void f.offsetWidth; f.classList.add('talk'); }
     clearTimeout(t); t=setTimeout(hide,ms); }
   function hide(){ clearTimeout(t); document.getElementById('coachBub')?.classList.remove('show'); document.querySelector('.fab')?.classList.remove('talk'); }
-  return {say,hide};
+  function badge(){ let m=document.getElementById('muteBadge'); const on=muted()&&!!USER;
+    if(!m){ m=document.createElement('button'); m.id='muteBadge'; m.className='mute-badge'; m.onclick=()=>setMute(false); document.body.appendChild(m); }
+    m.textContent='🤫 '+T({ar:'رجّع Acquire يتكلم',en:'Let Acquire talk'}); m.style.display=on?'':'none'; }
+  function setMute(v){ store.set('cot:mute',!!v); logEv('acquire_mute',v?'on':'off'); hide(); badge();
+    if(!v) say(T({ar:'رجعتلك تاني 🤖 هفضل معاك خطوة بخطوة!',en:'I’m back 🤖 I’ll be with you every step!'}),3500,{force:true}); }
+  return {say,hide,setMute,badge};
+})();
+
+/* Acquire companion: reacts to where the student is on the platform */
+const COMPANION=(()=>{ const seen=new Set();
+  const nm=c=>T(CONCEPTS[c]); const U=id=>unitById(id);
+  const list=a=>a.length<=1?a.join(''):a.slice(0,-1).join('، ')+T({ar:' و',en:' and '})+a[a.length-1];
+  const go2=r=>()=>go(r);
+  const say=(t,ms,opt)=>COACH.say(t,ms,opt);
+  function nextUnit(){ return UNITS.find(u=>!unitDone(u)); }
+  function inProgress(){ const id=S.lastUnit; if(!id) return null; const u=U(id); return u&&!unitDone(u)&&S.units?.[id]?.q&&Object.keys(S.units[id].q).length?u:(u&&!unitDone(u)?u:null); }
+  function openWeak(){ return (S.pre?.weak||[]).filter(c=>!S.fixed?.[c]); }
+  function pathAdvice(){
+    const k=S.path||S.rec;
+    if(k==='sup'){ const w=openWeak(); if(!w.length) return {t:T({ar:'صلّحت كل نقط ضعفك 🎉 إنت جاهز للاختبار البعدي!',en:'You fixed all your weak points 🎉 Ready for the post-test!'}),a:[{label:T({ar:'▶ ابدأ الاختبار البعدي',en:'▶ Start post-test'}),fn:go2('posttest'),primary:1}]};
+      const u=U(CONCEPTS[w[0]].u); return {t:T({ar:`فاضلك ${w.length} ${w.length===1?'مفهوم':'مفاهيم'} تصلّحه، يلا نبدأ بـ "${nm(w[0])}" (الدرس ${u.n}) 💪`,en:`${w.length} concept(s) left to fix — let’s start with "${nm(w[0])}" (lesson ${u.n}) 💪`}),a:[{label:T({ar:'▶ يلا بينا',en:'▶ Let’s go'}),fn:go2(u.id),primary:1}]}; }
+    if(k==='enr'){ const n=Object.values(S.chal||{}).filter(Boolean).length, N=CHALLENGES.length;
+      if(n>=N) return {t:T({ar:'حلّيت كل التحديات 🔥 إنت كده كسرت الدنيا! يلا على الاختبار البعدي',en:'All challenges solved 🔥 On to the post-test!'}),a:[{label:T({ar:'▶ الاختبار البعدي',en:'▶ Post-test'}),fn:go2('posttest'),primary:1}]};
+      return {t:n?T({ar:`حلّيت ${n} من ${N} تحديات 🔥 كمّل التحدي الجاي تحت`,en:`${n} of ${N} challenges solved 🔥 Keep going below`}):T({ar:`قدامك ${N} تحديات تفكير ناقد 🔥 يلا نبدأ بأول واحد!`,en:`${N} critical-thinking challenges await 🔥 Let’s start with the first!`}),a:[{label:T({ar:'وديني للتحديات',en:'Take me there'}),fn:()=>document.querySelector('#chq')?.scrollIntoView({behavior:'smooth'}),primary:1}]}; }
+    const ip=inProgress(); if(ip) return {t:T({ar:`إنت سايب "${T(ip.t)}" في النص، يلا نكمّله؟ 😉`,en:`You left "${T(ip.t)}" halfway — shall we finish it? 😉`}),a:[{label:T({ar:'▶ كمّله',en:'▶ Continue'}),fn:go2(ip.id),primary:1}]};
+    const nu=nextUnit(), d=UNITS.filter(unitDone).length;
+    if(!nu) return {t:T({ar:'خلصت كل الدروس 🎉 يلا على الاختبار البعدي نشوف اتحسّنت قد إيه',en:'All lessons done 🎉 Let’s see your progress in the post-test'}),a:[{label:T({ar:'▶ ابدأ الاختبار البعدي',en:'▶ Start post-test'}),fn:go2('posttest'),primary:1}]};
+    return {t:d?T({ar:`خلصت ${d} من 6 دروس 💪 الدرس الجاي: "${T(nu.t)}"`,en:`${d} of 6 lessons done 💪 Next: "${T(nu.t)}"`}):T({ar:`يلا نبدأ أول درس: "${T(nu.t)}" 🚀`,en:`Let’s start the first lesson: "${T(nu.t)}" 🚀`}),a:[{label:T({ar:'▶ يلا نبدأه',en:'▶ Start it'}),fn:go2(nu.id),primary:1}]}; }
+  function onRoute(r){ COACH.badge(); if(!USER) return;
+    setTimeout(()=>{ if(CUR_ROUTE!==r) return;
+      if(r==='dashboard' && S.pre){
+        if(S.justPre){ delete S.justPre; save(); const w=S.pre.weak, rec=S.rec;
+          let t=T({ar:`خلصت الاختبار 👏 جبت ${S.pre.score}%.`,en:`Test done 👏 You scored ${S.pre.score}%.`});
+          t+=w.length?T({ar:` عندك ${w.length} ${w.length===1?'مفهوم محتاج':'مفاهيم محتاجة'} شوية دعم: ${list(w.slice(0,3).map(nm))}${w.length>3?'…':''}.`,en:` ${w.length} concept(s) need support: ${list(w.slice(0,3).map(nm))}${w.length>3?'…':''}.`}):T({ar:' أتقنت كل المفاهيم! 🔥',en:' You mastered every concept! 🔥'});
+          t+=T({ar:` أنا شايف ${T(PATHS[rec].name)} هو الأنسب ليك.`,en:` I think the ${T(PATHS[rec].name)} suits you best.`});
+          document.querySelector('.path.rec')?.classList.add('glow');
+          return say(t,20000,{force:true,actions:[{label:T({ar:'▶ يلا نبدأ المسار',en:'▶ Start the path'}),fn:()=>choosePath(rec),primary:1},{label:T({ar:'وريني المسارات التانية',en:'Show other paths'}),fn:()=>document.querySelector('.paths')?.scrollIntoView({behavior:'smooth'})}]}); }
+        if(!sessionStorage.getItem('cot:greet')){ sessionStorage.setItem('cot:greet','1'); const a=S.path?pathAdvice():null;
+          return say(T({ar:'أهلًا تاني 👋 ',en:'Welcome back 👋 '})+(a?a.t:T({ar:'اختار مسارك وتعالى نبدأ!',en:'Pick your path and let’s begin!'})),12000,{force:true,actions:a?a.a:[]}); }
+        return; }
+      if(r==='path'){ const a=pathAdvice(); sessionStorage.setItem('cot:greet','1'); return say(a.t,12000,{force:true,actions:a.a}); }
+      if(/^u[1-6]$/.test(r)){ const u=U(r); if(seen.has(r)) return; seen.add(r);
+        say(T({ar:`الدرس ده عن: ${T(u.goal)} ابدأ بالمحاكاة، وخمّن قبل ما تدوس 🤔`,en:`This lesson: ${T(u.goal)} Start with the simulation and predict before you click 🤔`}),9000,{force:true,actions:[{label:T({ar:'وديني للمحاكاة',en:'Go to the simulation'}),fn:()=>document.querySelector('.sim')?.scrollIntoView({behavior:'smooth',block:'start'}),primary:1}]});
+        const q=document.querySelector('#uq'); if(q&&'IntersectionObserver' in window){ const io=new IntersectionObserver(es=>{ if(es.some(e=>e.isIntersecting)&&CUR_ROUTE===r){ io.disconnect(); say(T({ar:'يلا نختبر نفسنا 📝 لو احتجت، دوس 💡 تلميح جنب السؤال',en:'Time to check yourself 📝 Need help? Press 💡 Hint'}),5000,{gap:6000}); } },{threshold:.4}); io.observe(q); cleanups.push(()=>io.disconnect()); }
+        return; }
+      if(r==='report' && S.pre){
+        if(S.post){ const d=S.post.score-S.pre.score, m=11-S.post.weak.length, w=S.post.weak;
+          let t=d>0?T({ar:`اتحسّنت ${d}+% 🚀 بقيت متمكن من ${m} مفاهيم من 11!`,en:`You improved by +${d}% 🚀 You now master ${m} of 11 concepts!`}):T({ar:`نتيجتك ${S.post.score}%، ومتمكن من ${m} مفاهيم من 11 💪`,en:`You scored ${S.post.score}% and master ${m} of 11 concepts 💪`});
+          if(w.length){ t+=T({ar:` لسه محتاج تراجع "${nm(w[0])}".`,en:` You still need to review "${nm(w[0])}".`}); return say(t,15000,{force:true,actions:[{label:T({ar:'▶ راجع الدرس',en:'▶ Review it'}),fn:go2(CONCEPTS[w[0]].u),primary:1}]}); }
+          return say(t+T({ar:' برافو عليك 🎉',en:' Well done 🎉'}),9000,{force:true}); }
+        return say(T({ar:'لسه ماعملتش الاختبار البعدي، تحب تعمله وتشوف اتحسّنت قد إيه؟',en:'You haven’t taken the post-test yet — want to see how much you’ve improved?'}),12000,{force:true,actions:[{label:T({ar:'▶ ابدأه',en:'▶ Start it'}),fn:go2('posttest'),primary:1}]}); }
+    },900); }
+  function wrong(){ say(T({ar:'ولا يهمك 😊 دوس 💡 تلميح وأنا معاك',en:'No worries 😊 Press 💡 Hint, I’m with you'}),4000,{gap:6000}); }
+  function fixed(c){ const left=openWeak().length; say(T({ar:`برافو 🎉 صلّحت مفهوم "${nm(c)}"${left?`، فاضلك ${left}`:'، وكده خلصت كل نقط ضعفك!'}`,en:`Bravo 🎉 You fixed "${nm(c)}"${left?` — ${left} left`:' — all weak points fixed!'}`}),6000,{force:true}); }
+  function unitDoneMsg(id){ const k=S.path||S.rec; let a;
+    if(k==='sup'){ a=pathAdvice(); return say(T({ar:'خلصت الدرس 🎉 ',en:'Lesson complete 🎉 '})+a.t,15000,{force:true,actions:a.a}); }
+    const idx=UNITS.findIndex(u=>u.id===id), nx=UNITS.slice(idx+1).find(u=>!unitDone(u))||nextUnit();
+    if(!nx) return say(T({ar:'خلصت كل الدروس 🎉 يلا على الاختبار البعدي!',en:'All lessons done 🎉 On to the post-test!'}),15000,{force:true,actions:[{label:T({ar:'▶ الاختبار البعدي',en:'▶ Post-test'}),fn:go2('posttest'),primary:1}]});
+    say(T({ar:`خلصت الدرس 🎉 الدرس الجاي: "${T(nx.t)}"`,en:`Lesson complete 🎉 Next: "${T(nx.t)}"`}),15000,{force:true,actions:[{label:T({ar:'▶ يلا نبدأه',en:'▶ Start it'}),fn:go2(nx.id),primary:1}]}); }
+  function chal(){ const n=Object.values(S.chal||{}).filter(Boolean).length, N=CHALLENGES.length; say(n>=N?T({ar:'حلّيت كل التحديات 🔥 يلا على الاختبار البعدي!',en:'All challenges solved 🔥 On to the post-test!'}):T({ar:`برافو 🔥 حلّيت ${n} من ${N}`,en:`Bravo 🔥 ${n} of ${N} solved`}),n>=N?12000:4000,{force:true,actions:n>=N?[{label:T({ar:'▶ الاختبار البعدي',en:'▶ Post-test'}),fn:go2('posttest'),primary:1}]:[]}); }
+  return {onRoute,wrong,fixed,unitDone:unitDoneMsg,chal};
 })();
 function renderChat(){
   $('#fabWrap').innerHTML=`<button class="fab" onclick="toggleChat()" aria-label="Acquire">${ART.robot(42)}<span>${T({ar:'اسأل Acquire',en:'Ask Acquire'})}</span></button>
