@@ -193,14 +193,14 @@ const GUIDE = (()=>{
 function vWelcome(){
   const moods=[{k:'great',ar:'ممتاز',en:'Great'},{k:'good',ar:'كويس',en:'Good'},{k:'nervous',ar:'متوتر شوية',en:'A bit nervous'},{k:'tired',ar:'تعبان',en:'Tired'}];
   AFTER.push(()=>{ $$('.moods button').forEach(b=>b.onclick=()=>{S.mood=b.dataset.k;save();$$('.moods button').forEach(x=>x.classList.toggle('on',x===b));
-    $('#moodR').textContent = T(['nervous','tired'].includes(b.dataset.k)?{ar:'ولا يهمك، هنمشي واحدة واحدة، و Acquire معاك في أي وقت.',en:'No worries — we’ll go step by step, and Acquire is always here.'}:{ar:'جميل! يلا نستغل الطاقة دي.',en:'Great! Let’s use that energy.'}); logEv('mood',b.dataset.k)}); });
+    $('#moodR').textContent=T(MOOD_LINES[b.dataset.k]); WALKER.choose(b); logEv('mood',b.dataset.k)}); WALKER.start(); });
   const obj=[{ar:'تفسير الاتزان الديناميكي',en:'Explain dynamic equilibrium'},{ar:'تطبيق مبدأ لوشاتيليه',en:"Apply Le Chatelier's principle"},{ar:'كتابة واستخدام تعبيرات Kc و Kp',en:'Write and use Kc and Kp'},{ar:'تفسير أثر الحرارة والضغط على الاتزان و K',en:'Explain temperature and pressure effects on equilibrium and K'},{ar:'تفسير دور العامل الحفاز',en:'Explain the role of a catalyst'},{ar:'قراءة منحنيات المعدل والتركيز والطاقة',en:'Interpret rate, concentration and energy graphs'}];
   const axes=[{c:'blue',h:{ar:'المحور 1: فهم الاتزان الكيميائي',en:'Axis 1: Understanding equilibrium'},b:{ar:'التفاعل الانعكاسي، الاتزان الديناميكي، قانون فعل الكتلة، و Kc.',en:'Reversible reactions, dynamic equilibrium, mass action, Kc.'}},
     {c:'green',h:{ar:'المحور 2: مبدأ لوشاتيليه',en:"Axis 2: Le Chatelier's principle"},b:{ar:'التركيز، الحرارة، الضغط و Kp، والعامل الحفاز.',en:'Concentration, temperature, pressure & Kp, catalyst.'}},
     {c:'purple',h:{ar:'المحور 3: البحث والتطبيق',en:'Axis 3: Investigation & application'},b:{ar:'محاكاة تفاعلية، توقّع، قراءة منحنيات، ومواقف جديدة.',en:'Simulations, prediction, graphs and new situations.'}}];
   return `<div class="banner">${ART.spark()}<div><h1>${T({ar:'أهلًا بيك في رحلة الاتزان الكيميائي!',en:'Welcome to the chemical-equilibrium journey!'})}</h1><p>${T({ar:'عامل إيه النهارده؟',en:'How are you today?'})}</p>
-   <div class="moods" style="justify-content:center">${moods.map(m=>`<button data-k="${m.k}" class="${S.mood===m.k?'on':''}">${T(m)}</button>`).join('')}</div><div id="moodR" class="muted"></div></div></div>
-   <div class="card" style="margin-top:20px"><div style="display:flex;gap:18px;align-items:center;flex-wrap:wrap">${ART.robot(96)}<div style="flex:1;min-width:240px">
+   <div class="moods" style="justify-content:center">${moods.map(m=>`<button data-k="${m.k}" class="${S.mood===m.k?'on':''}">${T(m)}</button>`).join('')}</div><div id="moodR" class="sr-only" aria-live="polite"></div></div></div>
+   <div class="card" style="margin-top:20px"><div style="display:flex;gap:18px;align-items:center;flex-wrap:wrap"><span id="wbHome" class="wb-home">${ART.robot(96)}</span><div style="flex:1;min-width:240px">
     <h2 style="margin:0">${T({ar:'مهمتك: تحقيق في الاتزان الكيميائي',en:'Your mission: investigate chemical equilibrium'})}</h2>
     <p>${T({ar:'التفاعل الكيميائي المتزن "متهم" بأنه بيقاوم أي تغيير يحصل له. مهمتك تحقق في القضية: هتشوف إزاي النظام المتزن بيرد لما نغير التركيز أو الحرارة أو الضغط، وفي الآخر تصدر حكمك العلمي.',en:'An equilibrium system is "accused" of resisting every change. Your job: investigate how it responds when we change concentration, temperature or pressure — then give your scientific verdict.'})}</p>
     <p class="muted">${T({ar:'تحقق ← توقّع ← نمذجة ← حساب ← تطبيق ← تقييم ← الحكم',en:'Investigate → Predict → Model → Calculate → Apply → Assess → Verdict'})}</p></div></div>
@@ -209,6 +209,55 @@ function vWelcome(){
     <div class="predict">${T({ar:'الخطوة الجاية: اختبار تشخيصي قصير (14 سؤال) عشان نعرف نقطة انطلاقك. مفيش درجات عليه — هو بس بيحدد المسار الأنسب ليك.',en:'Next: a short diagnostic (14 questions) to find your starting point. It is not graded — it only picks the best path for you.'})}</div>
     <div style="text-align:center;margin-top:14px"><button class="btn blue" onclick="go('pretest')">${T({ar:'ابدأ الاختبار التشخيصي',en:'Start the diagnostic test'})} ${ART.i.play}</button></div></div>`;
 }
+
+
+/* ---- Welcome-page walking robot: tours the mood buttons, then reacts to the chosen mood ---- */
+const MOOD_LINES = {
+  great:{ar:'إيه الحلاوة دي! 🤩 إنت كده هتكسر الدنيا النهارده!',en:'Awesome! 🤩 You’re going to smash it today!'},
+  good:{ar:'حلو أوي! 👍 يلا نخلّي اليوم أحلى كمان مع الكيميا!',en:'Nice! 👍 Let’s make today even better with chemistry!'},
+  nervous:{ar:'ولا يهمك يا بطل 💪 هنمشي واحدة واحدة، وأنا معاك خطوة بخطوة!',en:'No worries, champ 💪 We’ll go step by step — I’m with you!'},
+  tired:{ar:'معلش يا صاحبي 😴 خد نفس عميق… هنبدأ براحة وهتلاقي نفسك صحصحت!',en:'Hang in there 😴 Take a deep breath — we’ll start easy and you’ll perk up!'}
+};
+const WALKER = (()=>{
+  const EMO={great:'🤩',good:'👍',nervous:'😬',tired:'😴'};
+  let el=null, pos={x:0,y:0}, running=false, token=0, current=null;
+  const reduce=()=>matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const sizeFor=()=>{ const b=document.querySelector('.moods button'); const h=b?b.getBoundingClientRect().height:44; return Math.round(h*1.6); };
+  function make(){ el?.remove(); el=document.createElement('div'); el.className='walker'; el.innerHTML=`<div class="wb-bub" aria-hidden="true"></div><div class="wb-body">${ART.robotMini()}</div>`; document.body.appendChild(el); size(); }
+  function size(){ if(!el) return; const h=sizeFor(); el.style.width=Math.round(h*100/132)+'px'; el.style.height=h+'px'; }
+  const page=r=>({x:r.left+scrollX, y:r.top+scrollY, w:r.width, h:r.height});
+  function spotOn(btn){ const r=page(btn.getBoundingClientRect()), w=el.offsetWidth, h=el.offsetHeight; return {x:r.x+r.w/2-w/2, y:r.y-h+6}; }
+  function spotHome(){ const r=page(document.querySelector('#wbHome').getBoundingClientRect()), w=el.offsetWidth, h=el.offsetHeight; return {x:r.x+r.w/2-w/2, y:r.y+r.h-h}; }
+  function place(p){ pos=p; el.style.transform=`translate(${p.x}px,${p.y}px)`; }
+  function mood(m){ el.className='walker'+(m?' m-'+m:''); current=m; }
+  function say(text,big){ const b=el.querySelector('.wb-bub'); b.textContent=text; b.classList.toggle('big',!!big); b.classList.remove('show'); void b.offsetWidth; b.classList.add('show');
+    b.style.marginInlineStart='0px'; requestAnimationFrame(()=>{ const r=b.getBoundingClientRect(); let dx=0; if(r.left<8) dx=8-r.left; if(r.right>innerWidth-8) dx=innerWidth-8-r.right; b.style.transform=`translateX(calc(-50% + ${dx}px))`; }); }
+  function hush(){ el?.querySelector('.wb-bub').classList.remove('show'); }
+  function move(to, tk){ return new Promise(res=>{
+    if(reduce()){ place(to); return res(); }
+    const from={...pos}, dist=Math.hypot(to.x-from.x,to.y-from.y), dur=Math.min(1600,Math.max(520,dist*2.2)), lift=Math.min(140,40+Math.abs(to.y-from.y)*0.35);
+    el.classList.add('run'); el.classList.toggle('face-l', to.x<from.x);
+    const mx=(from.x+to.x)/2, my=Math.min(from.y,to.y)-lift;
+    const a=el.animate([{transform:`translate(${from.x}px,${from.y}px)`},{transform:`translate(${mx}px,${my}px)`,offset:.5},{transform:`translate(${to.x}px,${to.y}px)`}],{duration:dur,easing:'ease-in-out'});
+    a.onfinish=()=>{ place(to); el.classList.remove('run'); el.classList.add('land'); setTimeout(()=>el&&el.classList.remove('land'),300); res(); };
+    a.oncancel=()=>res(); }); }
+  const wait=ms=>new Promise(r=>setTimeout(r,ms));
+  async function tour(){ const tk=++token; running=true; const home=document.querySelector('#wbHome'); home.classList.add('away');
+    place(spotHome()); mood(null); await wait(500);
+    for(const b of document.querySelectorAll('.moods button')){ if(tk!==token) return; hush(); mood(null); await move(spotOn(b),tk); if(tk!==token) return; mood(b.dataset.k); say(EMO[b.dataset.k]); await wait(1400); }
+    if(tk!==token) return; hush(); mood(null); await move(spotHome(),tk); if(tk!==token) return;
+    home.classList.remove('away'); el.style.visibility='hidden'; running=false; }
+  async function choose(btn){ if(!el) make(); const tk=++token; el.getAnimations().forEach(a=>a.cancel()); el.style.visibility='visible';
+    document.querySelector('#wbHome')?.classList.add('away'); if(!running){ place(spotHome()); } running=false;
+    hush(); mood(null); await move(spotOn(btn),tk); if(tk!==token) return; mood(btn.dataset.k); say(T(MOOD_LINES[btn.dataset.k]),true); }
+  function start(){ make(); const chosen=S.mood&&document.querySelector(`.moods button[data-k="${S.mood}"]`);
+    if(chosen){ document.querySelector('#wbHome').classList.add('away'); place(spotOn(chosen)); mood(S.mood); return; }
+    if(reduce()){ el.style.visibility='hidden'; return; } tour(); }
+  function relayout(){ if(!el||!document.querySelector('.moods')) return; size(); const on=current&&document.querySelector(`.moods button[data-k="${current}"]`); if(on&&!running) place(spotOn(on)); }
+  addEventListener('resize',relayout);
+  addEventListener('hashchange',()=>{ token++; el?.remove(); el=null; });
+  return {start,choose};
+})();
 
 /* ---- PRE / POST TEST (free navigation) ---- */
 function vTest(kind){

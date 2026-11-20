@@ -15,6 +15,32 @@ robot:(s=120)=>`<svg viewBox="0 0 120 130" width="${s}" height="${s*1.08}" aria-
  <rect x="34" y="86" width="52" height="38" rx="18" fill="url(#rb1)" stroke="#c4d4ea" stroke-width="2"/>
  <rect x="50" y="96" width="20" height="14" rx="5" fill="url(#rb3)"/><circle cx="60" cy="103" r="3" fill="#5ee6ff"/>
 </svg>`,
+robotMini:()=>`<svg viewBox="0 0 100 132" class="wb-svg" aria-hidden="true">
+ <defs><linearGradient id="wgB" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#fff"/><stop offset="1" stop-color="#dfe9f7"/></linearGradient>
+ <linearGradient id="wgV" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#1e3a64"/><stop offset="1" stop-color="#0f2142"/></linearGradient>
+ <linearGradient id="wgA" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#4a95f5"/><stop offset="1" stop-color="#1d5fc2"/></linearGradient></defs>
+ <g class="wb-legs"><rect class="wb-legL" x="36" y="94" width="11" height="22" rx="5" fill="url(#wgA)"/><rect class="wb-legR" x="53" y="94" width="11" height="22" rx="5" fill="url(#wgA)"/></g>
+ <g class="wb-torso">
+  <g class="wb-armL"><rect x="17" y="66" width="14" height="28" rx="7" fill="url(#wgB)" stroke="#c4d4ea" stroke-width="1.5"/><circle cx="24" cy="95" r="6" fill="url(#wgA)"/></g>
+  <g class="wb-armR"><rect x="69" y="66" width="14" height="28" rx="7" fill="url(#wgB)" stroke="#c4d4ea" stroke-width="1.5"/><circle cx="76" cy="95" r="6" fill="url(#wgA)"/><g class="wb-thumb"><rect x="72" y="83" width="8" height="12" rx="4" fill="#1d5fc2"/></g></g>
+  <rect x="28" y="60" width="44" height="40" rx="16" fill="url(#wgB)" stroke="#c4d4ea" stroke-width="1.5"/>
+  <rect x="42" y="72" width="16" height="11" rx="4" fill="url(#wgA)"/><circle cx="50" cy="77.5" r="2.6" fill="#5ee6ff"/>
+  <g class="wb-head">
+   <line x1="50" y1="6" x2="50" y2="15" stroke="#9fb6d6" stroke-width="3"/><circle cx="50" cy="5" r="4" fill="#4a95f5"/>
+   <rect x="16" y="13" width="68" height="50" rx="24" fill="url(#wgB)" stroke="#c4d4ea" stroke-width="1.5"/>
+   <rect x="9" y="28" width="9" height="20" rx="4.5" fill="url(#wgA)"/><rect x="82" y="28" width="9" height="20" rx="4.5" fill="url(#wgA)"/>
+   <rect x="24" y="22" width="52" height="33" rx="15" fill="url(#wgV)"/>
+   <g class="f f-normal"><ellipse cx="39" cy="36" rx="5.5" ry="6.5" fill="#5ee6ff"/><ellipse cx="61" cy="36" rx="5.5" ry="6.5" fill="#5ee6ff"/><path d="M42 46 Q50 51 58 46" stroke="#5ee6ff" stroke-width="2.6" fill="none" stroke-linecap="round"/></g>
+   <g class="f f-great"><path d="M33 38 Q39 30 45 38 M55 38 Q61 30 67 38" stroke="#5ee6ff" stroke-width="3" fill="none" stroke-linecap="round"/><path d="M40 44 Q50 55 60 44 Z" fill="#5ee6ff"/></g>
+   <g class="f f-good"><ellipse cx="39" cy="36" rx="5.5" ry="6.5" fill="#5ee6ff"/><path d="M56 37 Q61 32 66 37" stroke="#5ee6ff" stroke-width="3" fill="none" stroke-linecap="round"/><path d="M41 45 Q50 52 59 45" stroke="#5ee6ff" stroke-width="2.6" fill="none" stroke-linecap="round"/></g>
+   <g class="f f-nervous"><circle cx="39" cy="36" r="4" fill="#5ee6ff"/><circle cx="61" cy="36" r="4" fill="#5ee6ff"/><path d="M40 48 l4 -3 l4 3 l4 -3 l4 3 l4 -3" stroke="#5ee6ff" stroke-width="2.4" fill="none" stroke-linecap="round" stroke-linejoin="round"/></g>
+   <g class="f f-tired"><path d="M33 38 h12 M55 38 h12" stroke="#5ee6ff" stroke-width="3" stroke-linecap="round"/><path d="M33 34 h12 M55 34 h12" stroke="#2c4a78" stroke-width="2" stroke-linecap="round"/><ellipse cx="50" cy="47" rx="4" ry="3" fill="#5ee6ff"/></g>
+  </g>
+ </g>
+ <g class="p p-great"><path d="M8 20 l2.5 5 5 2.5 -5 2.5 -2.5 5 -2.5 -5 -5 -2.5 5 -2.5z" fill="#f6c443"/><path d="M92 14 l2 4 4 2 -4 2 -2 4 -2 -4 -4 -2 4 -2z" fill="#f6c443"/><path d="M90 48 l1.6 3.2 3.2 1.6 -3.2 1.6 -1.6 3.2 -1.6 -3.2 -3.2 -1.6 3.2 -1.6z" fill="#f2b33d"/></g>
+ <g class="p p-nervous"><path d="M83 20 Q88 28 83 31 Q78 28 83 20Z" fill="#7cc4ff"/></g>
+ <g class="p p-tired"><text x="76" y="14" font-size="13" font-weight="900" fill="#6a44c2" font-family="Inter,sans-serif">z</text><text x="86" y="6" font-size="10" font-weight="900" fill="#8a63e0" font-family="Inter,sans-serif">z</text></g>
+</svg>`,
 robotBig:()=>`<svg id="rbSvg" viewBox="0 0 260 280" class="rb-svg" aria-hidden="true">
  <defs><linearGradient id="rgB" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#fff"/><stop offset="1" stop-color="#dfe9f7"/></linearGradient>
  <linearGradient id="rgV" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#1e3a64"/><stop offset="1" stop-color="#0f2142"/></linearGradient>

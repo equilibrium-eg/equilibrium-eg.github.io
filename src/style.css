@@ -103,6 +103,49 @@ input.glow{border-color:var(--blue2)!important}
 @keyframes bubIn{to{opacity:1;transform:none}}
 @keyframes caret{50%{opacity:0}}
 @keyframes glow{0%,100%{box-shadow:0 0 0 3px rgba(242,179,61,.35)}50%{box-shadow:0 0 0 8px rgba(242,179,61,.55)}}
+/* WELCOME WALKER */
+.sr-only{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)}
+.wb-home{display:inline-block;transition:opacity .25s}
+.wb-home.away{opacity:0}
+.walker{position:absolute;left:0;top:0;z-index:35;pointer-events:none;will-change:transform}
+.wb-body{width:100%;height:100%}
+.walker.face-l .wb-svg{transform:scaleX(-1)}
+.wb-svg{width:100%;height:100%;overflow:visible;display:block}
+.wb-svg .f,.wb-svg .p{display:none}
+.walker:not([class*="m-"]) .f-normal{display:inline}
+.walker.m-great .f-great,.walker.m-great .p-great,.walker.m-good .f-good,.walker.m-nervous .f-nervous,.walker.m-nervous .p-nervous,.walker.m-tired .f-tired,.walker.m-tired .p-tired{display:inline}
+.wb-legL,.wb-legR{transform-box:fill-box;transform-origin:50% 0}
+.wb-armL,.wb-armR{transform-box:fill-box;transform-origin:50% 8%}
+.wb-head{transform-box:view-box;transform-origin:50px 60px}
+.wb-thumb{display:none}
+.walker.run .wb-legL{animation:legs .22s ease-in-out infinite alternate}
+.walker.run .wb-legR{animation:legs .22s ease-in-out infinite alternate-reverse}
+.walker.run .wb-armL{animation:legs .22s ease-in-out infinite alternate-reverse}
+.walker.run .wb-armR{animation:legs .22s ease-in-out infinite alternate}
+.walker.run .wb-torso{animation:bounce .22s ease-in-out infinite alternate}
+.walker.land .wb-body{animation:land .3s ease}
+.walker.m-great .wb-armL{transform:rotate(150deg)}.walker.m-great .wb-armR{transform:rotate(-150deg)}
+.walker.m-great .wb-body{animation:hop .5s ease-in-out infinite alternate}
+.walker.m-good .wb-armR{transform:rotate(-120deg)}.walker.m-good .wb-thumb{display:inline}
+.walker.m-good .wb-head{animation:nod 1s ease-in-out infinite}
+.walker.m-nervous .wb-body{animation:shiver .09s linear infinite alternate}
+.walker.m-nervous .wb-armL{transform:rotate(25deg)}.walker.m-nervous .wb-armR{transform:rotate(-25deg)}
+.walker.m-tired .wb-torso{transform:translateY(5px)}
+.walker.m-tired .wb-head{transform:rotate(-12deg)}
+.walker.m-tired .wb-armL,.walker.m-tired .wb-armR{transform:rotate(8deg)}
+.walker.m-tired .p-tired{animation:zz 1.6s ease-in-out infinite}
+.wb-bub{position:absolute;bottom:100%;left:50%;transform:translateX(-50%);margin-bottom:6px;background:#fff;border:2px solid #cfe0f7;border-radius:16px;padding:4px 10px;font-size:1.3rem;
+  white-space:nowrap;box-shadow:0 6px 18px rgba(29,95,194,.18);opacity:0;transition:opacity .25s}
+.wb-bub.big{white-space:normal;width:max-content;max-width:min(300px,86vw);font-size:1rem;font-weight:800;color:#13284a;padding:10px 14px;line-height:1.6}
+.wb-bub.show{opacity:1}
+.wb-bub:after{content:"";position:absolute;top:100%;left:50%;margin-left:-8px;border:8px solid transparent;border-top-color:#fff}
+@keyframes legs{from{transform:rotate(-28deg)}to{transform:rotate(28deg)}}
+@keyframes bounce{from{transform:translateY(0)}to{transform:translateY(-3px)}}
+@keyframes land{0%{transform:scale(1.12,.86)}100%{transform:none}}
+@keyframes hop{from{transform:translateY(0)}to{transform:translateY(-10px)}}
+@keyframes nod{0%,100%{transform:rotate(0)}50%{transform:rotate(6deg)}}
+@keyframes shiver{from{transform:translateX(-1.5px)}to{transform:translateX(1.5px)}}
+@keyframes zz{0%,100%{transform:translateY(0);opacity:.6}50%{transform:translateY(-4px);opacity:1}}
 /* DASHBOARD */
 .dash{display:grid;grid-template-columns:1fr 290px;gap:22px}
 html[dir=rtl] .dash{grid-template-columns:1fr 290px}
@@ -227,7 +270,8 @@ html[dir=ltr] .fab{padding:8px 10px 8px 18px}
 .bar{height:12px;border-radius:99px;background:#e3eaf6;overflow:hidden}
 .bar>i{display:block;height:100%}
 .moods{display:flex;gap:10px;flex-wrap:wrap;margin:10px 0}
-.moods button{border:1.5px solid var(--line);background:#fff;border-radius:14px;padding:8px 16px;font-weight:700}
+.moods button{border:1.5px solid var(--line);background:#fff;border-radius:16px;padding:12px 24px;font-weight:800;font-size:1.05rem;color:var(--blue)}
+.banner .moods{margin-top:104px;gap:14px}
 .moods button.on{border-color:var(--blue2);background:#eaf2ff}
 .axes{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin:14px 0}
 .axes>div{border-radius:18px;padding:14px;border:1px solid var(--line)}
@@ -261,6 +305,8 @@ html[dir=ltr] .fab{padding:8px 10px 8px 18px}
   .banner{padding:16px}
   .banner h1{font-size:1.4rem}
   .banner .spark{display:none}
+  .banner .moods{flex-wrap:nowrap;gap:6px;margin-top:96px}
+  .banner .moods button{padding:10px 10px;font-size:.92rem;white-space:nowrap;flex:1 1 auto}
   .side{grid-template-columns:1fr}
   .side .note,.side .flk{display:none}
   .dash .side{order:0}
