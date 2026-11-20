@@ -193,7 +193,10 @@ const GUIDE = (()=>{
 function vWelcome(){
   const moods=[{k:'great',ar:'ممتاز',en:'Great'},{k:'good',ar:'كويس',en:'Good'},{k:'nervous',ar:'متوتر شوية',en:'A bit nervous'},{k:'tired',ar:'تعبان',en:'Tired'}];
   AFTER.push(()=>{ $$('.moods button').forEach(b=>b.onclick=()=>{S.mood=b.dataset.k;save();$$('.moods button').forEach(x=>x.classList.toggle('on',x===b));
-    $('#moodR').textContent=T(MOOD_LINES[b.dataset.k]); WALKER.choose(b); logEv('mood',b.dataset.k)}); WALKER.start(); });
+    $('#moodR').textContent=T(MOOD_LINES[b.dataset.k]); WALKER.choose(b); logEv('mood',b.dataset.k)}); WALKER.start();
+    const sb=$('#startDx'); let told=false; const tell=()=>{ if(told) return; told=true; WALKER.hint(sb,T(OFFLINE_LINE)); logEv('robot_offline_hint',''); };
+    sb.addEventListener('mouseenter',tell); sb.addEventListener('focus',tell);
+    if('IntersectionObserver' in window && matchMedia('(hover: none)').matches){ const io=new IntersectionObserver(es=>{ if(es.some(e=>e.isIntersecting)){ io.disconnect(); setTimeout(tell,400); } },{threshold:0.9}); io.observe(sb); } });
   const obj=[{ar:'تفسير الاتزان الديناميكي',en:'Explain dynamic equilibrium'},{ar:'تطبيق مبدأ لوشاتيليه',en:"Apply Le Chatelier's principle"},{ar:'كتابة واستخدام تعبيرات Kc و Kp',en:'Write and use Kc and Kp'},{ar:'تفسير أثر الحرارة والضغط على الاتزان و K',en:'Explain temperature and pressure effects on equilibrium and K'},{ar:'تفسير دور العامل الحفاز',en:'Explain the role of a catalyst'},{ar:'قراءة منحنيات المعدل والتركيز والطاقة',en:'Interpret rate, concentration and energy graphs'}];
   const axes=[{c:'blue',h:{ar:'المحور 1: فهم الاتزان الكيميائي',en:'Axis 1: Understanding equilibrium'},b:{ar:'التفاعل الانعكاسي، الاتزان الديناميكي، قانون فعل الكتلة، و Kc.',en:'Reversible reactions, dynamic equilibrium, mass action, Kc.'}},
     {c:'green',h:{ar:'المحور 2: مبدأ لوشاتيليه',en:"Axis 2: Le Chatelier's principle"},b:{ar:'التركيز، الحرارة، الضغط و Kp، والعامل الحفاز.',en:'Concentration, temperature, pressure & Kp, catalyst.'}},
@@ -207,7 +210,8 @@ function vWelcome(){
     <h3>${T({ar:'هتقدر في آخر الرحلة:',en:'By the end you will be able to:'})}</h3><ul class="kp">${obj.map(o=>`<li>${T(o)}</li>`).join('')}</ul>
     <div class="axes">${axes.map(a=>`<div style="background:var(--${a.c}Soft)"><b>${T(a.h)}</b><div class="muted">${T(a.b)}</div></div>`).join('')}</div>
     <div class="predict">${T({ar:'الخطوة الجاية: اختبار تشخيصي قصير (14 سؤال) عشان نعرف نقطة انطلاقك. مفيش درجات عليه — هو بس بيحدد المسار الأنسب ليك.',en:'Next: a short diagnostic (14 questions) to find your starting point. It is not graded — it only picks the best path for you.'})}</div>
-    <div style="text-align:center;margin-top:14px"><button class="btn blue" onclick="go('pretest')">${T({ar:'ابدأ الاختبار التشخيصي',en:'Start the diagnostic test'})} ${ART.i.play}</button></div></div>`;
+    <div style="text-align:center;margin-top:14px"><button class="btn blue" id="startDx" onclick="go('pretest')">${T({ar:'ابدأ الاختبار التشخيصي',en:'Start the diagnostic test'})} ${ART.i.play}</button>
+     <div class="offline-note">📶 ${T({ar:'لو النت فصل وإنت بتحل، ولا يهمك: إجاباتك وبياناتك محفوظة على جهازك وهتتبعت لوحدها أول ما النت يرجع.',en:'If your internet drops while you work, no worries: your answers and data are saved on your device and sent automatically when you reconnect.'})}</div></div></div>`;
 }
 
 
@@ -230,8 +234,8 @@ const WALKER = (()=>{
   function spotHome(){ const r=page(document.querySelector('#wbHome').getBoundingClientRect()), w=el.offsetWidth, h=el.offsetHeight; return {x:r.x+r.w/2-w/2, y:r.y+r.h-h}; }
   function place(p){ pos=p; el.style.transform=`translate(${p.x}px,${p.y}px)`; }
   function mood(m){ el.className='walker'+(m?' m-'+m:''); current=m; }
-  function say(text,big){ const b=el.querySelector('.wb-bub'); b.textContent=text; b.classList.toggle('big',!!big); b.classList.remove('show'); void b.offsetWidth; b.classList.add('show');
-    b.style.marginInlineStart='0px'; requestAnimationFrame(()=>{ const r=b.getBoundingClientRect(); let dx=0; if(r.left<8) dx=8-r.left; if(r.right>innerWidth-8) dx=innerWidth-8-r.right; b.style.transform=`translateX(calc(-50% + ${dx}px))`; }); }
+  function say(text,big,side){ const b=el.querySelector('.wb-bub'); b.textContent=text; b.classList.toggle('big',!!big); b.classList.toggle('side',!!side); b.classList.remove('show'); void b.offsetWidth; b.classList.add('show');
+    b.style.marginInlineStart='0px'; if(side){ b.style.transform=''; const room=el.getBoundingClientRect().left-24; b.style.maxWidth=Math.max(200,Math.min(500,room))+'px'; return; } requestAnimationFrame(()=>{ const r=b.getBoundingClientRect(); let dx=0; if(r.left<8) dx=8-r.left; if(r.right>innerWidth-8) dx=innerWidth-8-r.right; b.style.transform=`translateX(calc(-50% + ${dx}px))`; }); }
   function hush(){ el?.querySelector('.wb-bub').classList.remove('show'); }
   function move(to, tk){ return new Promise(res=>{
     if(reduce()){ place(to); return res(); }
@@ -256,25 +260,34 @@ const WALKER = (()=>{
   function relayout(){ if(!el||!document.querySelector('.moods')) return; size(); const on=current&&document.querySelector(`.moods button[data-k="${current}"]`); if(on&&!running) place(spotOn(on)); }
   addEventListener('resize',relayout);
   addEventListener('hashchange',()=>{ token++; el?.remove(); el=null; });
-  return {start,choose};
+  async function hint(btn,text){ if(!el) make(); const tk=++token; el.getAnimations().forEach(a=>a.cancel()); el.style.visibility='visible';
+    document.querySelector('#wbHome')?.classList.add('away'); if(running||!current){ place(spotHome()); } running=false;
+    const wide=innerWidth>760 && btn.getBoundingClientRect().left>300; let to;
+    if(wide){ const r=page(btn.getBoundingClientRect()), w=el.offsetWidth, h=el.offsetHeight; to={x:r.x-w-18, y:r.y+r.h/2-h/2}; } else to=spotOn(btn);
+    hush(); mood(null); await move(to,tk); if(tk!==token) return; mood('great'); say(text,true,wide); }
+  return {start,choose,hint};
 })();
+const OFFLINE_LINE={ar:'بص، إحنا على فكرة عندنا ميزة حلوة 😉 ما تشغلش بالك لو النت قطع وإنت بتحل، إحنا محتفظين بكل إجاباتك وكل الداتا بتاعتك! 💾',en:'Hey, here’s a cool feature 😉 Don’t worry if your internet drops while you work — we keep all your answers and data safe! 💾'};
 
 /* ---- PRE / POST TEST (free navigation) ---- */
 function vTest(kind){
   const qs = kind==='pre'?PRETEST:[...PRETEST].sort((a,b)=>((a.id.charCodeAt(2)*7)%11)-((b.id.charCodeAt(2)*7)%11));
-  let i=0; const ans={}, flag={};
+  S.drafts=S.drafts||{}; const dr=S.drafts[kind]||{};
+  let i=dr.i||0; const ans=Object.assign({},dr.ans), flag=Object.assign({},dr.flag);
+  const keep=()=>{ S.drafts[kind]={ans,flag,i,at:new Date().toISOString()}; save(); };
+  if(Object.keys(ans).length) setTimeout(()=>toast(T({ar:'رجّعنالك إجاباتك اللي فاتت 💾',en:'Your earlier answers were restored 💾'})),300);
   const L=j=>LANG==='ar'?'أبجد'[j]:'ABCD'[j];
   AFTER.push(()=>{ const box=$('#tq');
     const navRow=()=>{ const n=Object.keys(ans).length; $('#tp').style.width=(n/qs.length*100)+'%';
       $('#tn').textContent=T({ar:`${n} من ${qs.length} متجاوب`,en:`${n} of ${qs.length} answered`});
       $('#qnav').innerHTML=qs.map((q,k)=>`<button class="qn ${ans[q.id]!=null?'a':''} ${k===i?'cur':''} ${flag[q.id]?'f':''}" data-k="${k}" aria-label="${T({ar:'سؤال',en:'Question'})} ${k+1}">${k+1}</button>`).join('');
       $$('#qnav .qn').forEach(b=>b.onclick=()=>{i=+b.dataset.k;show()}); };
-    const show=()=>{ const q=qs[i]; $('#tsub').innerHTML='';
+    const show=()=>{ const q=qs[i]; $('#tsub').innerHTML=''; if(Object.keys(ans).length||i) keep();
       box.innerHTML=chem(`<div style="display:flex;justify-content:space-between;align-items:flex-start;gap:10px"><h2 style="font-size:1.2rem;margin-top:0">${i+1}. ${T(q.q)}</h2><button class="btn sm flagb ${flag[q.id]?'on':''}" id="tfl">⚑ ${flag[q.id]?T({ar:'مُعلَّم للمراجعة',en:'Marked for review'}):T({ar:'علّم للمراجعة',en:'Mark for review'})}</button></div>
         ${q.o.map((o,j)=>`<button class="opt ${ans[q.id]===j?'sel':''}" data-j="${j}"><span class="k">${L(j)}</span><span>${T(o)}</span></button>`).join('')}
         <div style="display:flex;justify-content:space-between;margin-top:14px"><button class="btn ghost sm" id="tb" ${i?'':'disabled'}>${T({ar:'السابق',en:'Back'})}</button><button class="btn blue sm" id="tnx" ${i===qs.length-1?'disabled':''}>${T({ar:'التالي',en:'Next'})}</button></div>`);
-      $$('.opt',box).forEach(b=>b.onclick=()=>{const j=+b.dataset.j; if(ans[q.id]===j){delete ans[q.id]}else ans[q.id]=j; $$('.opt',box).forEach(x=>x.classList.toggle('sel',+x.dataset.j===ans[q.id])); navRow()});
-      $('#tfl').onclick=()=>{flag[q.id]=!flag[q.id]; show()};
+      $$('.opt',box).forEach(b=>b.onclick=()=>{const j=+b.dataset.j; if(ans[q.id]===j){delete ans[q.id]}else ans[q.id]=j; $$('.opt',box).forEach(x=>x.classList.toggle('sel',+x.dataset.j===ans[q.id])); navRow(); keep()});
+      $('#tfl').onclick=()=>{flag[q.id]=!flag[q.id]; keep(); show()};
       $('#tb').onclick=()=>{i--;show()}; $('#tnx').onclick=()=>{i++;show()}; navRow(); };
     $('#tsend').onclick=()=>{ const miss=qs.map((q,k)=>ans[q.id]==null?k+1:0).filter(Boolean), fl=qs.map((q,k)=>flag[q.id]?k+1:0).filter(Boolean);
       if(!miss.length && !fl.length) return finish();
@@ -282,7 +295,7 @@ function vTest(kind){
         ${miss.length?`<div class="muted">${T({ar:'الأسئلة المتروكة هتتحسب غلط.',en:'Unanswered questions count as wrong.'})}</div>`:''}
         <div class="ctrls"><button class="btn blue sm" id="tgo">${T({ar:'ارجع لها',en:'Go back to them'})}</button><button class="btn ghost sm" id="tfin">${T({ar:'سلّم كده',en:'Submit anyway'})}</button></div></div>`;
       $('#tgo').onclick=()=>{i=(miss[0]||fl[0])-1;show()}; $('#tfin').onclick=finish; $('#tsub').scrollIntoView({behavior:'smooth',block:'center'}); };
-    const finish=()=>{ let ok=0; const wrong=new Set();
+    const finish=()=>{ delete S.drafts[kind]; let ok=0; const wrong=new Set();
       PRETEST.forEach(q=>{ if(ans[q.id]===q.a) ok++; else wrong.add(q.c)});
       const score=Math.round(ok/PRETEST.length*100), weak=[...wrong];
       const skipped=PRETEST.filter(q=>ans[q.id]==null).map(q=>q.id);
