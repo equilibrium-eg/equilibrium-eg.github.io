@@ -72,6 +72,45 @@ input{font-family:inherit}
 .consent{display:flex;gap:10px;align-items:flex-start;font-size:.92rem;color:var(--muted);margin:6px 0 16px}
 .consent input{margin-top:6px;width:18px;height:18px}
 
+/* LOGIN + GUIDE ROBOT */
+.login2{max-width:1180px;margin:24px auto;display:grid;grid-template-columns:1.05fr 1fr;gap:28px;align-items:center}
+.lcol{display:flex;flex-direction:column;gap:18px}
+.login2 .hero{background:linear-gradient(150deg,#e3edfd,#efe9fd);border-radius:var(--radius);padding:22px 26px;border:1px solid #d6e0f6}
+.login2 h1{font-size:2.1rem;line-height:1.3;margin:4px 0;color:#13284a;font-weight:900}
+.rstage{position:relative;display:flex;flex-direction:column;align-items:center;justify-content:flex-end;min-height:520px;
+  background:radial-gradient(closest-side,#e4eefc 0,#e4eefc 55%,transparent 100%);border-radius:40px}
+.rbot{width:330px;max-width:80%;transition:transform .5s cubic-bezier(.3,1.6,.5,1);transform-origin:50% 100%;animation:rbIn .9s cubic-bezier(.3,1.4,.5,1) both}
+.rbot.big{transform:scale(1.08)}
+.rbot.pop{animation:rbPop .6s ease}
+.rbot.jump .rb-body{animation:rbJump .7s ease 2}
+.rb-svg{width:100%;height:auto;overflow:visible;display:block}
+.rb-head{animation:rbBob 3s ease-in-out infinite;transform-box:view-box;transform-origin:110px 140px}
+.rb-eyes{animation:rbBlink 4.5s infinite;transform-box:view-box;transform-origin:110px 84px}
+.rb-ant{animation:rbAnt 1.6s ease-in-out infinite}
+.rb-chest{animation:rbAnt 1.2s ease-in-out infinite}
+.rb-wave{transform-box:view-box;transform-origin:76px 159px}
+.rbot.wave .rb-wave{animation:rbWave .5s ease-in-out 6 alternate}
+.rb-point{transform-box:view-box;transform-origin:148px 159px;transform:rotate(65deg);transition:transform .7s cubic-bezier(.3,1.5,.5,1)}
+.rbot.point .rb-point rect:last-child{animation:rbTap .8s ease-in-out infinite alternate}
+.rbubble{position:relative;align-self:stretch;margin:0 8% 14px;background:#fff;border:2px solid #cfe0f7;border-radius:24px;padding:16px 20px;font-size:1.25rem;font-weight:800;color:#13284a;
+  box-shadow:0 10px 30px rgba(29,95,194,.15);min-height:70px;opacity:0;transform:translateY(8px) scale(.96)}
+.rbubble.show{animation:bubIn .35s ease forwards}
+.rbubble:after{content:"";position:absolute;bottom:-14px;left:50%;margin-left:-14px;border:14px solid transparent;border-top-color:#fff;border-bottom:0}
+.rbubble .caret{display:inline-block;width:3px;height:1.1em;background:#2f7be6;margin-inline-start:3px;vertical-align:-3px;animation:caret 1s steps(1) infinite}
+.rskip{margin-top:12px}
+.glow{position:relative;border-radius:14px;animation:glow 1.3s ease-in-out infinite}
+input.glow{border-color:var(--blue2)!important}
+@keyframes rbIn{from{transform:translateX(-80px) scale(.6);opacity:0}to{transform:none;opacity:1}}
+@keyframes rbPop{0%{transform:scale(1)}40%{transform:scale(1.18)}100%{transform:scale(1.08)}}
+@keyframes rbJump{0%,100%{transform:translateY(0)}45%{transform:translateY(-26px)}}
+@keyframes rbBob{0%,100%{transform:translateY(0) rotate(0)}50%{transform:translateY(-4px) rotate(-2deg)}}
+@keyframes rbBlink{0%,92%,100%{transform:scaleY(1)}95%{transform:scaleY(.1)}}
+@keyframes rbAnt{0%,100%{opacity:1}50%{opacity:.45}}
+@keyframes rbWave{from{transform:rotate(-12deg)}to{transform:rotate(28deg)}}
+@keyframes rbTap{from{transform:translateX(0)}to{transform:translateX(6px)}}
+@keyframes bubIn{to{opacity:1;transform:none}}
+@keyframes caret{50%{opacity:0}}
+@keyframes glow{0%,100%{box-shadow:0 0 0 3px rgba(242,179,61,.35)}50%{box-shadow:0 0 0 8px rgba(242,179,61,.55)}}
 /* DASHBOARD */
 .dash{display:grid;grid-template-columns:1fr 290px;gap:22px}
 html[dir=rtl] .dash{grid-template-columns:1fr 290px}
@@ -209,6 +248,15 @@ html[dir=ltr] .fab{padding:8px 10px 8px 18px}
   .paths{grid-template-columns:1fr;gap:26px}
   .path.rec{order:-1}
   .login{grid-template-columns:1fr}
+  .login2{grid-template-columns:1fr}
+  .lcol{display:contents}
+  .login2 .hero{order:0}
+  .login2 #lf{order:2}
+  .rstage{order:1;min-height:0;flex-direction:row;align-items:flex-end;gap:6px;background:none}
+  .rbot{width:150px;flex:none}
+  .rbubble{margin:0 0 70px;font-size:1.02rem;padding:12px 14px;flex:1}
+  .rbubble:after{bottom:auto;top:auto;left:auto;inset-inline-end:-14px;bottom:22px;border:12px solid transparent;border-inline-start-color:#fff;margin:0}
+  .rskip{display:none}
   .simgrid{grid-template-columns:1fr}
   .axes{grid-template-columns:1fr}
 }
@@ -226,6 +274,7 @@ html[dir=ltr] .fab{padding:8px 10px 8px 18px}
   .dash .side{order:0}
   .mis{grid-template-columns:1fr}
   .login h1{font-size:1.6rem}
+  .login2 h1{font-size:1.6rem}
   .helpbar{flex-direction:column}
   .fab span{display:none}
   .fab{padding:6px!important}
@@ -253,6 +302,29 @@ robot:(s=120)=>`<svg viewBox="0 0 120 130" width="${s}" height="${s*1.08}" aria-
  <path d="M52 64 Q60 69 68 64" stroke="#5ee6ff" stroke-width="2.5" fill="none" stroke-linecap="round"/>
  <rect x="34" y="86" width="52" height="38" rx="18" fill="url(#rb1)" stroke="#c4d4ea" stroke-width="2"/>
  <rect x="50" y="96" width="20" height="14" rx="5" fill="url(#rb3)"/><circle cx="60" cy="103" r="3" fill="#5ee6ff"/>
+</svg>`,
+robotBig:()=>`<svg id="rbSvg" viewBox="0 0 260 280" class="rb-svg" aria-hidden="true">
+ <defs><linearGradient id="rgB" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#fff"/><stop offset="1" stop-color="#dfe9f7"/></linearGradient>
+ <linearGradient id="rgV" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#1e3a64"/><stop offset="1" stop-color="#0f2142"/></linearGradient>
+ <linearGradient id="rgA" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#4a95f5"/><stop offset="1" stop-color="#1d5fc2"/></linearGradient></defs>
+ <ellipse cx="110" cy="268" rx="62" ry="9" fill="#cfdcf0" class="rb-shadow"/>
+ <g class="rb-body">
+  <rect x="80" y="226" width="22" height="30" rx="10" fill="url(#rgA)"/><rect x="118" y="226" width="22" height="30" rx="10" fill="url(#rgA)"/>
+  <g id="rbWave" class="rb-wave"><rect x="34" y="150" width="46" height="18" rx="9" fill="url(#rgB)" stroke="#c4d4ea" stroke-width="2" transform="rotate(35 76 159)"/><circle cx="42" cy="134" r="12" fill="url(#rgA)"/></g>
+  <rect x="68" y="140" width="84" height="92" rx="32" fill="url(#rgB)" stroke="#c4d4ea" stroke-width="2"/>
+  <rect x="94" y="164" width="32" height="22" rx="8" fill="url(#rgA)"/><circle cx="110" cy="175" r="5" fill="#5ee6ff" class="rb-chest"/>
+  <g id="rbPoint" class="rb-point"><rect x="146" y="150" width="64" height="18" rx="9" fill="url(#rgB)" stroke="#c4d4ea" stroke-width="2"/><circle cx="214" cy="159" r="13" fill="url(#rgA)"/><rect x="220" y="154" width="20" height="10" rx="5" fill="#1d5fc2"/></g>
+  <g class="rb-head">
+   <line x1="110" y1="16" x2="110" y2="36" stroke="#9fb6d6" stroke-width="4"/><circle cx="110" cy="12" r="8" fill="#4a95f5" class="rb-ant"/>
+   <rect x="98" y="128" width="24" height="16" rx="6" fill="#c4d4ea"/>
+   <rect x="46" y="36" width="128" height="100" rx="46" fill="url(#rgB)" stroke="#c4d4ea" stroke-width="2"/>
+   <rect x="32" y="66" width="20" height="40" rx="10" fill="url(#rgA)"/><rect x="168" y="66" width="20" height="40" rx="10" fill="url(#rgA)"/>
+   <path d="M40 72 Q42 24 110 24 Q178 24 180 72" fill="none" stroke="url(#rgA)" stroke-width="7" stroke-linecap="round"/>
+   <rect x="62" y="56" width="96" height="62" rx="28" fill="url(#rgV)"/>
+   <g class="rb-eyes"><ellipse cx="90" cy="84" rx="11" ry="13" fill="#5ee6ff"/><ellipse cx="130" cy="84" rx="11" ry="13" fill="#5ee6ff"/><circle cx="93" cy="79" r="3.5" fill="#fff"/><circle cx="133" cy="79" r="3.5" fill="#fff"/></g>
+   <path class="rb-mouth" d="M96 102 Q110 112 124 102" stroke="#5ee6ff" stroke-width="4" fill="none" stroke-linecap="round"/>
+  </g>
+ </g>
 </svg>`,
 atom:(s=56)=>`<svg viewBox="0 0 64 64" width="${s}" height="${s}" aria-hidden="true"><g fill="none" stroke="#fff" stroke-width="3"><ellipse cx="32" cy="32" rx="28" ry="11"/><ellipse cx="32" cy="32" rx="28" ry="11" transform="rotate(60 32 32)"/><ellipse cx="32" cy="32" rx="28" ry="11" transform="rotate(120 32 32)"/></g><circle cx="32" cy="32" r="5" fill="#fff"/></svg>`,
 books:()=>`<svg viewBox="0 0 200 140" class="ill" aria-hidden="true">
@@ -1006,31 +1078,97 @@ function render(){
 let AFTER=[], CUR_ROUTE='';
 window.addEventListener('hashchange',render);
 
-/* ---- LOGIN ---- */
+/* ---- LOGIN (with Acquire guide robot) ---- */
+const validEmail = v => /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(v.trim());
+const cleanPhone = v => v.trim().replace(/[\s-]/g,'').replace(/[٠-٩]/g,d=>'٠١٢٣٤٥٦٧٨٩'.indexOf(d));
+const validPhone = v => { const ph=cleanPhone(v); return /^(\+?20)?0?1[0125]\d{8}$/.test(ph) || /^\+?\d{9,15}$/.test(ph); };
 function vLogin(){
   AFTER.push(()=>{ $('#lf').onsubmit=e=>{ e.preventDefault();
-    const em=$('#em').value.trim().toLowerCase(), ph=$('#ph').value.trim().replace(/[\s-]/g,'').replace(/[٠-٩]/g,d=>'٠١٢٣٤٥٦٧٨٩'.indexOf(d));
-    let err='';
-    if(!/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(em)) err=T({ar:'اكتب إيميل صحيح.',en:'Enter a valid email.'});
-    else if(!/^(\+?20)?0?1[0125]\d{8}$/.test(ph) && !/^\+?\d{9,15}$/.test(ph)) err=T({ar:'اكتب رقم تليفون صحيح.',en:'Enter a valid phone number.'});
-    else if(!$('#cs').checked) err=T({ar:'لازم توافق على تسجيل بياناتك عشان نكمل.',en:'Please agree to the data note to continue.'});
-    $('#lerr').textContent=err; if(err) return;
+    const em=$('#em').value.trim().toLowerCase(), ph=cleanPhone($('#ph').value);
+    let err='', tgt=null;
+    if(!validEmail(em)) { err=T({ar:'اكتب إيميل صحيح.',en:'Enter a valid email.'}); tgt='#em'; }
+    else if(!validPhone(ph)) { err=T({ar:'اكتب رقم تليفون صحيح.',en:'Enter a valid phone number.'}); tgt='#ph'; }
+    else if(!$('#cs').checked) { err=T({ar:'لازم توافق على تسجيل بياناتك عشان نكمل.',en:'Please agree to the data note to continue.'}); tgt='#csWrap'; }
+    $('#lerr').textContent=err; if(err){ GUIDE.oops(err,tgt); return; }
+    GUIDE.stop();
     USER={email:em, phone:ph}; store.set('cot:user',USER); S=store.get('cot:s:'+em,{}); S.firstLogin=S.firstLogin||new Date().toISOString(); save();
-    logEv('login', S.pre?'returning':'new'); go(S.pre?'dashboard':'welcome'); }; });
-  return `<div class="login">
-   <div class="hero"><span class="tag ill">${T({ar:'الصف الثالث الثانوي · كيمياء',en:'Grade 12 (Egypt) · Chemistry'})}</span>
-    <h1>${T({ar:'الاتزان الكيميائي',en:'Chemical Equilibrium'})}</h1>
-    <p style="font-size:1.12rem;margin:0 0 10px">${T({ar:'كيف تدافع التفاعلات عن توازنها ضد الحرارة والضغط؟',en:'How do reactions defend their balance against heat and pressure?'})}</p>
-    <p class="muted">${T({ar:'رحلة إلى عالم الاتزان الكيميائي — اختبار تشخيصي، ثلاث مسارات تعلم، محاكاة تفاعلية، ومساعد ذكي يرافقك في كل خطوة.',en:'A journey into chemical equilibrium — a diagnostic test, three learning paths, interactive simulations and an AI assistant at every step.'})}</p>
-    <div style="display:flex;align-items:flex-end;justify-content:space-between;margin-top:18px">${ART.robot(120)}${ART.flasks()}</div></div>
-   <form class="card" id="lf" novalidate><h2 style="margin-top:0">${T({ar:'تسجيل الدخول',en:'Sign in'})}</h2>
-    <div class="field"><label for="em">${T({ar:'البريد الإلكتروني',en:'Email'})}</label><input id="em" type="email" autocomplete="email" dir="ltr" placeholder="name@example.com"></div>
-    <div class="field"><label for="ph">${T({ar:'رقم التليفون',en:'Phone number'})}</label><input id="ph" type="tel" autocomplete="tel" dir="ltr" placeholder="01xxxxxxxxx"></div>
-    <label class="consent"><input type="checkbox" id="cs"><span>${T({ar:'أوافق على تسجيل الإيميل ورقم التليفون ونتائجي ونشاطي في المنصة لدى المعلمة لمتابعة تقدّمي.',en:'I agree that my email, phone, results and activity are recorded for my teacher to follow my progress.'})}</span></label>
-    <div class="err" id="lerr" role="alert"></div>
-    <button class="btn blue" style="width:100%">${T({ar:'يلا نبدأ',en:"Let's start"})} ${ART.i.play}</button>
-    <p class="muted" style="font-size:.85rem;margin-bottom:0">${T({ar:'لو دخلت قبل كده بنفس الإيميل، هتكمّل من مكانك على نفس الجهاز.',en:'If you signed in before with this email, you continue where you left off on this device.'})}</p></form></div>`;
+    logEv('login', S.pre?'returning':'new'); go(S.pre?'dashboard':'welcome'); };
+    GUIDE.start(); });
+  return `<div class="login2">
+   <div class="lcol">
+    <div class="hero"><span class="tag ill">${T({ar:'الصف الثالث الثانوي · كيمياء',en:'Grade 12 (Egypt) · Chemistry'})}</span>
+     <h1>${T({ar:'الاتزان الكيميائي',en:'Chemical Equilibrium'})}</h1>
+     <p style="font-size:1.08rem;margin:0">${T({ar:'كيف تدافع التفاعلات عن توازنها ضد الحرارة والضغط؟',en:'How do reactions defend their balance against heat and pressure?'})}</p></div>
+    <form class="card" id="lf" novalidate><h2 style="margin-top:0">${T({ar:'تسجيل الدخول',en:'Sign in'})}</h2>
+     <div class="field"><label for="em">${T({ar:'البريد الإلكتروني',en:'Email'})}</label><input id="em" type="email" autocomplete="email" dir="ltr" placeholder="name@example.com"></div>
+     <div class="field"><label for="ph">${T({ar:'رقم الموبايل',en:'Mobile number'})}</label><input id="ph" type="tel" autocomplete="tel" dir="ltr" placeholder="01xxxxxxxxx"></div>
+     <label class="consent" id="csWrap"><input type="checkbox" id="cs"><span>${T({ar:'أوافق على تسجيل الإيميل ورقم الموبايل ونتائجي ونشاطي في المنصة لدى المعلمة لمتابعة تقدّمي.',en:'I agree that my email, phone, results and activity are recorded for my teacher to follow my progress.'})}</span></label>
+     <div class="err" id="lerr" role="alert"></div>
+     <button class="btn blue" id="lgo" style="width:100%">${T({ar:'يلا نبدأ',en:"Let's start"})} ${ART.i.play}</button>
+     <p class="muted" style="font-size:.85rem;margin-bottom:0">${T({ar:'لو دخلت قبل كده بنفس الإيميل، هتكمّل من مكانك على نفس الجهاز.',en:'If you signed in before with this email, you continue where you left off on this device.'})}</p></form>
+   </div>
+   <div class="rstage" id="rstage" aria-live="polite">
+    <div class="rbubble" id="rbub"><span id="rtxt"></span><i class="caret"></i></div>
+    <div class="rbot" id="rbot">${ART.robotBig()}</div>
+    <button type="button" class="btn ghost sm rskip" id="rreplay">↺ ${T({ar:'اسمع Acquire تاني',en:'Hear Acquire again'})}</button>
+   </div></div>`;
 }
+
+/* Acquire guide: talks, grows, waves and points at what to fill */
+const GUIDE = (()=>{
+  let timers=[], stage='', typing=null, live=false;
+  const L = {
+    hi:{ar:'أهلًا بيك! 👋 هنبدأ تجربة تعليمية بشكل جديد خالص',en:'Hi there! 👋 We’re starting a totally new learning experience'},
+    ready:{ar:'جاااهز؟ 🤩',en:'Readyyy? 🤩'},
+    go:{ar:'يلا بينا يا أصحابي نبدأ! 🚀',en:'Let’s go, friends! 🚀'},
+    email:{ar:'اكتب الإيميل الشخصي بتاعك 📧',en:'Type your personal email 📧'},
+    phone:{ar:'تمام! 👌 وكمان رقم موبايلك 📱',en:'Great! 👌 And your mobile number 📱'},
+    consent:{ar:'آخر حاجة: علّم هنا بالموافقة ✅',en:'Last thing: tick the agreement here ✅'},
+    btn:{ar:'كده تمام! دوس هنا ونبدأ 🎉',en:'All set! Press here to start 🎉'}
+  };
+  const $r = s=>document.querySelector(s);
+  const clear=()=>{ timers.forEach(clearTimeout); timers=[]; clearInterval(typing); };
+  const later=(ms,f)=>timers.push(setTimeout(()=>live&&f(),ms));
+  function mood(cls){ const b=$r('#rbot'); if(!b)return; b.classList.remove('pop','jump','wave','point','big'); void b.offsetWidth; cls.split(' ').filter(Boolean).forEach(c=>b.classList.add(c)); }
+  function say(o){ const el=$r('#rtxt'); if(!el)return; const txt=T(o); clearInterval(typing); el.textContent=''; let i=0;
+    const bub=$r('#rbub'); bub.classList.remove('show'); void bub.offsetWidth; bub.classList.add('show');
+    if(matchMedia('(prefers-reduced-motion: reduce)').matches){ el.textContent=txt; return; }
+    const chars=[...txt]; typing=setInterval(()=>{ el.textContent+=chars[i++]||''; if(i>=chars.length) clearInterval(typing); },32); }
+  function highlight(sel){ document.querySelectorAll('.glow').forEach(x=>x.classList.remove('glow')); if(!sel) return; const t=$r(sel); if(t) t.classList.add('glow'); }
+  function aim(sel){ const arm=$r('#rbPoint'), svg=$r('#rbSvg'); if(!arm||!svg) return;
+    if(!sel){ arm.style.transform='rotate(65deg)'; return; }
+    const t=$r(sel); if(!t) return;
+    const r=svg.getBoundingClientRect(), k=r.width/260, sx=r.left+148*k, sy=r.top+159*k;
+    const tr=t.getBoundingClientRect(); const tx=(document.documentElement.dir==='rtl'? tr.left+Math.min(40,tr.width/2) : tr.left+tr.width/2), ty=tr.top+tr.height/2;
+    let deg=Math.atan2(ty-sy, tx-sx)*180/Math.PI; deg=Math.max(-80,Math.min(95,deg));
+    arm.style.transform=`rotate(${deg}deg)`; }
+  function point(sel,msg){ stage=sel; say(msg); mood('point'); highlight(sel); aim(sel); }
+  function next(){ if(!live) return;
+    if(!validEmail($r('#em').value)) return point('#em',L.email);
+    if(!validPhone($r('#ph').value)) return point('#ph',L.phone);
+    if(!$r('#cs').checked) return point('#csWrap',L.consent);
+    point('#lgo',L.btn); }
+  function intro(){ clear(); live=true; highlight(null); aim(null);
+    say(L.hi); mood('big wave');
+    later(3200,()=>{ say(L.ready); mood('big pop'); });
+    later(5200,()=>{ say(L.go); mood('big jump'); });
+    later(7600,()=>{ mood(''); next(); }); }
+  function start(){ live=true; intro();
+    const em=$r('#em'), ph=$r('#ph'), cs=$r('#cs');
+    const onEdit=()=>{ if(timers.length){ clear(); } next(); };
+    em.addEventListener('focus',()=>{ if(stage!=='#em'){ clear(); point('#em',L.email);} });
+    ph.addEventListener('focus',()=>{ if(stage!=='#ph'){ clear(); point('#ph',validEmail(em.value)?L.phone:{ar:'وكمان رقم موبايلك 📱',en:'And your mobile number 📱'});} });
+    em.addEventListener('input',()=>{ if(validEmail(em.value)&&stage==='#em'){ clear(); later(600,next); live=true; } });
+    ph.addEventListener('input',()=>{ if(validPhone(ph.value)&&stage==='#ph'){ clear(); later(600,next); live=true; } });
+    cs.addEventListener('change',onEdit);
+    $r('#rreplay').onclick=intro;
+    window.addEventListener('resize',()=>stage&&aim(stage));
+    window.addEventListener('scroll',()=>stage&&aim(stage),{passive:true}); }
+  function oops(msg,sel){ clear(); live=true; stage=sel; say({ar:'🤔 '+msg,en:'🤔 '+msg}); mood('pop point'); highlight(sel); aim(sel); }
+  function stop(){ clear(); live=false; highlight(null); }
+  window.addEventListener('hashchange',()=>{ if(!document.querySelector('#rstage')) stop(); });
+  return {start,stop,oops};
+})();
 
 /* ---- WELCOME ---- */
 function vWelcome(){

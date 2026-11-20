@@ -15,6 +15,29 @@ robot:(s=120)=>`<svg viewBox="0 0 120 130" width="${s}" height="${s*1.08}" aria-
  <rect x="34" y="86" width="52" height="38" rx="18" fill="url(#rb1)" stroke="#c4d4ea" stroke-width="2"/>
  <rect x="50" y="96" width="20" height="14" rx="5" fill="url(#rb3)"/><circle cx="60" cy="103" r="3" fill="#5ee6ff"/>
 </svg>`,
+robotBig:()=>`<svg id="rbSvg" viewBox="0 0 260 280" class="rb-svg" aria-hidden="true">
+ <defs><linearGradient id="rgB" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#fff"/><stop offset="1" stop-color="#dfe9f7"/></linearGradient>
+ <linearGradient id="rgV" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#1e3a64"/><stop offset="1" stop-color="#0f2142"/></linearGradient>
+ <linearGradient id="rgA" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#4a95f5"/><stop offset="1" stop-color="#1d5fc2"/></linearGradient></defs>
+ <ellipse cx="110" cy="268" rx="62" ry="9" fill="#cfdcf0" class="rb-shadow"/>
+ <g class="rb-body">
+  <rect x="80" y="226" width="22" height="30" rx="10" fill="url(#rgA)"/><rect x="118" y="226" width="22" height="30" rx="10" fill="url(#rgA)"/>
+  <g id="rbWave" class="rb-wave"><rect x="34" y="150" width="46" height="18" rx="9" fill="url(#rgB)" stroke="#c4d4ea" stroke-width="2" transform="rotate(35 76 159)"/><circle cx="42" cy="134" r="12" fill="url(#rgA)"/></g>
+  <rect x="68" y="140" width="84" height="92" rx="32" fill="url(#rgB)" stroke="#c4d4ea" stroke-width="2"/>
+  <rect x="94" y="164" width="32" height="22" rx="8" fill="url(#rgA)"/><circle cx="110" cy="175" r="5" fill="#5ee6ff" class="rb-chest"/>
+  <g id="rbPoint" class="rb-point"><rect x="146" y="150" width="64" height="18" rx="9" fill="url(#rgB)" stroke="#c4d4ea" stroke-width="2"/><circle cx="214" cy="159" r="13" fill="url(#rgA)"/><rect x="220" y="154" width="20" height="10" rx="5" fill="#1d5fc2"/></g>
+  <g class="rb-head">
+   <line x1="110" y1="16" x2="110" y2="36" stroke="#9fb6d6" stroke-width="4"/><circle cx="110" cy="12" r="8" fill="#4a95f5" class="rb-ant"/>
+   <rect x="98" y="128" width="24" height="16" rx="6" fill="#c4d4ea"/>
+   <rect x="46" y="36" width="128" height="100" rx="46" fill="url(#rgB)" stroke="#c4d4ea" stroke-width="2"/>
+   <rect x="32" y="66" width="20" height="40" rx="10" fill="url(#rgA)"/><rect x="168" y="66" width="20" height="40" rx="10" fill="url(#rgA)"/>
+   <path d="M40 72 Q42 24 110 24 Q178 24 180 72" fill="none" stroke="url(#rgA)" stroke-width="7" stroke-linecap="round"/>
+   <rect x="62" y="56" width="96" height="62" rx="28" fill="url(#rgV)"/>
+   <g class="rb-eyes"><ellipse cx="90" cy="84" rx="11" ry="13" fill="#5ee6ff"/><ellipse cx="130" cy="84" rx="11" ry="13" fill="#5ee6ff"/><circle cx="93" cy="79" r="3.5" fill="#fff"/><circle cx="133" cy="79" r="3.5" fill="#fff"/></g>
+   <path class="rb-mouth" d="M96 102 Q110 112 124 102" stroke="#5ee6ff" stroke-width="4" fill="none" stroke-linecap="round"/>
+  </g>
+ </g>
+</svg>`,
 atom:(s=56)=>`<svg viewBox="0 0 64 64" width="${s}" height="${s}" aria-hidden="true"><g fill="none" stroke="#fff" stroke-width="3"><ellipse cx="32" cy="32" rx="28" ry="11"/><ellipse cx="32" cy="32" rx="28" ry="11" transform="rotate(60 32 32)"/><ellipse cx="32" cy="32" rx="28" ry="11" transform="rotate(120 32 32)"/></g><circle cx="32" cy="32" r="5" fill="#fff"/></svg>`,
 books:()=>`<svg viewBox="0 0 200 140" class="ill" aria-hidden="true">
  <ellipse cx="100" cy="128" rx="78" ry="9" fill="#d9e4f5"/>

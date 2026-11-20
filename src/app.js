@@ -97,31 +97,97 @@ function render(){
 let AFTER=[], CUR_ROUTE='';
 window.addEventListener('hashchange',render);
 
-/* ---- LOGIN ---- */
+/* ---- LOGIN (with Acquire guide robot) ---- */
+const validEmail = v => /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(v.trim());
+const cleanPhone = v => v.trim().replace(/[\s-]/g,'').replace(/[٠-٩]/g,d=>'٠١٢٣٤٥٦٧٨٩'.indexOf(d));
+const validPhone = v => { const ph=cleanPhone(v); return /^(\+?20)?0?1[0125]\d{8}$/.test(ph) || /^\+?\d{9,15}$/.test(ph); };
 function vLogin(){
   AFTER.push(()=>{ $('#lf').onsubmit=e=>{ e.preventDefault();
-    const em=$('#em').value.trim().toLowerCase(), ph=$('#ph').value.trim().replace(/[\s-]/g,'').replace(/[٠-٩]/g,d=>'٠١٢٣٤٥٦٧٨٩'.indexOf(d));
-    let err='';
-    if(!/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(em)) err=T({ar:'اكتب إيميل صحيح.',en:'Enter a valid email.'});
-    else if(!/^(\+?20)?0?1[0125]\d{8}$/.test(ph) && !/^\+?\d{9,15}$/.test(ph)) err=T({ar:'اكتب رقم تليفون صحيح.',en:'Enter a valid phone number.'});
-    else if(!$('#cs').checked) err=T({ar:'لازم توافق على تسجيل بياناتك عشان نكمل.',en:'Please agree to the data note to continue.'});
-    $('#lerr').textContent=err; if(err) return;
+    const em=$('#em').value.trim().toLowerCase(), ph=cleanPhone($('#ph').value);
+    let err='', tgt=null;
+    if(!validEmail(em)) { err=T({ar:'اكتب إيميل صحيح.',en:'Enter a valid email.'}); tgt='#em'; }
+    else if(!validPhone(ph)) { err=T({ar:'اكتب رقم تليفون صحيح.',en:'Enter a valid phone number.'}); tgt='#ph'; }
+    else if(!$('#cs').checked) { err=T({ar:'لازم توافق على تسجيل بياناتك عشان نكمل.',en:'Please agree to the data note to continue.'}); tgt='#csWrap'; }
+    $('#lerr').textContent=err; if(err){ GUIDE.oops(err,tgt); return; }
+    GUIDE.stop();
     USER={email:em, phone:ph}; store.set('cot:user',USER); S=store.get('cot:s:'+em,{}); S.firstLogin=S.firstLogin||new Date().toISOString(); save();
-    logEv('login', S.pre?'returning':'new'); go(S.pre?'dashboard':'welcome'); }; });
-  return `<div class="login">
-   <div class="hero"><span class="tag ill">${T({ar:'الصف الثالث الثانوي · كيمياء',en:'Grade 12 (Egypt) · Chemistry'})}</span>
-    <h1>${T({ar:'الاتزان الكيميائي',en:'Chemical Equilibrium'})}</h1>
-    <p style="font-size:1.12rem;margin:0 0 10px">${T({ar:'كيف تدافع التفاعلات عن توازنها ضد الحرارة والضغط؟',en:'How do reactions defend their balance against heat and pressure?'})}</p>
-    <p class="muted">${T({ar:'رحلة إلى عالم الاتزان الكيميائي — اختبار تشخيصي، ثلاث مسارات تعلم، محاكاة تفاعلية، ومساعد ذكي يرافقك في كل خطوة.',en:'A journey into chemical equilibrium — a diagnostic test, three learning paths, interactive simulations and an AI assistant at every step.'})}</p>
-    <div style="display:flex;align-items:flex-end;justify-content:space-between;margin-top:18px">${ART.robot(120)}${ART.flasks()}</div></div>
-   <form class="card" id="lf" novalidate><h2 style="margin-top:0">${T({ar:'تسجيل الدخول',en:'Sign in'})}</h2>
-    <div class="field"><label for="em">${T({ar:'البريد الإلكتروني',en:'Email'})}</label><input id="em" type="email" autocomplete="email" dir="ltr" placeholder="name@example.com"></div>
-    <div class="field"><label for="ph">${T({ar:'رقم التليفون',en:'Phone number'})}</label><input id="ph" type="tel" autocomplete="tel" dir="ltr" placeholder="01xxxxxxxxx"></div>
-    <label class="consent"><input type="checkbox" id="cs"><span>${T({ar:'أوافق على تسجيل الإيميل ورقم التليفون ونتائجي ونشاطي في المنصة لدى المعلمة لمتابعة تقدّمي.',en:'I agree that my email, phone, results and activity are recorded for my teacher to follow my progress.'})}</span></label>
-    <div class="err" id="lerr" role="alert"></div>
-    <button class="btn blue" style="width:100%">${T({ar:'يلا نبدأ',en:"Let's start"})} ${ART.i.play}</button>
-    <p class="muted" style="font-size:.85rem;margin-bottom:0">${T({ar:'لو دخلت قبل كده بنفس الإيميل، هتكمّل من مكانك على نفس الجهاز.',en:'If you signed in before with this email, you continue where you left off on this device.'})}</p></form></div>`;
+    logEv('login', S.pre?'returning':'new'); go(S.pre?'dashboard':'welcome'); };
+    GUIDE.start(); });
+  return `<div class="login2">
+   <div class="lcol">
+    <div class="hero"><span class="tag ill">${T({ar:'الصف الثالث الثانوي · كيمياء',en:'Grade 12 (Egypt) · Chemistry'})}</span>
+     <h1>${T({ar:'الاتزان الكيميائي',en:'Chemical Equilibrium'})}</h1>
+     <p style="font-size:1.08rem;margin:0">${T({ar:'كيف تدافع التفاعلات عن توازنها ضد الحرارة والضغط؟',en:'How do reactions defend their balance against heat and pressure?'})}</p></div>
+    <form class="card" id="lf" novalidate><h2 style="margin-top:0">${T({ar:'تسجيل الدخول',en:'Sign in'})}</h2>
+     <div class="field"><label for="em">${T({ar:'البريد الإلكتروني',en:'Email'})}</label><input id="em" type="email" autocomplete="email" dir="ltr" placeholder="name@example.com"></div>
+     <div class="field"><label for="ph">${T({ar:'رقم الموبايل',en:'Mobile number'})}</label><input id="ph" type="tel" autocomplete="tel" dir="ltr" placeholder="01xxxxxxxxx"></div>
+     <label class="consent" id="csWrap"><input type="checkbox" id="cs"><span>${T({ar:'أوافق على تسجيل الإيميل ورقم الموبايل ونتائجي ونشاطي في المنصة لدى المعلمة لمتابعة تقدّمي.',en:'I agree that my email, phone, results and activity are recorded for my teacher to follow my progress.'})}</span></label>
+     <div class="err" id="lerr" role="alert"></div>
+     <button class="btn blue" id="lgo" style="width:100%">${T({ar:'يلا نبدأ',en:"Let's start"})} ${ART.i.play}</button>
+     <p class="muted" style="font-size:.85rem;margin-bottom:0">${T({ar:'لو دخلت قبل كده بنفس الإيميل، هتكمّل من مكانك على نفس الجهاز.',en:'If you signed in before with this email, you continue where you left off on this device.'})}</p></form>
+   </div>
+   <div class="rstage" id="rstage" aria-live="polite">
+    <div class="rbubble" id="rbub"><span id="rtxt"></span><i class="caret"></i></div>
+    <div class="rbot" id="rbot">${ART.robotBig()}</div>
+    <button type="button" class="btn ghost sm rskip" id="rreplay">↺ ${T({ar:'اسمع Acquire تاني',en:'Hear Acquire again'})}</button>
+   </div></div>`;
 }
+
+/* Acquire guide: talks, grows, waves and points at what to fill */
+const GUIDE = (()=>{
+  let timers=[], stage='', typing=null, live=false;
+  const L = {
+    hi:{ar:'أهلًا بيك! 👋 هنبدأ تجربة تعليمية بشكل جديد خالص',en:'Hi there! 👋 We’re starting a totally new learning experience'},
+    ready:{ar:'جاااهز؟ 🤩',en:'Readyyy? 🤩'},
+    go:{ar:'يلا بينا يا أصحابي نبدأ! 🚀',en:'Let’s go, friends! 🚀'},
+    email:{ar:'اكتب الإيميل الشخصي بتاعك 📧',en:'Type your personal email 📧'},
+    phone:{ar:'تمام! 👌 وكمان رقم موبايلك 📱',en:'Great! 👌 And your mobile number 📱'},
+    consent:{ar:'آخر حاجة: علّم هنا بالموافقة ✅',en:'Last thing: tick the agreement here ✅'},
+    btn:{ar:'كده تمام! دوس هنا ونبدأ 🎉',en:'All set! Press here to start 🎉'}
+  };
+  const $r = s=>document.querySelector(s);
+  const clear=()=>{ timers.forEach(clearTimeout); timers=[]; clearInterval(typing); };
+  const later=(ms,f)=>timers.push(setTimeout(()=>live&&f(),ms));
+  function mood(cls){ const b=$r('#rbot'); if(!b)return; b.classList.remove('pop','jump','wave','point','big'); void b.offsetWidth; cls.split(' ').filter(Boolean).forEach(c=>b.classList.add(c)); }
+  function say(o){ const el=$r('#rtxt'); if(!el)return; const txt=T(o); clearInterval(typing); el.textContent=''; let i=0;
+    const bub=$r('#rbub'); bub.classList.remove('show'); void bub.offsetWidth; bub.classList.add('show');
+    if(matchMedia('(prefers-reduced-motion: reduce)').matches){ el.textContent=txt; return; }
+    const chars=[...txt]; typing=setInterval(()=>{ el.textContent+=chars[i++]||''; if(i>=chars.length) clearInterval(typing); },32); }
+  function highlight(sel){ document.querySelectorAll('.glow').forEach(x=>x.classList.remove('glow')); if(!sel) return; const t=$r(sel); if(t) t.classList.add('glow'); }
+  function aim(sel){ const arm=$r('#rbPoint'), svg=$r('#rbSvg'); if(!arm||!svg) return;
+    if(!sel){ arm.style.transform='rotate(65deg)'; return; }
+    const t=$r(sel); if(!t) return;
+    const r=svg.getBoundingClientRect(), k=r.width/260, sx=r.left+148*k, sy=r.top+159*k;
+    const tr=t.getBoundingClientRect(); const tx=(document.documentElement.dir==='rtl'? tr.left+Math.min(40,tr.width/2) : tr.left+tr.width/2), ty=tr.top+tr.height/2;
+    let deg=Math.atan2(ty-sy, tx-sx)*180/Math.PI; deg=Math.max(-80,Math.min(95,deg));
+    arm.style.transform=`rotate(${deg}deg)`; }
+  function point(sel,msg){ stage=sel; say(msg); mood('point'); highlight(sel); aim(sel); }
+  function next(){ if(!live) return;
+    if(!validEmail($r('#em').value)) return point('#em',L.email);
+    if(!validPhone($r('#ph').value)) return point('#ph',L.phone);
+    if(!$r('#cs').checked) return point('#csWrap',L.consent);
+    point('#lgo',L.btn); }
+  function intro(){ clear(); live=true; highlight(null); aim(null);
+    say(L.hi); mood('big wave');
+    later(3200,()=>{ say(L.ready); mood('big pop'); });
+    later(5200,()=>{ say(L.go); mood('big jump'); });
+    later(7600,()=>{ mood(''); next(); }); }
+  function start(){ live=true; intro();
+    const em=$r('#em'), ph=$r('#ph'), cs=$r('#cs');
+    const onEdit=()=>{ if(timers.length){ clear(); } next(); };
+    em.addEventListener('focus',()=>{ if(stage!=='#em'){ clear(); point('#em',L.email);} });
+    ph.addEventListener('focus',()=>{ if(stage!=='#ph'){ clear(); point('#ph',validEmail(em.value)?L.phone:{ar:'وكمان رقم موبايلك 📱',en:'And your mobile number 📱'});} });
+    em.addEventListener('input',()=>{ if(validEmail(em.value)&&stage==='#em'){ clear(); later(600,next); live=true; } });
+    ph.addEventListener('input',()=>{ if(validPhone(ph.value)&&stage==='#ph'){ clear(); later(600,next); live=true; } });
+    cs.addEventListener('change',onEdit);
+    $r('#rreplay').onclick=intro;
+    window.addEventListener('resize',()=>stage&&aim(stage));
+    window.addEventListener('scroll',()=>stage&&aim(stage),{passive:true}); }
+  function oops(msg,sel){ clear(); live=true; stage=sel; say({ar:'🤔 '+msg,en:'🤔 '+msg}); mood('pop point'); highlight(sel); aim(sel); }
+  function stop(){ clear(); live=false; highlight(null); }
+  window.addEventListener('hashchange',()=>{ if(!document.querySelector('#rstage')) stop(); });
+  return {start,stop,oops};
+})();
 
 /* ---- WELCOME ---- */
 function vWelcome(){
