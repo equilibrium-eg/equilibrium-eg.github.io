@@ -1563,7 +1563,7 @@ const STARTERS=[{k:'simple',ar:'اشرح لي مفهوم بطريقة أبسط',
 
 /* ---- GAME ZONE (built only from the platform's own concepts & misconceptions) ---- */
 const shuf=a=>{a=a.slice();for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]]}return a};
-function gameDefs(){ return Object.keys(CONCEPTS).filter(c=>EXPLAIN[c]).map(c=>{ let d=T(EXPLAIN[c].s); const k=d.indexOf(':'); if(k>0&&k<40) d=d.slice(k+1).trim(); if(c==='c_cat') d=d.replace(/^العامل الحفاز\s*/,'').replace(/^A catalyst\s*/,'It '); { const ss=d.split(/(?<=\.)\s/); let t=''; for(const s of ss){ t=t?t+' '+s:s; if(t.length>=60) break; } d=t; } return {c,name:T(CONCEPTS[c]),d}; }); }
+function gameDefs(){ return Object.keys(CONCEPTS).filter(c=>EXPLAIN[c]).map(c=>{ let d=T(EXPLAIN[c].s); const k=d.indexOf(':'); if(k>0&&k<40&&c!=='c_phase') d=d.slice(k+1).trim(); if(c==='c_cat') d=d.replace(/^العامل الحفاز\s*/,'').replace(/^A catalyst\s*/,'It '); { const ss=d.split(/(?<=\.)\s/); let t=''; for(const s of ss){ t=t?t+' '+s:s; if(t.length>=60) break; } d=t; } return {c,name:T(CONCEPTS[c]),d}; }); }
 function tfBank(){ const out=[]; UNITS.forEach(u=>u.mis.forEach(m=>{ out.push({s:m.w,ok:false,why:m.r,c:m.c}); out.push({s:m.r,ok:true,why:EXPLAIN[m.c]?.s||m.r,c:m.c}); })); return out; }
 function gLevel(p){ return p>=200?T({ar:'خبير 🏆',en:'Expert 🏆'}):p>=80?T({ar:'متمكّن ⭐',en:'Skilled ⭐'}):T({ar:'مبتدئ 🌱',en:'Beginner 🌱'}); }
 function gAdd(n){ S.games=S.games||{pts:0,ok:0}; S.games.pts+=n; S.games.ok++; save(); gScore(); }
