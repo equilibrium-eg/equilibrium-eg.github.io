@@ -27,8 +27,7 @@ input{font-family:inherit}
 /* NAV */
 .nav{background:var(--navy);color:#fff;display:flex;align-items:center;gap:18px;padding:10px 26px;position:sticky;top:0;z-index:30;box-shadow:0 2px 10px rgba(0,0,0,.15)}
 .brand{display:flex;align-items:center;gap:12px;font-weight:800;font-size:1.15rem;flex:1;min-width:0}
-.atom-e{display:none}
-body[data-route=login] .brand .atom-e,body[data-route=welcome] .brand .atom-e,body[data-route=dashboard] .brand .atom-e{display:inline}
+.brand .atom-e{display:inline}
 @media (prefers-reduced-motion:reduce){.atom-e{display:none!important}}
 .brand span{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .navlinks{display:flex;gap:6px;align-items:center}
@@ -418,3 +417,7 @@ html[dir=ltr] .fab{padding:8px 10px 8px 18px}
 .lev{margin-top:14px;background:#f7f9fd;border-radius:16px;padding:12px}.lev div{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px}
 .lkeys{display:flex;gap:6px;margin:10px 0}.lkeys span{filter:grayscale(1);opacity:.35;font-size:1.3rem}.lkeys span.on{filter:none;opacity:1}
 @media (max-width:640px){.kzones{grid-template-columns:1fr}.kz{min-height:70px}.lmap{grid-template-columns:repeat(2,1fr)}}
+
+.navlinks .lang2{padding:6px 12px}
+.navlinks .lang2 span{display:inline!important}
+@media (max-width:640px){.navlinks .lang2{padding:5px 10px;font-size:.85rem}.navlinks{gap:8px}}

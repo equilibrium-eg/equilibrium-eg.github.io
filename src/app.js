@@ -67,7 +67,7 @@ const unitById = id => UNITS.find(u=>u.id===id);
 /* ================= LAYOUT ================= */
 function nav(){
   return `<nav class="nav"><div class="brand">${ART.atom(44)}<span>${T({ar:'الاتزان الكيميائي',en:'Chemical Equilibrium'})}</span></div>
-  <div class="navlinks">${USER?`<button class="hamb" id="hamb" onclick="toggleMenu(event)" aria-label="menu" aria-expanded="false" aria-controls="navmenu"><span class="hb-i">☰</span></button>
+  <div class="navlinks">${USER?`<button class="lang lang2" onclick="toggleLang()" aria-label="language">${ART.i.globe}<span>${LANG==='ar'?'English':'العربية'}</span></button><button class="hamb" id="hamb" onclick="toggleMenu(event)" aria-label="menu" aria-expanded="false" aria-controls="navmenu"><span class="hb-i">☰</span></button>
    <div class="navmenu" id="navmenu" role="menu">
     <button role="menuitem" onclick="menuGo(()=>go('dashboard'))">${ART.i.home}<span>${T({ar:'الرئيسية',en:'Home'})}</span></button>
     <button role="menuitem" onclick="menuGo(()=>go('report'))">${ART.i.chart}<span>${T({ar:'نتائجك',en:'Results'})}</span></button>
