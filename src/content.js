@@ -117,7 +117,7 @@ const UNITS = [
   ],
   quiz:[
    {id:'Q2a', c:'c_mass', q:{ar:'عند الاتزان يكون:',en:'At equilibrium:'}, o:[{ar:'$r_{f}=r_{b}$ و $K_{c}=«k_{f}|k_{b}»$',en:'$r_{f}=r_{b}$ and $K_{c}=«k_{f}|k_{b}»$'},{ar:'$r_{f}=0$',en:'$r_{f}=0$'},{ar:'$K_{c}=k_{f}×k_{b}$',en:'$K_{c}=k_{f}×k_{b}$'}], a:0, x:{ar:'تساوي المعدلين يعطي النسبة $«k_{f}|k_{b}»$.',en:'Equal rates give the ratio $«k_{f}|k_{b}»$.'}},
-   {id:'Q2b', c:'c_lec', q:{ar:'عند إضافة $NH4Cl$ لنظام الاتزان السابق، اللون:',en:'Adding $NH4Cl$ to this equilibrium makes the colour:'}, o:[{ar:'أحمر أعمق',en:'Deeper red'},{ar:'أحمر أفتح',en:'Paler red'},{ar:'لا يتغير',en:'Unchanged'}], a:1, x:{ar:'$NH4Cl$ ناتج ← إزاحة عكسية ← لون أفتح.',en:'$NH4Cl$ is a product → backward shift → paler.'}}
+   {id:'Q2b', c:'c_lec', q:{ar:'في خليط الاتزان الأحمر للتفاعل: $FeCl3(aq)+3NH4SCN(aq)<=>Fe(SCN)3(aq)+3NH4Cl(aq)$ عند إضافة $NH4Cl$ يصبح اللون:',en:'In the red equilibrium mixture of $FeCl3(aq)+3NH4SCN(aq)<=>Fe(SCN)3(aq)+3NH4Cl(aq)$, adding $NH4Cl$ makes the colour:'}, o:[{ar:'أحمر أعمق',en:'Deeper red'},{ar:'أحمر أفتح',en:'Paler red'},{ar:'لا يتغير',en:'Unchanged'}], a:1, x:{ar:'$NH4Cl$ ناتج ← إزاحة عكسية ← لون أفتح.',en:'$NH4Cl$ is a product → backward shift → paler.'}}
   ]
 },
 { id:'u3', n:3, color:'purple',
