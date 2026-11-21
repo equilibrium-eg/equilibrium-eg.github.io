@@ -458,16 +458,27 @@ function gLevel(p){ return p>=200?T({ar:'خبير 🏆',en:'Expert 🏆'}):p>=80
 function gAdd(n){ S.games=S.games||{pts:0,ok:0}; S.games.pts+=n; S.games.ok++; save(); gScore(); }
 function gScore(){ const g=S.games||{pts:0,ok:0}; const set=(id,v)=>{const e=document.getElementById(id); if(e) e.textContent=v}; set('gPts',g.pts); set('gOk',g.ok); set('gLvl',gLevel(g.pts)); }
 function vGames(){
-  AFTER.push(()=>{ gScore(); document.querySelectorAll('.gtab').forEach(b=>b.onclick=()=>gOpen(b.dataset.g)); gOpen('tf'); });
+  AFTER.push(()=>{ gScore(); gMenu(); });
   return `<section class="card ghead"><h1>🎮 ${T({ar:'ساحة الألعاب',en:'Game zone'})}</h1>
     <p class="muted">${T({ar:'العب، واكسب نقط، واعرف فهمك فين — كل الأسئلة من دروس المنصة.',en:'Play, earn points and check your understanding — all items come from the platform lessons.'})}</p>${reviewTag()}
     <div class="gstats"><div><b id="gPts">0</b><span>${T({ar:'نقطة',en:'points'})}</span></div><div><b id="gOk">0</b><span>${T({ar:'إجابة صحيحة',en:'correct'})}</span></div><div><b id="gLvl"></b><span>${T({ar:'المستوى',en:'level'})}</span></div></div>
-    <div class="gtabs"><button class="gtab" data-g="tf">✔✘ ${T({ar:'صح ولا غلط؟',en:'True or false?'})}</button><button class="gtab" data-g="match">🔗 ${T({ar:'طابق واكسب',en:'Match & win'})}</button></div></section>
+</section>
     <section class="card" id="gBox"></section>`;
 }
-function gOpen(g){ document.querySelectorAll('.gtab').forEach(b=>b.classList.toggle('on',b.dataset.g===g)); logEv('game_open',g); (g==='tf'?gTF:gMatch)(); }
-function gTF(){ const box=$('#gBox'); const qs=shuf(tfBank()).slice(0,8); let i=0, right=0;
-  const show=()=>{ if(i>=qs.length){ box.innerHTML=`<div class="gend"><div class="gbig">${right}/${qs.length}</div><p>${right>=6?T({ar:'تحفة! 🔥 فهمك للمفاهيم دي قوي',en:'Great! 🔥 Your understanding is strong'}):T({ar:'كويس! 💪 الجولة الجاية هتبقى أحسن',en:'Good! 💪 Next round will be better'})}</p><button class="btn blue" id="gAgain">🔄 ${T({ar:'جولة جديدة',en:'New round'})}</button></div>`; logEv('game_round','tf:'+right+'/'+qs.length); $('#gAgain').onclick=gTF; return; }
+const GAMES=[
+  {g:'tf',ico:'✔✘',bg:'#e6f7ee',t:{ar:'صح ولا غلط؟',en:'True or false?'},d:{ar:'عبارات علمية، قرّر هي صح ولا غلط، وشوف التفسير.',en:'Decide if each statement is true or false, then see why.'},tag:{ar:'تصحيح المفاهيم',en:'Misconceptions'}},
+  {g:'match',ico:'🔗',bg:'#eaf1fe',t:{ar:'طابق واكسب',en:'Match & win'},d:{ar:'وصّل كل مفهوم علمي بتعريفه بأقل عدد محاولات.',en:'Match each concept to its description in as few tries as possible.'},tag:{ar:'مراجعة سريعة',en:'Quick review'}},
+  {g:'kc',ico:'🧩',bg:'#fff4e0',soon:1,t:{ar:'رتّب معادلتك',en:'Build the expression'},d:{ar:'رتّب البطاقات عشان تبني تعبير ثابت الاتزان صح.',en:'Arrange cards to build the equilibrium-constant expression.'},tag:{ar:'تحدي التفكير',en:'Thinking'}},
+  {g:'lab',ico:'🔐',bg:'#f3eefc',soon:1,t:{ar:'اهرب من مختبر الاتزان',en:'Escape the equilibrium lab'},d:{ar:'ألغاز علمية، ماتعديش للأوضة الجاية غير لما تحل اللغز.',en:'Science puzzles — solve each one to unlock the next room.'},tag:{ar:'حل المشكلات',en:'Problem solving'}}];
+function gInner(){ const b=$('#gBox'); let i=b.querySelector('#gIn'); if(!i){ b.innerHTML='<div id="gIn"></div>'; i=b.querySelector('#gIn'); } return i; }
+function gMenu(){ const box=$('#gBox');
+  box.innerHTML=`<h2 class="gmh">${T({ar:'اختار اللعبة 👇',en:'Pick a game 👇'})}</h2><div class="glist">${GAMES.map(x=>`<button class="gitem${x.soon?' soon':''}" data-g="${x.g}" ${x.soon?'aria-disabled="true"':''}><span class="gico" style="background:${x.bg}">${x.ico}</span><span class="gtx"><b>${T(x.t)}</b><span>${T(x.d)}</span><em>${x.soon?T({ar:'قريبًا ⏳',en:'Coming soon ⏳'}):T(x.tag)}</em></span>${x.soon?'':'<span class="gplay">▶</span>'}</button>`).join('')}</div>`;
+  box.querySelectorAll('.gitem').forEach(b=>b.onclick=()=>{ if(b.classList.contains('soon')) return toast(T({ar:'اللعبة دي جاية قريب 😉',en:'Coming soon 😉'})); gOpen(b.dataset.g); }); }
+function gOpen(g){ logEv('game_open',g); (g==='tf'?gTF:gMatch)(); const box=$('#gBox'); const x=GAMES.find(k=>k.g===g);
+  box.insertAdjacentHTML('afterbegin',`<div class="gbar"><button class="btn ghost sm" id="gBack">→ ${T({ar:'قايمة الألعاب',en:'Games menu'})}</button><b>${x.ico} ${T(x.t)}</b></div>`);
+  $('#gBack').onclick=gMenu; box.scrollIntoView({behavior:'smooth',block:'start'}); }
+function gTF(){ const box=gInner(); const qs=shuf(tfBank()).slice(0,8); let i=0, right=0;
+  const show=()=>{ if(i>=qs.length){ box.innerHTML=`<div class="gend"><div class="gbig">${right}/${qs.length}</div><p>${right>=6?T({ar:'تحفة! 🔥 فهمك للمفاهيم دي قوي',en:'Great! 🔥 Your understanding is strong'}):T({ar:'كويس! 💪 الجولة الجاية هتبقى أحسن',en:'Good! 💪 Next round will be better'})}</p><button class="btn blue" id="gAgain">🔄 ${T({ar:'جولة جديدة',en:'New round'})}</button></div>`; logEv('game_round','tf:'+right+'/'+qs.length); $('#gAgain').onclick=()=>gTF(); return; }
     const q=qs[i];
     box.innerHTML=`<div class="gtop"><span class="pill">${T({ar:'عبارة',en:'Statement'})} ${i+1}/${qs.length}</span><span class="pill soft">${T(CONCEPTS[q.c])}</span></div>
       <p class="gstmt">${chem(T(q.s))}</p>
@@ -478,14 +489,14 @@ function gTF(){ const box=$('#gBox'); const qs=shuf(tfBank()).slice(0,8); let i=
       $('#gFb').innerHTML=`<div class="fb ${ok?'ok':'no'}"><b>${ok?T({ar:'برافو! +10 ✔',en:'Correct! +10 ✔'}):T({ar:'مش بالظبط ✘',en:'Not quite ✘'})}</b> — ${q.ok?T({ar:'العبارة صح. ',en:'The statement is true. '}):T({ar:'العبارة غلط، والصح: ',en:'It is false. Correct idea: '})}${chem(T(q.why))}</div><button class="btn blue" id="gNext">${T({ar:'اللي بعده ←',en:'Next →'})}</button>`;
       logEv('game_answer',`tf:${q.c}:${ok?1:0}`); $('#gNext').onclick=()=>{i++;show()}; }); };
   show(); }
-function gMatch(){ const box=$('#gBox'); const items=shuf(gameDefs()).slice(0,5); const defs=shuf(items); let sel=null, tries=0, done=0;
+function gMatch(){ const box=gInner(); const items=shuf(gameDefs()).slice(0,5); const defs=shuf(items); let sel=null, tries=0, done=0;
   box.innerHTML=`<p class="muted">${T({ar:'اختار مفهوم من العمود الأول، وبعدين اختار تعريفه من العمود التاني. كل توصيلة صح = 10 نقط.',en:'Pick a concept, then its description. Each correct match = 10 points.'})}</p>
     <div class="gmatch"><div><h3>${T({ar:'المفهوم',en:'Concept'})}</h3>${items.map(x=>`<button class="gcard gc" data-c="${x.c}">${x.name}</button>`).join('')}</div>
     <div><h3>${T({ar:'التعريف أو الوصف',en:'Description'})}</h3>${defs.map(x=>`<button class="gcard gd" data-c="${x.c}">${chem(x.d)}</button>`).join('')}</div></div><div id="gFb"></div>`;
   box.querySelectorAll('.gc').forEach(b=>b.onclick=()=>{ if(b.classList.contains('good')) return; box.querySelectorAll('.gc').forEach(x=>x.classList.remove('sel')); b.classList.add('sel'); sel=b; });
   box.querySelectorAll('.gd').forEach(b=>b.onclick=()=>{ if(!sel||b.classList.contains('good')) { if(!sel) toast(T({ar:'اختار المفهوم الأول 👈',en:'Pick a concept first'})); return; } tries++;
     if(b.dataset.c===sel.dataset.c){ [b,sel].forEach(x=>{x.classList.remove('sel');x.classList.add('good');x.disabled=true}); sel=null; done++; gAdd(10); logEv('game_answer','match:'+b.dataset.c+':1');
-      if(done===items.length){ $('#gFb').innerHTML=`<div class="gend"><p>${T({ar:`خلصت التوصيلات كلها في ${tries} ${tries<=10&&tries>2?'محاولات':'محاولة'} 🎉`,en:`All matched in ${tries} tries 🎉`})}</p><button class="btn blue" id="gAgain">🔄 ${T({ar:'جولة جديدة',en:'New round'})}</button></div>`; logEv('game_round','match:'+tries); $('#gAgain').onclick=gMatch; } }
+      if(done===items.length){ $('#gFb').innerHTML=`<div class="gend"><p>${T({ar:`خلصت التوصيلات كلها في ${tries} ${tries<=10&&tries>2?'محاولات':'محاولة'} 🎉`,en:`All matched in ${tries} tries 🎉`})}</p><button class="btn blue" id="gAgain">🔄 ${T({ar:'جولة جديدة',en:'New round'})}</button></div>`; logEv('game_round','match:'+tries); $('#gAgain').onclick=()=>gMatch(); } }
     else { b.classList.add('bad'); setTimeout(()=>b.classList.remove('bad'),600); logEv('game_answer','match:'+sel.dataset.c+':0'); } });
 }
 
