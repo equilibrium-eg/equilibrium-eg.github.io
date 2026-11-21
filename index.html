@@ -426,6 +426,14 @@ html[dir=ltr] .fab{padding:8px 10px 8px 18px}
 .lkeys{display:flex;gap:6px;margin:10px 0}.lkeys span{filter:grayscale(1);opacity:.35;font-size:1.3rem}.lkeys span.on{filter:none;opacity:1}
 @media (max-width:640px){.kzones{grid-template-columns:1fr}.kz{min-height:70px}.lmap{grid-template-columns:repeat(2,1fr)}}
 
+
+.gconf{display:flex;flex-direction:column;align-items:center;gap:6px;margin:12px 0}
+.gconf .btn{min-width:200px;padding:12px;font-weight:800}.gconf .btn:disabled{opacity:.45}
+.gconf .muted{font-size:.85rem}
+.opt.pick,.gtf .btn.pick{border-color:#2f6fdb!important;background:#eaf1fe!important;box-shadow:0 0 0 3px rgba(47,111,219,.18)}
+.kctrl{display:flex;flex-wrap:wrap;gap:8px;justify-content:center}.kctrl .btn:disabled{opacity:.45}
+.ktip{font-size:.82rem;text-align:center}
+#kPool{border-radius:14px}
 </style>
 </head>
 <body>
@@ -1630,6 +1638,13 @@ const GINTRO={
   wheel:{ar:'جاهز؟ 🎡 لفّ العجلة وأنا هشوف معاك هتقف على أنهي درس!',en:'Ready? 🎡 Spin and let’s see which lesson it lands on!'},
   kc:{ar:'افتكر القاعدة 🧩 النواتج فوق، المتفاعلات تحت، والصلب والسائل النقي برّه!',en:'Remember 🧩 products on top, reactants below, pure solids and liquids out!'},
   lab:{ar:'إنت محبوس في مختبر الاتزان 🔐 حل لغز كل أوضة عشان تفتح الباب اللي بعدها، ويلا نهرب سوا!',en:'You’re locked in the equilibrium lab 🔐 Solve each room’s puzzle to open the next door!'}};
+/* choose-then-confirm: the student can change the choice before pressing "confirm" */
+function gPick(root, sel, fn){ const opts=[...root.querySelectorAll(sel)]; if(!opts.length) return; let ref=opts[opts.length-1]; if(ref.parentElement.classList.contains('gtf')) ref=ref.parentElement;
+  const wrap=document.createElement('div'); wrap.className='gconf';
+  wrap.innerHTML=`<span class="muted">${T({ar:'تقدر تغيّر اختيارك قبل ما تأكّد',en:'You can change your choice before confirming'})}</span><button class="btn blue" disabled>✔ ${T({ar:'تأكيد الإجابة',en:'Confirm answer'})}</button>`;
+  ref.after(wrap); const cb=wrap.querySelector('button'); let cur=null;
+  opts.forEach(b=>b.onclick=()=>{ if(b.disabled) return; if(cur===b){ b.classList.remove('pick'); cur=null; cb.disabled=true; return; } opts.forEach(x=>x.classList.remove('pick')); b.classList.add('pick'); cur=b; cb.disabled=false; });
+  cb.onclick=()=>{ if(!cur) return; const b=cur; cur=null; b.classList.remove('pick'); cb.disabled=true; fn(b); if(opts.every(x=>x.disabled)) wrap.remove(); }; }
 function gInner(){ const b=$('#gBox'); let i=b.querySelector('#gIn'); if(!i){ b.innerHTML='<div id="gIn"></div>'; i=b.querySelector('#gIn'); } return i; }
 function gMenu(){ const box=$('#gBox');
   box.innerHTML=`<h2 class="gmh">${T({ar:'اختار اللعبة 👇',en:'Pick a game 👇'})}</h2><div class="glist">${GAMES.map(x=>`<button class="gitem${x.soon?' soon':''}" data-g="${x.g}" ${x.soon?'aria-disabled="true"':''}><span class="gico" style="background:${x.bg}">${x.ico}</span><span class="gtx"><b>${T(x.t)}</b><span>${T(x.d)}</span><em>${x.soon?T({ar:'قريبًا ⏳',en:'Coming soon ⏳'}):T(x.tag)}</em></span>${x.soon?'':'<span class="gplay">▶</span>'}</button>`).join('')}</div>`;
@@ -1644,7 +1659,7 @@ function gTF(){ const box=gInner(); const qs=shuf(tfBank()).slice(0,8); let i=0,
       <p class="gstmt">${chem(T(q.s))}</p>
       <div class="gtf"><button class="btn gT" data-v="1">✔ ${T({ar:'صح',en:'True'})}</button><button class="btn gF" data-v="0">✘ ${T({ar:'غلط',en:'False'})}</button></div>
       <div id="gFb"></div>`;
-    box.querySelectorAll('.gtf button').forEach(b=>b.onclick=()=>{ const ok=(b.dataset.v==='1')===q.ok; box.querySelectorAll('.gtf button').forEach(x=>x.disabled=true); b.classList.add(ok?'good':'bad');
+    gPick(box,'.gtf button',b=>{ const ok=(b.dataset.v==='1')===q.ok; box.querySelectorAll('.gtf button').forEach(x=>x.disabled=true); b.classList.add(ok?'good':'bad');
       if(ok){ right++; gAdd(10); streak++; gSay(streak>=3?{ar:`${streak} ورا بعض! 🔥 إنت ماشي صاروخ`,en:`${streak} in a row! 🔥`}:{ar:'برافو عليك 👏',en:'Well done 👏'},3000); } else { streak=0; gSay({ar:'ولا يهمك 😊 اقرا التفسير كويس، هو ده المهم',en:'No worries 😊 read the explanation — that’s what matters'},4000); } 
       $('#gFb').innerHTML=`<div class="fb ${ok?'ok':'no'}"><b>${ok?T({ar:'برافو! +10 ✔',en:'Correct! +10 ✔'}):T({ar:'مش بالظبط ✘',en:'Not quite ✘'})}</b> — ${q.ok?T({ar:'العبارة صح. ',en:'The statement is true. '}):T({ar:'العبارة غلط، والصح: ',en:'It is false. Correct idea: '})}${chem(T(q.why))}</div><button class="btn blue" id="gNext">${T({ar:'اللي بعده ←',en:'Next →'})}</button>`;
       logEv('game_answer',`tf:${q.c}:${ok?1:0}`); $('#gNext').onclick=()=>{i++;show()}; }); };
@@ -1670,7 +1685,7 @@ function gWheel(){ const box=gInner(); let rot=0, busy=false;
   function ask(w){ const u=unitById(w.u), q=u.quiz[Math.floor(Math.random()*u.quiz.length)]; logEv('game_spin',w.u+':'+q.id); gSay({ar:`وقفت على "${T(w.t)}" 🎯 ركّز وجاوب`,en:`Landed on "${T(w.t)}" 🎯 Focus and answer`},3500,true);
     $('#wQ').innerHTML=`<div class="gtop"><span class="pill" style="background:${w.c}22;color:${w.c}">🎯 ${T(w.t)}</span><span class="pill soft">${T({ar:'الدرس',en:'Lesson'})} ${u.n}</span></div>
       <p class="gstmt">${chem(T(q.q))}</p>${q.o.map((o,j)=>`<button class="opt" data-j="${j}"><span class="k">${j+1}</span><span>${chem(T(o))}</span></button>`).join('')}<div id="wFb"></div>`;
-    $('#wQ').querySelectorAll('.opt').forEach(b=>b.onclick=()=>{ const j=+b.dataset.j, ok=j===q.a; $('#wQ').querySelectorAll('.opt').forEach(x=>x.disabled=true);
+    gPick($('#wQ'),'.opt',b=>{ const j=+b.dataset.j, ok=j===q.a; $('#wQ').querySelectorAll('.opt').forEach(x=>x.disabled=true);
       b.classList.add(ok?'good':'bad'); if(!ok) $('#wQ').querySelector(`.opt[data-j="${q.a}"]`).classList.add('good');
       if(ok) gAdd(15); logEv('game_answer',`wheel:${q.id}:${ok?1:0}`); gSay(ok?{ar:'+15 نقطة 🎉 لفّ تاني!',en:'+15 points 🎉 Spin again!'}:{ar:'ولا يهمك 😊 بص على الإجابة الصح والتفسير، ولفّ تاني',en:'No worries 😊 check the explanation and spin again'},4000,true);
       $('#wFb').innerHTML=`<div class="fb ${ok?'ok':'no'}"><b>${ok?T({ar:'برافو! +15 🎉',en:'Correct! +15 🎉'}):T({ar:'مش بالظبط ✘',en:'Not quite ✘'})}</b>${q.x?' — '+chem(T(q.x)):''}</div>`;
@@ -1688,17 +1703,23 @@ function gKc(){ const box=gInner(); const rx=shuf(KC_RX); let i=0, right=0;
       <p class="muted">${T({ar:'دوس على بطاقة المادة، وبعدين دوس على المكان الصح ليها.',en:'Tap a substance card, then tap where it belongs.'})}</p>
       <div class="kcards" id="kPool">${r.sp.map((x,j)=>`<button class="kcard" data-j="${j}">${chem('$'+(x.co>1?x.co:'')+x.f+'('+x.ph+')$')}</button>`).join('')}</div>
       <div class="kzones"><div class="kz" data-z="n"><b>${T({ar:'⬆ البسط (فوق)',en:'⬆ Numerator'})}</b><div class="kzin"></div></div><div class="kz" data-z="d"><b>${T({ar:'⬇ المقام (تحت)',en:'⬇ Denominator'})}</b><div class="kzin"></div></div><div class="kz out" data-z="o"><b>${T({ar:'🚫 مايتكتبش',en:'🚫 Omitted'})}</b><div class="kzin"></div></div></div>
-      <div class="eqblock" id="kPrev">${chem('$K_{c}=?$')}</div><div class="ctrls"><button class="btn purple" id="kChk">✔ ${T({ar:'تحقّق',en:'Check'})}</button></div><div id="gFb"></div>`;
-    const prev=()=>{ $('#kPrev').innerHTML=chem(kexpr(r.sp.filter((x,j)=>place[j]==='n'),r.sp.filter((x,j)=>place[j]==='d'))); };
-    box.querySelectorAll('.kcard').forEach(c=>c.onclick=()=>{ box.querySelectorAll('.kcard').forEach(x=>x.classList.remove('sel')); c.classList.add('sel'); sel=c; });
-    box.querySelectorAll('.kz').forEach(z=>z.onclick=()=>{ if(!sel){ toast(T({ar:'اختار بطاقة الأول 👆',en:'Pick a card first'})); return; } z.querySelector('.kzin').appendChild(sel); place[sel.dataset.j]=z.dataset.z; sel.classList.remove('sel'); sel=null; prev(); });
+      <div class="eqblock" id="kPrev">${chem('$K_{c}=?$')}</div><div class="ctrls kctrl"><button class="btn ghost sm" id="kUndo">↩ ${T({ar:'تراجع',en:'Undo'})}</button><button class="btn ghost sm" id="kReset">🔄 ${T({ar:'ابدأ من الأول',en:'Start over'})}</button><button class="btn purple" id="kChk">✔ ${T({ar:'تأكيد وتحقّق',en:'Submit & check'})}</button></div><p class="muted ktip">${T({ar:'عايز ترجّع بطاقة؟ دوس عليها، وبعدين دوس على مكانها الجديد أو على مكان البطاقات فوق.',en:'To move a card back, tap it, then tap a new place or the card area above.'})}</p><div id="gFb"></div>`;
+    const hist=[]; const pool=$('#kPool');
+    const prev=()=>{ $('#kPrev').innerHTML=chem(kexpr(r.sp.filter((x,j)=>place[j]==='n'),r.sp.filter((x,j)=>place[j]==='d'))); $('#kUndo').disabled=!hist.length; $('#kReset').disabled=!Object.keys(place).length; };
+    const moveTo=(c,z)=>{ const j=c.dataset.j; if(z==='p'){ pool.appendChild(c); delete place[j]; } else { box.querySelector(`.kz[data-z="${z}"] .kzin`).appendChild(c); place[j]=z; } };
+    box.querySelectorAll('.kcard').forEach(c=>c.onclick=e=>{ e.stopPropagation(); if(c.classList.contains('good')||c.classList.contains('bad')) return; if(sel===c){ c.classList.remove('sel'); sel=null; return; } box.querySelectorAll('.kcard').forEach(x=>x.classList.remove('sel')); c.classList.add('sel'); sel=c; });
+    box.querySelectorAll('.kz').forEach(z=>z.onclick=()=>{ if(!sel){ toast(T({ar:'اختار بطاقة الأول 👆',en:'Pick a card first'})); return; } hist.push([sel,place[sel.dataset.j]||'p']); moveTo(sel,z.dataset.z); sel.classList.remove('sel'); sel=null; prev(); });
+    pool.onclick=()=>{ if(!sel||!place[sel.dataset.j]) return; hist.push([sel,place[sel.dataset.j]]); moveTo(sel,'p'); sel.classList.remove('sel'); sel=null; prev(); };
+    $('#kUndo').onclick=()=>{ const h=hist.pop(); if(!h) return; moveTo(h[0],h[1]); box.querySelectorAll('.kcard').forEach(x=>x.classList.remove('sel')); sel=null; prev(); };
+    $('#kReset').onclick=()=>{ box.querySelectorAll('.kcard').forEach(c=>{ c.classList.remove('sel'); moveTo(c,'p'); }); hist.length=0; sel=null; prev(); };
+    prev();
     $('#kChk').onclick=()=>{ if(Object.keys(place).length<r.sp.length){ toast(T({ar:'حط كل البطاقات الأول 🧩',en:'Place every card first'})); gSay({ar:'لسه فيه بطاقات ما حطّتهاش مكانها 🧩',en:'Some cards are still unplaced 🧩'},3000); return; }
       let all=true; r.sp.forEach((x,j)=>{ const ok=place[j]===where(x); if(!ok) all=false; box.querySelector(`.kcard[data-j="${j}"]`).classList.add(ok?'good':'bad'); });
       const corr=kexpr(r.sp.filter(x=>where(x)==='n'),r.sp.filter(x=>where(x)==='d'));
       if(all){ right++; gAdd(20); gSay({ar:'تحفة 🎉 +20 نقطة! المعامل بقى أُس زي ما اتعلمنا',en:'Brilliant 🎉 +20! Coefficients became powers'},4000,true); }
       else { const sl=r.sp.some((x,j)=>where(x)==='o'&&place[j]!=='o'); gSay(sl?{ar:'خلّي بالك 👀 المادة الصلبة والسائل النقي تركيزهم ثابت فما بيتكتبوش',en:'Careful 👀 pure solids and liquids are omitted'}:{ar:'افتكر 👀 النواتج فوق والمتفاعلات تحت',en:'Remember 👀 products on top, reactants below'},5000,true); }
       logEv('game_answer',`kc:${r.id}:${all?1:0}`);
-      $('#kChk').remove(); box.querySelectorAll('.kcard,.kz').forEach(x=>x.onclick=null);
+      box.querySelector('.kctrl').remove(); box.querySelector('.ktip')?.remove(); box.querySelectorAll('.kcard,.kz').forEach(x=>x.onclick=null); pool.onclick=null;
       $('#gFb').innerHTML=`<div class="fb ${all?'ok':'no'}"><b>${all?T({ar:'صح! +20 ✔',en:'Correct! +20 ✔'}):T({ar:'مش بالظبط ✘',en:'Not quite ✘'})}</b> ${T({ar:'التعبير الصح:',en:'Correct expression:'})} <span>${chem(corr)}</span></div><button class="btn blue" id="gNext">${T({ar:'المعادلة اللي بعدها ←',en:'Next reaction →'})}</button>`;
       $('#gNext').onclick=()=>{i++;show()}; }; };
   show(); }
@@ -1727,7 +1748,7 @@ function gLab(){ const box=gInner(); S.games=S.games||{pts:0,ok:0}; const L=S.ga
         <p class="gstmt">${chem(T(q.q))}</p>${q.o.map((o,j)=>`<button class="opt" data-j="${j}"><span class="k">${j+1}</span><span>${chem(T(o))}</span></button>`).join('')}<div id="gFb"></div>
         <div class="ctrls"><button class="btn ghost sm" id="lMap">🗺️ ${T({ar:'الخريطة',en:'Map'})}</button></div>`;
       $('#lMap').onclick=map;
-      box.querySelectorAll('.opt').forEach(b=>b.onclick=()=>{ const j=+b.dataset.j, ok=j===q.a; logEv('game_answer',`lab:${q.id}:${ok?1:0}`);
+      gPick(box,'.opt',b=>{ const j=+b.dataset.j, ok=j===q.a; logEv('game_answer',`lab:${q.id}:${ok?1:0}`);
         if(!ok){ b.classList.add('bad'); b.disabled=true; const H=HINTS[q.id]?.h?.[0]; $('#gFb').innerHTML=`<div class="fb hint">🔒 ${T({ar:'القفل ما اتفتحش… جرّب تاني.',en:'The lock didn’t open… try again.'})}${H?' 💡 '+chem(T(H)):''}</div>`; gSay({ar:'القفل لسه مقفول 🔒 خد التلميح ده وجرّب تاني',en:'Still locked 🔒 use the hint and try again'},4000,true); return; }
         box.querySelectorAll('.opt').forEach(x=>x.disabled=true); b.classList.add('good'); qi++;
         if(qi<qs.length){ $('#gFb').innerHTML=`<div class="fb ok">🔑 ${T({ar:'لقيت مفتاح! كمّل.',en:'You found a key! Keep going.'})}</div><button class="btn blue" id="gNext">${T({ar:'اللي بعده ←',en:'Next →'})}</button>`; gSay({ar:'لقيت مفتاح 🔑 كمّل!',en:'Key found 🔑 keep going!'},2500,true); $('#gNext').onclick=ask; }
@@ -1742,7 +1763,7 @@ function gMatch(){ const box=gInner(); const items=shuf(gameDefs()).slice(0,5); 
   box.innerHTML=`<p class="muted">${T({ar:'اختار مفهوم من العمود الأول، وبعدين اختار تعريفه من العمود التاني. كل توصيلة صح = 10 نقط.',en:'Pick a concept, then its description. Each correct match = 10 points.'})}</p>
     <div class="gmatch"><div><h3>${T({ar:'المفهوم',en:'Concept'})}</h3>${items.map(x=>`<button class="gcard gc" data-c="${x.c}">${x.name}</button>`).join('')}</div>
     <div><h3>${T({ar:'التعريف أو الوصف',en:'Description'})}</h3>${defs.map(x=>`<button class="gcard gd" data-c="${x.c}">${chem(x.d)}</button>`).join('')}</div></div><div id="gFb"></div>`;
-  box.querySelectorAll('.gc').forEach(b=>b.onclick=()=>{ if(b.classList.contains('good')) return; box.querySelectorAll('.gc').forEach(x=>x.classList.remove('sel')); b.classList.add('sel'); sel=b; });
+  box.querySelectorAll('.gc').forEach(b=>b.onclick=()=>{ if(b.classList.contains('good')) return; if(sel===b){ b.classList.remove('sel'); sel=null; return; } box.querySelectorAll('.gc').forEach(x=>x.classList.remove('sel')); b.classList.add('sel'); sel=b; });
   box.querySelectorAll('.gd').forEach(b=>b.onclick=()=>{ if(!sel||b.classList.contains('good')) { if(!sel) toast(T({ar:'اختار المفهوم الأول 👈',en:'Pick a concept first'})); return; } tries++;
     if(b.dataset.c===sel.dataset.c){ [b,sel].forEach(x=>{x.classList.remove('sel');x.classList.add('good');x.disabled=true}); sel=null; done++; gAdd(10); logEv('game_answer','match:'+b.dataset.c+':1'); if(done<items.length) gSay({ar:'صح كده 👌 كمّل!',en:'Correct 👌 keep going!'},2500);
       if(done===items.length){ gSay(tries<=items.length+1?{ar:'وصّلتهم كلهم من غير غلط تقريبًا 🤩 إيه الحلاوة دي!',en:'Almost no mistakes 🤩 amazing!'}:{ar:'خلصتهم كلهم 🎉 الجولة الجاية حاول بمحاولات أقل',en:'All matched 🎉 try fewer tries next time'},6000,true); $('#gFb').innerHTML=`<div class="gend"><p>${T({ar:`خلصت التوصيلات كلها في ${tries} ${tries<=10&&tries>2?'محاولات':'محاولة'} 🎉`,en:`All matched in ${tries} tries 🎉`})}</p><button class="btn blue" id="gAgain">🔄 ${T({ar:'جولة جديدة',en:'New round'})}</button></div>`; logEv('game_round','match:'+tries); $('#gAgain').onclick=()=>gMatch(); } }
