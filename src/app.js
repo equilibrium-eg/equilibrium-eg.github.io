@@ -71,6 +71,7 @@ function nav(){
    <div class="navmenu" id="navmenu" role="menu">
     <button role="menuitem" onclick="menuGo(()=>go('dashboard'))">${ART.i.home}<span>${T({ar:'الرئيسية',en:'Home'})}</span></button>
     <button role="menuitem" onclick="menuGo(()=>go('report'))">${ART.i.chart}<span>${T({ar:'نتائجك',en:'Results'})}</span></button>
+    <button role="menuitem" onclick="menuGo(()=>go('games'))"><span class="mi-emo">🎮</span><span>${T({ar:'ساحة الألعاب',en:'Game zone'})}</span></button>
     <button role="menuitem" onclick="menuGo(openChat)">${ART.i.help}<span>${T({ar:'المساعدة',en:'Help'})}</span></button>
     <button role="menuitem" onclick="menuGo(toggleLang)">${ART.i.globe}<span>${LANG==='ar'?'English':'العربية'}</span></button>
     <hr>
@@ -95,7 +96,7 @@ function render(){
   if(!USER && r!=='login') r='login';
   if(USER && r==='login') r=S.pre?'dashboard':'welcome';
   if(USER && !S.pre && !['welcome','pretest'].includes(r)) r='welcome';
-  const V={login:vLogin, welcome:vWelcome, pretest:()=>vTest('pre'), posttest:()=>vTest('post'), dashboard:vDash, path:vPath, report:vReport};
+  const V={login:vLogin, welcome:vWelcome, pretest:()=>vTest('pre'), posttest:()=>vTest('post'), dashboard:vDash, path:vPath, report:vReport, games:vGames};
   const html = /^u[1-6]$/.test(r) ? vUnit(r) : (V[r]||vDash)();
   $('#app').innerHTML = nav() + `<main class="wrap" id="main">${chem(html)}</main>`;
   $('#fabWrap').style.display = USER?'':'none';
@@ -448,6 +449,46 @@ function vReport(){
 const CTX={unit:null,q:null,wrong:null,lvl:{}}; let CHAT=[];
 const norm=s=>String(s).toLowerCase().replace(/[ً-ْـ]/g,'').replace(/[أإآ]/g,'ا').replace(/ة/g,'ه').replace(/ى/g,'ي').replace(/[₀-₉]/g,d=>'0123456789'['₀₁₂₃₄₅₆₇₈₉'.indexOf(d)]);
 const STARTERS=[{k:'simple',ar:'اشرح لي مفهوم بطريقة أبسط',en:'Explain a concept more simply'},{k:'hint',ar:'ساعدني في السؤال من غير ما تقول الإجابة',en:'Help me without giving the answer'},{k:'why',ar:'وضّح لي سبب خطأ إجابتي',en:'Why was my answer wrong?'},{k:'cmp',ar:'الفرق بين الحرارة والعامل الحفاز؟',en:'Temperature vs catalyst?'},{k:'act',ar:'رشّح لي نشاط لنقطة ضعفي',en:'Suggest an activity for my weak point'}];
+
+/* ---- GAME ZONE (built only from the platform's own concepts & misconceptions) ---- */
+const shuf=a=>{a=a.slice();for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]]}return a};
+function gameDefs(){ return Object.keys(CONCEPTS).filter(c=>EXPLAIN[c]).map(c=>{ let d=T(EXPLAIN[c].s); const k=d.indexOf(':'); if(k>0&&k<40) d=d.slice(k+1).trim(); if(c==='c_cat') d=d.replace(/^العامل الحفاز\s*/,'').replace(/^A catalyst\s*/,'It '); { const ss=d.split(/(?<=\.)\s/); let t=''; for(const s of ss){ t=t?t+' '+s:s; if(t.length>=60) break; } d=t; } return {c,name:T(CONCEPTS[c]),d}; }); }
+function tfBank(){ const out=[]; UNITS.forEach(u=>u.mis.forEach(m=>{ out.push({s:m.w,ok:false,why:m.r,c:m.c}); out.push({s:m.r,ok:true,why:EXPLAIN[m.c]?.s||m.r,c:m.c}); })); return out; }
+function gLevel(p){ return p>=200?T({ar:'خبير 🏆',en:'Expert 🏆'}):p>=80?T({ar:'متمكّن ⭐',en:'Skilled ⭐'}):T({ar:'مبتدئ 🌱',en:'Beginner 🌱'}); }
+function gAdd(n){ S.games=S.games||{pts:0,ok:0}; S.games.pts+=n; S.games.ok++; save(); gScore(); }
+function gScore(){ const g=S.games||{pts:0,ok:0}; const set=(id,v)=>{const e=document.getElementById(id); if(e) e.textContent=v}; set('gPts',g.pts); set('gOk',g.ok); set('gLvl',gLevel(g.pts)); }
+function vGames(){
+  AFTER.push(()=>{ gScore(); document.querySelectorAll('.gtab').forEach(b=>b.onclick=()=>gOpen(b.dataset.g)); gOpen('tf'); });
+  return `<section class="card ghead"><h1>🎮 ${T({ar:'ساحة الألعاب',en:'Game zone'})}</h1>
+    <p class="muted">${T({ar:'العب، واكسب نقط، واعرف فهمك فين — كل الأسئلة من دروس المنصة.',en:'Play, earn points and check your understanding — all items come from the platform lessons.'})}</p>${reviewTag()}
+    <div class="gstats"><div><b id="gPts">0</b><span>${T({ar:'نقطة',en:'points'})}</span></div><div><b id="gOk">0</b><span>${T({ar:'إجابة صحيحة',en:'correct'})}</span></div><div><b id="gLvl"></b><span>${T({ar:'المستوى',en:'level'})}</span></div></div>
+    <div class="gtabs"><button class="gtab" data-g="tf">✔✘ ${T({ar:'صح ولا غلط؟',en:'True or false?'})}</button><button class="gtab" data-g="match">🔗 ${T({ar:'طابق واكسب',en:'Match & win'})}</button></div></section>
+    <section class="card" id="gBox"></section>`;
+}
+function gOpen(g){ document.querySelectorAll('.gtab').forEach(b=>b.classList.toggle('on',b.dataset.g===g)); logEv('game_open',g); (g==='tf'?gTF:gMatch)(); }
+function gTF(){ const box=$('#gBox'); const qs=shuf(tfBank()).slice(0,8); let i=0, right=0;
+  const show=()=>{ if(i>=qs.length){ box.innerHTML=`<div class="gend"><div class="gbig">${right}/${qs.length}</div><p>${right>=6?T({ar:'تحفة! 🔥 فهمك للمفاهيم دي قوي',en:'Great! 🔥 Your understanding is strong'}):T({ar:'كويس! 💪 الجولة الجاية هتبقى أحسن',en:'Good! 💪 Next round will be better'})}</p><button class="btn blue" id="gAgain">🔄 ${T({ar:'جولة جديدة',en:'New round'})}</button></div>`; logEv('game_round','tf:'+right+'/'+qs.length); $('#gAgain').onclick=gTF; return; }
+    const q=qs[i];
+    box.innerHTML=`<div class="gtop"><span class="pill">${T({ar:'عبارة',en:'Statement'})} ${i+1}/${qs.length}</span><span class="pill soft">${T(CONCEPTS[q.c])}</span></div>
+      <p class="gstmt">${chem(T(q.s))}</p>
+      <div class="gtf"><button class="btn gT" data-v="1">✔ ${T({ar:'صح',en:'True'})}</button><button class="btn gF" data-v="0">✘ ${T({ar:'غلط',en:'False'})}</button></div>
+      <div id="gFb"></div>`;
+    box.querySelectorAll('.gtf button').forEach(b=>b.onclick=()=>{ const ok=(b.dataset.v==='1')===q.ok; box.querySelectorAll('.gtf button').forEach(x=>x.disabled=true); b.classList.add(ok?'good':'bad');
+      if(ok){ right++; gAdd(10); } 
+      $('#gFb').innerHTML=`<div class="fb ${ok?'ok':'no'}"><b>${ok?T({ar:'برافو! +10 ✔',en:'Correct! +10 ✔'}):T({ar:'مش بالظبط ✘',en:'Not quite ✘'})}</b> — ${q.ok?T({ar:'العبارة صح. ',en:'The statement is true. '}):T({ar:'العبارة غلط، والصح: ',en:'It is false. Correct idea: '})}${chem(T(q.why))}</div><button class="btn blue" id="gNext">${T({ar:'اللي بعده ←',en:'Next →'})}</button>`;
+      logEv('game_answer',`tf:${q.c}:${ok?1:0}`); $('#gNext').onclick=()=>{i++;show()}; }); };
+  show(); }
+function gMatch(){ const box=$('#gBox'); const items=shuf(gameDefs()).slice(0,5); const defs=shuf(items); let sel=null, tries=0, done=0;
+  box.innerHTML=`<p class="muted">${T({ar:'اختار مفهوم من العمود الأول، وبعدين اختار تعريفه من العمود التاني. كل توصيلة صح = 10 نقط.',en:'Pick a concept, then its description. Each correct match = 10 points.'})}</p>
+    <div class="gmatch"><div><h3>${T({ar:'المفهوم',en:'Concept'})}</h3>${items.map(x=>`<button class="gcard gc" data-c="${x.c}">${x.name}</button>`).join('')}</div>
+    <div><h3>${T({ar:'التعريف أو الوصف',en:'Description'})}</h3>${defs.map(x=>`<button class="gcard gd" data-c="${x.c}">${chem(x.d)}</button>`).join('')}</div></div><div id="gFb"></div>`;
+  box.querySelectorAll('.gc').forEach(b=>b.onclick=()=>{ if(b.classList.contains('good')) return; box.querySelectorAll('.gc').forEach(x=>x.classList.remove('sel')); b.classList.add('sel'); sel=b; });
+  box.querySelectorAll('.gd').forEach(b=>b.onclick=()=>{ if(!sel||b.classList.contains('good')) { if(!sel) toast(T({ar:'اختار المفهوم الأول 👈',en:'Pick a concept first'})); return; } tries++;
+    if(b.dataset.c===sel.dataset.c){ [b,sel].forEach(x=>{x.classList.remove('sel');x.classList.add('good');x.disabled=true}); sel=null; done++; gAdd(10); logEv('game_answer','match:'+b.dataset.c+':1');
+      if(done===items.length){ $('#gFb').innerHTML=`<div class="gend"><p>${T({ar:`خلصت التوصيلات كلها في ${tries} ${tries<=10&&tries>2?'محاولات':'محاولة'} 🎉`,en:`All matched in ${tries} tries 🎉`})}</p><button class="btn blue" id="gAgain">🔄 ${T({ar:'جولة جديدة',en:'New round'})}</button></div>`; logEv('game_round','match:'+tries); $('#gAgain').onclick=gMatch; } }
+    else { b.classList.add('bad'); setTimeout(()=>b.classList.remove('bad'),600); logEv('game_answer','match:'+sel.dataset.c+':0'); } });
+}
+
 /* Acquire coach bubble beside the floating button: text + optional action buttons, close (✕) and "mute for a while" */
 const COACH=(()=>{ let t=null, last=0;
   const muted=()=>!!store.get('cot:mute',false);
