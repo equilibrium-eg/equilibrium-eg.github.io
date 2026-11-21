@@ -468,13 +468,14 @@ function vGames(){
 const GAMES=[
   {g:'tf',ico:'✔✘',bg:'#e6f7ee',t:{ar:'صح ولا غلط؟',en:'True or false?'},d:{ar:'عبارات علمية، قرّر هي صح ولا غلط، وشوف التفسير.',en:'Decide if each statement is true or false, then see why.'},tag:{ar:'تصحيح المفاهيم',en:'Misconceptions'}},
   {g:'match',ico:'🔗',bg:'#eaf1fe',t:{ar:'طابق واكسب',en:'Match & win'},d:{ar:'وصّل كل مفهوم علمي بتعريفه بأقل عدد محاولات.',en:'Match each concept to its description in as few tries as possible.'},tag:{ar:'مراجعة سريعة',en:'Quick review'}},
+  {g:'wheel',ico:'🎡',bg:'#e3f6f6',t:{ar:'عجلة الحظ الكيميائية',en:'Chemistry wheel'},d:{ar:'لفّ العجلة، تقف على درس، وجاوب سؤال منه.',en:'Spin the wheel, land on a lesson, answer a question from it.'},tag:{ar:'تحدي سريع',en:'Quick challenge'}},
   {g:'kc',ico:'🧩',bg:'#fff4e0',soon:1,t:{ar:'رتّب معادلتك',en:'Build the expression'},d:{ar:'رتّب البطاقات عشان تبني تعبير ثابت الاتزان صح.',en:'Arrange cards to build the equilibrium-constant expression.'},tag:{ar:'تحدي التفكير',en:'Thinking'}},
   {g:'lab',ico:'🔐',bg:'#f3eefc',soon:1,t:{ar:'اهرب من مختبر الاتزان',en:'Escape the equilibrium lab'},d:{ar:'ألغاز علمية، ماتعديش للأوضة الجاية غير لما تحل اللغز.',en:'Science puzzles — solve each one to unlock the next room.'},tag:{ar:'حل المشكلات',en:'Problem solving'}}];
 function gInner(){ const b=$('#gBox'); let i=b.querySelector('#gIn'); if(!i){ b.innerHTML='<div id="gIn"></div>'; i=b.querySelector('#gIn'); } return i; }
 function gMenu(){ const box=$('#gBox');
   box.innerHTML=`<h2 class="gmh">${T({ar:'اختار اللعبة 👇',en:'Pick a game 👇'})}</h2><div class="glist">${GAMES.map(x=>`<button class="gitem${x.soon?' soon':''}" data-g="${x.g}" ${x.soon?'aria-disabled="true"':''}><span class="gico" style="background:${x.bg}">${x.ico}</span><span class="gtx"><b>${T(x.t)}</b><span>${T(x.d)}</span><em>${x.soon?T({ar:'قريبًا ⏳',en:'Coming soon ⏳'}):T(x.tag)}</em></span>${x.soon?'':'<span class="gplay">▶</span>'}</button>`).join('')}</div>`;
   box.querySelectorAll('.gitem').forEach(b=>b.onclick=()=>{ if(b.classList.contains('soon')) return toast(T({ar:'اللعبة دي جاية قريب 😉',en:'Coming soon 😉'})); gOpen(b.dataset.g); }); }
-function gOpen(g){ logEv('game_open',g); (g==='tf'?gTF:gMatch)(); const box=$('#gBox'); const x=GAMES.find(k=>k.g===g);
+function gOpen(g){ logEv('game_open',g); ({tf:gTF,match:gMatch,wheel:gWheel}[g])(); const box=$('#gBox'); const x=GAMES.find(k=>k.g===g);
   box.insertAdjacentHTML('afterbegin',`<div class="gbar"><button class="btn ghost sm" id="gBack">→ ${T({ar:'قايمة الألعاب',en:'Games menu'})}</button><b>${x.ico} ${T(x.t)}</b></div>`);
   $('#gBack').onclick=gMenu; box.scrollIntoView({behavior:'smooth',block:'start'}); }
 function gTF(){ const box=gInner(); const qs=shuf(tfBank()).slice(0,8); let i=0, right=0;
@@ -489,6 +490,33 @@ function gTF(){ const box=gInner(); const qs=shuf(tfBank()).slice(0,8); let i=0,
       $('#gFb').innerHTML=`<div class="fb ${ok?'ok':'no'}"><b>${ok?T({ar:'برافو! +10 ✔',en:'Correct! +10 ✔'}):T({ar:'مش بالظبط ✘',en:'Not quite ✘'})}</b> — ${q.ok?T({ar:'العبارة صح. ',en:'The statement is true. '}):T({ar:'العبارة غلط، والصح: ',en:'It is false. Correct idea: '})}${chem(T(q.why))}</div><button class="btn blue" id="gNext">${T({ar:'اللي بعده ←',en:'Next →'})}</button>`;
       logEv('game_answer',`tf:${q.c}:${ok?1:0}`); $('#gNext').onclick=()=>{i++;show()}; }); };
   show(); }
+
+const WHEEL=[{u:'u1',c:'#2f6fdb',t:{ar:'الاتزان الديناميكي',en:'Dynamic eq.'},l:{ar:'الاتزان|الديناميكي',en:'Dynamic|equilibrium'}},{u:'u2',c:'#21a06b',t:{ar:'فعل الكتلة',en:'Mass action'},l:{ar:'فعل|الكتلة',en:'Mass|action'}},{u:'u3',c:'#7a4fd6',t:{ar:'ثابت الاتزان Kc',en:'Kc'},l:{ar:'ثابت|الاتزان Kc',en:'Constant|Kc'}},{u:'u4',c:'#e0663a',t:{ar:'الحرارة',en:'Temperature'},l:{ar:'الحرارة',en:'Temperature'}},{u:'u5',c:'#1b9aa8',t:{ar:'الضغط و Kp',en:'Pressure & Kp'},l:{ar:'الضغط|و Kp',en:'Pressure|& Kp'}},{u:'u6',c:'#e2a72e',t:{ar:'العامل الحفاز',en:'Catalyst'},l:{ar:'العامل|الحفاز',en:'The|catalyst'}}];
+function wheelSvg(){ const n=WHEEL.length, R=150, cx=160, cy=160; let s='';
+  WHEEL.forEach((w,i)=>{ const a0=(i*360/n-90)*Math.PI/180, a1=((i+1)*360/n-90)*Math.PI/180;
+    s+=`<path d="M${cx} ${cy} L${cx+R*Math.cos(a0)} ${cy+R*Math.sin(a0)} A${R} ${R} 0 0 1 ${cx+R*Math.cos(a1)} ${cy+R*Math.sin(a1)}Z" fill="${w.c}" stroke="#fff" stroke-width="3"/>`;
+    const mid=(i*360/n+360/n/2)*Math.PI/180, px=cx+R*0.63*Math.sin(mid), py=cy-R*0.63*Math.cos(mid), ls=T(w.l).split('|');
+    s+=`<g class="wl" style="transform-origin:${px.toFixed(1)}px ${py.toFixed(1)}px"><text x="${px.toFixed(1)}" y="${(py-(ls.length-1)*9).toFixed(1)}" text-anchor="middle" dominant-baseline="middle" fill="#fff" font-weight="800" font-size="15">${ls.map((t,k)=>`<tspan x="${px.toFixed(1)}" dy="${k?18:0}">${t}</tspan>`).join('')}</text></g>`; });
+  return `<svg viewBox="0 0 320 320" class="wsvg" id="wSvg">${s}<circle cx="${cx}" cy="${cy}" r="30" fill="#fff" stroke="#f0b94a" stroke-width="7"/><text x="${cx}" y="${cy+2}" text-anchor="middle" dominant-baseline="middle" font-size="24">🎯</text></svg>`; }
+function gWheel(){ const box=gInner(); let rot=0, busy=false;
+  box.innerHTML=`<p class="muted">${T({ar:'دوس "لفّ العجلة"، العجلة هتقف على درس، وجاوب سؤال منه. كل إجابة صح = 15 نقطة.',en:'Spin, land on a lesson and answer one of its questions. Each correct answer = 15 points.'})}</p>
+    <div class="wwrap"><div class="wptr">▼</div>${wheelSvg()}</div>
+    <div class="wq" id="wQ"><p class="muted" style="text-align:center">${T({ar:'العجلة مستنياك… يلا لفّها! 🎡',en:'The wheel is waiting… spin it! 🎡'})}</p></div>
+    <div class="wbtns"><button class="btn blue" id="wSpin">🎡 ${T({ar:'لفّ العجلة',en:'Spin the wheel'})}</button></div>`;
+  const svg=$('#wSvg'), btn=$('#wSpin');
+  btn.onclick=()=>{ if(busy) return; busy=true; btn.disabled=true; const n=WHEEL.length, i=Math.floor(Math.random()*n);
+    const target=360-(i*360/n+360/n/2); rot+=360*5+((target-rot%360)+360)%360; svg.style.transform=`rotate(${rot}deg)`; svg.querySelectorAll('.wl').forEach(g=>g.style.transform=`rotate(${-rot}deg)`);
+    $('#wQ').innerHTML=`<p class="muted" style="text-align:center">${T({ar:'العجلة بتلف… بالتوفيق! 🤞',en:'Spinning… good luck! 🤞'})}</p>`;
+    setTimeout(()=>{ busy=false; ask(WHEEL[i]); },3300); };
+  function ask(w){ const u=unitById(w.u), q=u.quiz[Math.floor(Math.random()*u.quiz.length)]; logEv('game_spin',w.u+':'+q.id);
+    $('#wQ').innerHTML=`<div class="gtop"><span class="pill" style="background:${w.c}22;color:${w.c}">🎯 ${T(w.t)}</span><span class="pill soft">${T({ar:'الدرس',en:'Lesson'})} ${u.n}</span></div>
+      <p class="gstmt">${chem(T(q.q))}</p>${q.o.map((o,j)=>`<button class="opt" data-j="${j}"><span class="k">${j+1}</span><span>${chem(T(o))}</span></button>`).join('')}<div id="wFb"></div>`;
+    $('#wQ').querySelectorAll('.opt').forEach(b=>b.onclick=()=>{ const j=+b.dataset.j, ok=j===q.a; $('#wQ').querySelectorAll('.opt').forEach(x=>x.disabled=true);
+      b.classList.add(ok?'good':'bad'); if(!ok) $('#wQ').querySelector(`.opt[data-j="${q.a}"]`).classList.add('good');
+      if(ok) gAdd(15); logEv('game_answer',`wheel:${q.id}:${ok?1:0}`);
+      $('#wFb').innerHTML=`<div class="fb ${ok?'ok':'no'}"><b>${ok?T({ar:'برافو! +15 🎉',en:'Correct! +15 🎉'}):T({ar:'مش بالظبط ✘',en:'Not quite ✘'})}</b>${q.x?' — '+chem(T(q.x)):''}</div>`;
+      btn.disabled=false; btn.textContent='🎡 '+T({ar:'لفّ تاني',en:'Spin again'}); }); }
+}
 function gMatch(){ const box=gInner(); const items=shuf(gameDefs()).slice(0,5); const defs=shuf(items); let sel=null, tries=0, done=0;
   box.innerHTML=`<p class="muted">${T({ar:'اختار مفهوم من العمود الأول، وبعدين اختار تعريفه من العمود التاني. كل توصيلة صح = 10 نقط.',en:'Pick a concept, then its description. Each correct match = 10 points.'})}</p>
     <div class="gmatch"><div><h3>${T({ar:'المفهوم',en:'Concept'})}</h3>${items.map(x=>`<button class="gcard gc" data-c="${x.c}">${x.name}</button>`).join('')}</div>
