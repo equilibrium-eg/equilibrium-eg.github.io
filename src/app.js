@@ -799,3 +799,4 @@ function botInner(kind,arg){
 
 /* ================= BOOT ================= */
 applyDir(); renderChat(); render();
+INTRO.run(()=>{ VOICE.stop(); const rp=document.getElementById('rreplay'); if(rp) rp.click(); });
