@@ -1,6 +1,7 @@
 /* ================= CONFIG ================= */
 const CONFIG = {
   API_URL: 'https://script.google.com/macros/s/AKfycbwkTkQUCGk2qS5gro0e0cEB2YF1A8R0czG9KKu_HErutTg4woSlBZHNVTFFrP9pFrojmw/exec', // Google Apps Script Web App (logging)
+  certMinPost: 50,          // post-test % needed (with a finished path) to unlock the certificate
   showReviewTags: true,      // show "pending teacher approval" tags (turn off before launch)
   thresholds: { remedial: 49, support: 79 }, // 0–49 remedial · 50–79 support · 80–100 enrichment
   teacher: { ar:'أ. أروى يوسف', en:'Miss Arwa Yousef' }
@@ -478,7 +479,8 @@ function vReport(){
     ${Object.keys(CONCEPTS).map(c=>`<tr><td>${T(CONCEPTS[c])}</td><td>${st(pre,c)}</td><td>${S.fixed?.[c]?'<span class="dot g">✓</span>':'—'}</td><td>${st(post,c)}</td></tr>`).join('')}</table></div>
    <div class="card" style="margin-top:20px"><h2 style="margin-top:0">${T({ar:'نشاطك',en:'Your activity'})}</h2><p>${T({ar:'دروس مكتملة:',en:'Lessons completed:'})} <b>${done.length}/6</b> · ${T({ar:'تحديات محلولة:',en:'Challenges solved:'})} <b>${chal}/${CHALLENGES.length}</b></p>
     <h3>${T({ar:'الخطوات الجاية المقترحة',en:'Suggested next steps'})}</h3>${still.length?`<ul class="kp">${still.map(c=>`<li>${T({ar:'راجع',en:'Review'})} <a href="#${CONCEPTS[c].u}">${T(CONCEPTS[c])}</a></li>`).join('')}</ul>`:`<p>${T({ar:'ممتاز! جرّب تحديات المسار الإثرائي.',en:'Excellent! Try the enrichment challenges.'})}</p>`}
-    <p class="muted" style="font-size:.88rem">${T({ar:'الدرجة مؤشر واحد فقط، ولا تقيس كل ما تعلمته.',en:'A score is only one indicator; it does not measure everything you learned.'})}</p></div>`;
+    <p class="muted" style="font-size:.88rem">${T({ar:'الدرجة مؤشر واحد فقط، ولا تقيس كل ما تعلمته.',en:'A score is only one indicator; it does not measure everything you learned.'})}</p></div>
+   ${CERT.card()}`;
 }
 
 /* ================= ACQUIRE (free, content-based assistant) ================= */
