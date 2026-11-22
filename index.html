@@ -434,6 +434,9 @@ html[dir=ltr] .fab{padding:8px 10px 8px 18px}
 .kctrl{display:flex;flex-wrap:wrap;gap:8px;justify-content:center}.kctrl .btn:disabled{opacity:.45}
 .ktip{font-size:.82rem;text-align:center}
 #kPool{border-radius:14px}
+
+.coach-bub .cb-s{position:absolute;top:4px;inset-inline-end:30px;background:none;border:0;font-size:.95rem;padding:2px 4px}
+.coach-bub .cb-t{padding-inline-end:46px}
 </style>
 </head>
 <body>
@@ -1233,6 +1236,7 @@ function nav(){
     <button role="menuitem" onclick="menuGo(()=>go('report'))">${ART.i.chart}<span>${T({ar:'نتائجك',en:'Results'})}</span></button>
     <button role="menuitem" onclick="menuGo(()=>go('games'))"><span class="mi-emo">🎮</span><span>${T({ar:'ساحة الألعاب',en:'Game zone'})}</span></button>
     <button role="menuitem" onclick="menuGo(openChat)">${ART.i.help}<span>${T({ar:'المساعدة',en:'Help'})}</span></button>
+    <button role="menuitem" data-snd onclick="VOICE.toggle()">${VOICE.label()}</button>
     <button role="menuitem" onclick="menuGo(toggleLang)">${ART.i.globe}<span>${LANG==='ar'?'English':'العربية'}</span></button>
     <hr>
     <button role="menuitem" class="out" onclick="menuGo(logout)">${ART.i.out}<span>${T({ar:'خروج',en:'Logout'})}</span></button>
@@ -1260,7 +1264,7 @@ function render(){
   const html = /^u[1-6]$/.test(r) ? vUnit(r) : (V[r]||vDash)();
   $('#app').innerHTML = nav() + `<main class="wrap" id="main">${chem(html)}</main>`;
   $('#fabWrap').style.display = USER?'':'none';
-  CUR_ROUTE=r; document.body.dataset.route=r;
+  CUR_ROUTE=r; document.body.dataset.route=r; VOICE.stop();
   AFTER.splice(0).forEach(f=>{try{f()}catch(e){console.error(e)}});
   if(!/test$/.test(r)) COACH.hide();
   try{ COMPANION.onRoute(r); }catch(e){ console.error(e); }
@@ -1301,26 +1305,43 @@ function vLogin(){
     <div class="rbubble" id="rbub"><span id="rtxt"></span><i class="caret"></i></div>
     <div class="rbot" id="rbot">${ART.robotBig()}</div>
     <button type="button" class="btn ghost sm rskip" id="rreplay">↺ ${T({ar:'اسمع Acquire تاني',en:'Hear Acquire again'})}</button>
+    <button type="button" class="btn ghost sm rskip" data-snd onclick="VOICE.toggle()">${VOICE.label()}</button>
    </div></div>`;
 }
 
 /* Acquire guide: talks, grows, waves and points at what to fill */
+/* ---- Acquire voice: recorded lines in audio/<lang>/<id>.mp3 (ids = robot script numbers) ---- */
+const VOICE=(()=>{ let a=null, q=[], pending=null;
+  const on=()=>store.get('cot:sound',true)&&!store.get('cot:mute',false);
+  const src=id=>`audio/${LANG==='en'?'en':'ar'}/${String(id).padStart(2,'0')}.mp3`;
+  function next(){ const id=q.shift(); if(id==null){ a=null; return; } const rest=q.slice(); a=new Audio(src(id)); a.onended=next;
+    a.play().catch(()=>{ pending=[id,...rest]; q=[]; }); }
+  function play(ids){ stop(); if(!on()||ids==null) return; q=[].concat(ids).filter(x=>x!=null); pending=null; next(); }
+  function stop(){ q=[]; if(a){ a.onended=null; try{a.pause()}catch(e){} a=null; } }
+  const unlock=()=>{ if(pending&&on()){ const p=pending; pending=null; play(p); } };
+  ['pointerdown','keydown','touchstart'].forEach(ev=>document.addEventListener(ev,unlock,{capture:true}));
+  function set(v){ store.set('cot:sound',!!v); logEv('acquire_sound',v?'on':'off'); if(!v) stop(); document.querySelectorAll('[data-snd]').forEach(b=>b.innerHTML=label()); document.querySelectorAll('[data-sndi]').forEach(b=>b.textContent=icon()); }
+  const icon=()=>store.get('cot:sound',true)?'🔊':'🔇';
+  const label=()=>store.get('cot:sound',true)?'🔊 '+T({ar:'صوت الروبوت شغّال',en:'Robot voice on'}):'🔇 '+T({ar:'صوت الروبوت مقفول',en:'Robot voice off'});
+  return {play,stop,on,set,label,icon,toggle:()=>set(!store.get('cot:sound',true))};
+})();
+
 const GUIDE = (()=>{
   let timers=[], stage='', typing=null, live=false;
   const L = {
-    hi:{ar:'أهلًا بيك! 👋 هنبدأ تجربة تعليمية بشكل جديد خالص',en:'Hi there! 👋 We’re starting a totally new learning experience'},
-    ready:{ar:'جاااهز؟ 🤩',en:'Readyyy? 🤩'},
-    go:{ar:'يلا بينا يا أصحابي نبدأ! 🚀',en:'Let’s go, friends! 🚀'},
-    email:{ar:'اكتب الإيميل الشخصي بتاعك 📧',en:'Type your personal email 📧'},
-    phone:{ar:'تمام! 👌 وكمان رقم موبايلك 📱',en:'Great! 👌 And your mobile number 📱'},
-    consent:{ar:'آخر حاجة: علّم هنا بالموافقة ✅',en:'Last thing: tick the agreement here ✅'},
-    btn:{ar:'كده تمام! دوس هنا ونبدأ 🎉',en:'All set! Press here to start 🎉'}
+    hi:{v:1,ar:'أهلًا بيك! 👋 هنبدأ تجربة تعليمية بشكل جديد خالص',en:'Hi there! 👋 We’re starting a totally new learning experience'},
+    ready:{v:2,ar:'جاااهز؟ 🤩',en:'Readyyy? 🤩'},
+    go:{v:3,ar:'يلا بينا يا أصحابي نبدأ! 🚀',en:'Let’s go, friends! 🚀'},
+    email:{v:4,ar:'اكتب الإيميل الشخصي بتاعك 📧',en:'Type your personal email 📧'},
+    phone:{v:5,ar:'تمام! 👌 وكمان رقم موبايلك 📱',en:'Great! 👌 And your mobile number 📱'},
+    consent:{v:6,ar:'آخر حاجة: علّم هنا بالموافقة ✅',en:'Last thing: tick the agreement here ✅'},
+    btn:{v:7,ar:'كده تمام! دوس هنا ونبدأ 🎉',en:'All set! Press here to start 🎉'}
   };
   const $r = s=>document.querySelector(s);
   const clear=()=>{ timers.forEach(clearTimeout); timers=[]; clearInterval(typing); };
   const later=(ms,f)=>timers.push(setTimeout(()=>live&&f(),ms));
   function mood(cls){ const b=$r('#rbot'); if(!b)return; b.classList.remove('pop','jump','wave','point','big'); void b.offsetWidth; cls.split(' ').filter(Boolean).forEach(c=>b.classList.add(c)); }
-  function say(o){ const el=$r('#rtxt'); if(!el)return; const txt=T(o); clearInterval(typing); el.textContent=''; let i=0;
+  function say(o){ const el=$r('#rtxt'); if(!el)return; const txt=T(o); VOICE.play(o.v); clearInterval(typing); el.textContent=''; let i=0;
     const bub=$r('#rbub'); bub.classList.remove('show'); void bub.offsetWidth; bub.classList.add('show');
     if(matchMedia('(prefers-reduced-motion: reduce)').matches){ el.textContent=txt; return; }
     const chars=[...txt]; typing=setInterval(()=>{ el.textContent+=chars[i++]||''; if(i>=chars.length) clearInterval(typing); },32); }
@@ -1347,14 +1368,14 @@ const GUIDE = (()=>{
     const em=$r('#em'), ph=$r('#ph'), cs=$r('#cs');
     const onEdit=()=>{ if(timers.length){ clear(); } next(); };
     em.addEventListener('focus',()=>{ if(stage!=='#em'){ clear(); point('#em',L.email);} });
-    ph.addEventListener('focus',()=>{ if(stage!=='#ph'){ clear(); point('#ph',validEmail(em.value)?L.phone:{ar:'وكمان رقم موبايلك 📱',en:'And your mobile number 📱'});} });
+    ph.addEventListener('focus',()=>{ if(stage!=='#ph'){ clear(); point('#ph',validEmail(em.value)?L.phone:{v:5,ar:'وكمان رقم موبايلك 📱',en:'And your mobile number 📱'});} });
     em.addEventListener('input',()=>{ if(validEmail(em.value)&&stage==='#em'){ clear(); later(600,next); live=true; } });
     ph.addEventListener('input',()=>{ if(validPhone(ph.value)&&stage==='#ph'){ clear(); later(600,next); live=true; } });
     cs.addEventListener('change',onEdit);
     $r('#rreplay').onclick=intro;
     window.addEventListener('resize',()=>stage&&aim(stage));
     window.addEventListener('scroll',()=>stage&&aim(stage),{passive:true}); }
-  function oops(msg,sel){ clear(); live=true; stage=sel; say({ar:'🤔 '+msg,en:'🤔 '+msg}); mood('pop point'); highlight(sel); aim(sel); }
+  function oops(msg,sel){ clear(); live=true; stage=sel; say({v:{'#em':8,'#ph':9,'#csWrap':10}[sel],ar:'🤔 '+msg,en:'🤔 '+msg}); mood('pop point'); highlight(sel); aim(sel); }
   function stop(){ clear(); live=false; highlight(null); }
   window.addEventListener('hashchange',()=>{ if(!document.querySelector('#rstage')) stop(); });
   return {start,stop,oops};
@@ -1365,7 +1386,7 @@ function vWelcome(){
   const moods=[{k:'great',ar:'ممتاز',en:'Great'},{k:'good',ar:'كويس',en:'Good'},{k:'nervous',ar:'متوتر شوية',en:'A bit nervous'},{k:'tired',ar:'تعبان',en:'Tired'}];
   AFTER.push(()=>{ $$('.moods button').forEach(b=>b.onclick=()=>{S.mood=b.dataset.k;save();$$('.moods button').forEach(x=>x.classList.toggle('on',x===b));
     $('#moodR').textContent=T(MOOD_LINES[b.dataset.k]); WALKER.choose(b); logEv('mood',b.dataset.k)}); WALKER.start();
-    const sb=$('#startDx'); let told=false; const tell=()=>{ if(told) return; told=true; WALKER.hint(sb,T(OFFLINE_LINE)); logEv('robot_offline_hint',''); };
+    const sb=$('#startDx'); let told=false; const tell=()=>{ if(told) return; told=true; WALKER.hint(sb,T(OFFLINE_LINE)); VOICE.play(15); logEv('robot_offline_hint',''); };
     sb.addEventListener('mouseenter',tell); sb.addEventListener('focus',tell);
     if('IntersectionObserver' in window && matchMedia('(hover: none)').matches){ const io=new IntersectionObserver(es=>{ if(es.some(e=>e.isIntersecting)){ io.disconnect(); setTimeout(tell,400); } },{threshold:0.9}); io.observe(sb); } });
   const obj=[{ar:'تفسير الاتزان الديناميكي',en:'Explain dynamic equilibrium'},{ar:'تطبيق مبدأ لوشاتيليه',en:"Apply Le Chatelier's principle"},{ar:'كتابة واستخدام تعبيرات Kc و Kp',en:'Write and use Kc and Kp'},{ar:'تفسير أثر الحرارة والضغط على الاتزان و K',en:'Explain temperature and pressure effects on equilibrium and K'},{ar:'تفسير دور العامل الحفاز',en:'Explain the role of a catalyst'},{ar:'قراءة منحنيات المعدل والتركيز والطاقة',en:'Interpret rate, concentration and energy graphs'}];
@@ -1403,7 +1424,7 @@ const WALKER = (()=>{
   const page=r=>({x:r.left+scrollX, y:r.top+scrollY, w:r.width, h:r.height});
   function spotOn(btn){ const r=page(btn.getBoundingClientRect()), w=el.offsetWidth, h=el.offsetHeight; return {x:r.x+r.w/2-w/2, y:r.y-h+12}; }
   function spotHome(){ const r=page(document.querySelector('#wbHome').getBoundingClientRect()), w=el.offsetWidth, h=el.offsetHeight; return {x:r.x+r.w/2-w/2, y:r.y+r.h-h}; }
-  function place(p){ pos=p; el.style.transform=`translate(${p.x}px,${p.y}px)`; }
+  function place(p){ pos=p; if(!el) return; el.style.transform=`translate(${p.x}px,${p.y}px)`; }
   function mood(m){ el.className='walker'+(m?' m-'+m:''); current=m; }
   function say(text,big,side){ const b=el.querySelector('.wb-bub'); b.textContent=text; b.classList.toggle('big',!!big); b.classList.toggle('side',!!side); b.classList.remove('show'); void b.offsetWidth; b.classList.add('show');
     b.style.marginInlineStart='0px'; if(side){ b.style.transform=''; const room=el.getBoundingClientRect().left-24; b.style.maxWidth=Math.max(200,Math.min(500,room))+'px'; return; } requestAnimationFrame(()=>{ const r=b.getBoundingClientRect(); let dx=0; if(r.left<8) dx=8-r.left; if(r.right>innerWidth-8) dx=innerWidth-8-r.right; b.style.transform=`translateX(calc(-50% + ${dx}px))`; }); }
@@ -1424,7 +1445,7 @@ const WALKER = (()=>{
     home.classList.remove('away'); el.style.visibility='hidden'; running=false; }
   async function choose(btn){ if(!el) make(); const tk=++token; el.getAnimations().forEach(a=>a.cancel()); el.style.visibility='visible';
     document.querySelector('#wbHome')?.classList.add('away'); if(!running){ place(spotHome()); } running=false;
-    hush(); mood(null); await move(spotOn(btn),tk); if(tk!==token) return; mood(btn.dataset.k); say(T(MOOD_LINES[btn.dataset.k]),true); }
+    hush(); mood(null); await move(spotOn(btn),tk); if(tk!==token) return; mood(btn.dataset.k); say(T(MOOD_LINES[btn.dataset.k]),true); VOICE.play({great:11,good:12,nervous:13,tired:14}[btn.dataset.k]); }
   function start(){ make(); const chosen=S.mood&&document.querySelector(`.moods button[data-k="${S.mood}"]`);
     if(chosen){ document.querySelector('#wbHome').classList.add('away'); place(spotOn(chosen)); mood(S.mood); return; }
     if(reduce()){ el.style.visibility='hidden'; return; } tour(); }
@@ -1450,15 +1471,15 @@ function vTest(kind){
   const L=j=>LANG==='ar'?'أبجد'[j]:'ABCD'[j];
   AFTER.push(()=>{ const box=$('#tq');
     const N=qs.length, done=()=>Object.keys(ans).length, gapBefore=k=>{ for(let x=0;x<k;x++) if(ans[qs[x].id]==null) return x+1; return 0; };
-    let idle=null; const idleArm=()=>{ clearTimeout(idle); idle=setTimeout(()=>{ if(CUR_ROUTE.endsWith('test')) COACH.say(T({ar:'أنا موجود هنا لمساعدتك 🤖 خد وقتك وفكّر براحتك',en:'I’m right here to help you 🤖 Take your time and think it through'}),5000); },25000); };
+    let idle=null; const idleArm=()=>{ clearTimeout(idle); idle=setTimeout(()=>{ if(CUR_ROUTE.endsWith('test')) COACH.say(T({ar:'أنا موجود هنا لمساعدتك 🤖 خد وقتك وفكّر براحتك',en:'I’m right here to help you 🤖 Take your time and think it through'}),5000,{voice:17}); },25000); };
     cleanups.push(()=>{ clearTimeout(idle); COACH.hide(); });
-    const progressLine=()=>{ const n=done(), m=N-n;
-      if(m===0){ $('#tsend').classList.add('glow'); return T({ar:'جاوبت على كل الأسئلة 🎉 تقدر دلوقتي تسلّم الاختبار',en:'You answered every question 🎉 You can submit the test now'}); }
+    let pv=null; const progressLine=()=>{ const n=done(), m=N-n; pv=null;
+      if(m===0){ pv=31; $('#tsend').classList.add('glow'); return T({ar:'جاوبت على كل الأسئلة 🎉 تقدر دلوقتي تسلّم الاختبار',en:'You answered every question 🎉 You can submit the test now'}); }
       $('#tsend').classList.remove('glow');
       let s = n===1 ? T({ar:`حلّيت سؤال، فاضلك ${m} 💪`,en:`1 done, ${m} to go 💪`}) : T({ar:`حلّيت ${n}، فاضلك ${m} 💪`,en:`${n} done, ${m} to go 💪`});
-      const g=gapBefore(i); if(g) s+=T({ar:` — بس إنت ناسي سؤال رقم ${g}، افتكر ترجعله 😉`,en:` — but you skipped question ${g}, remember to go back 😉`});
+      pv=N===14?[17+n]:[]; const g=gapBefore(i); if(g&&N===14) pv.push(31+g); if(g) s+=T({ar:` — بس إنت ناسي سؤال رقم ${g}، افتكر ترجعله 😉`,en:` — but you skipped question ${g}, remember to go back 😉`});
       return s; };
-    COACH.say(T({ar:`أنا موجود هنا لمساعدتك 🤖 جاوب براحتك، وأنا هقولك فاضلك كام سؤال`,en:`I’m here to help you 🤖 Answer at your pace and I’ll tell you how many are left`}),6000);
+    COACH.say(T({ar:`أنا موجود هنا لمساعدتك 🤖 جاوب براحتك، وأنا هقولك فاضلك كام سؤال`,en:`I’m here to help you 🤖 Answer at your pace and I’ll tell you how many are left`}),6000,{voice:16});
     const navRow=()=>{ const n=Object.keys(ans).length; $('#tp').style.width=(n/qs.length*100)+'%';
       $('#tn').textContent=T({ar:`${n} من ${qs.length} متجاوب`,en:`${n} of ${qs.length} answered`});
       $('#qnav').innerHTML=qs.map((q,k)=>`<button class="qn ${ans[q.id]!=null?'a':''} ${k===i?'cur':''} ${flag[q.id]?'f':''}" data-k="${k}" aria-label="${T({ar:'سؤال',en:'Question'})} ${k+1}">${k+1}</button>`).join('');
@@ -1468,12 +1489,12 @@ function vTest(kind){
         ${q.o.map((o,j)=>`<button class="opt ${ans[q.id]===j?'sel':''}" data-j="${j}"><span class="k">${L(j)}</span><span>${T(o)}</span></button>`).join('')}
         <div style="display:flex;justify-content:space-between;margin-top:14px"><button class="btn ghost sm" id="tb" ${i?'':'disabled'}>${T({ar:'السابق',en:'Back'})}</button><button class="btn blue sm" id="tnx" ${i===qs.length-1?'disabled':''}>${T({ar:'التالي',en:'Next'})}</button></div>`);
       $$('.opt',box).forEach(b=>b.onclick=()=>{const j=+b.dataset.j; const was=ans[q.id]; if(ans[q.id]===j){delete ans[q.id]}else ans[q.id]=j; $$('.opt',box).forEach(x=>x.classList.toggle('sel',+x.dataset.j===ans[q.id])); navRow(); keep(); idleArm();
-        if(was==null && ans[q.id]!=null) COACH.say(progressLine(),done()===N?9000:3500); else if(ans[q.id]==null){ COACH.hide(); $('#tsend').classList.remove('glow'); } });
+        if(was==null && ans[q.id]!=null) COACH.say(progressLine(),done()===N?9000:3500,{voice:pv}); else if(ans[q.id]==null){ COACH.hide(); $('#tsend').classList.remove('glow'); } });
       $('#tfl').onclick=()=>{flag[q.id]=!flag[q.id]; keep(); show()};
-      $('#tb').onclick=()=>{i--;show()}; $('#tnx').onclick=()=>{ const left=ans[q.id]==null; i++; show(); if(left) COACH.say(T({ar:`إنت ناسي سؤال رقم ${i}، افتكر ترجعله 😉`,en:`You skipped question ${i} — remember to come back 😉`}),4500); }; navRow(); idleArm(); };
+      $('#tb').onclick=()=>{i--;show()}; $('#tnx').onclick=()=>{ const left=ans[q.id]==null; i++; show(); if(left) COACH.say(T({ar:`إنت ناسي سؤال رقم ${i}، افتكر ترجعله 😉`,en:`You skipped question ${i} — remember to come back 😉`}),4500,{voice:N===14?31+i:null}); }; navRow(); idleArm(); };
     $('#tsend').onclick=()=>{ const miss=qs.map((q,k)=>ans[q.id]==null?k+1:0).filter(Boolean), fl=qs.map((q,k)=>flag[q.id]?k+1:0).filter(Boolean);
       if(!miss.length && !fl.length) return finish();
-      COACH.say(miss.length?T({ar:`فاضلك ${miss.length} ${miss.length===1?'سؤال':'أسئلة'} ماجاوبتهمش: ${miss.join('، ')} — تحب ترجعلهم؟`,en:`${miss.length} unanswered: ${miss.join(', ')} — want to go back?`}):T({ar:'جاوبت على كل الأسئلة 🎉 راجع اللي معلّمه لو حابب، وبعدين سلّم',en:'All answered 🎉 Review your marked ones if you like, then submit'}),7000);
+      COACH.say(miss.length?T({ar:`فاضلك ${miss.length} ${miss.length===1?'سؤال':'أسئلة'} ماجاوبتهمش: ${miss.join('، ')} — تحب ترجعلهم؟`,en:`${miss.length} unanswered: ${miss.join(', ')} — want to go back?`}):T({ar:'جاوبت على كل الأسئلة 🎉 راجع اللي معلّمه لو حابب، وبعدين سلّم',en:'All answered 🎉 Review your marked ones if you like, then submit'}),7000,{voice:miss.length?46:47});
       $('#tsub').innerHTML=`<div class="predict"><b>${miss.length?T({ar:'فاضل أسئلة ماتجاوبتش: ',en:'Unanswered questions: '})+miss.join('، '):''}</b>${fl.length?`<div>${T({ar:'أسئلة معلّمة للمراجعة: ',en:'Marked for review: '})}${fl.join('، ')}</div>`:''}
         ${miss.length?`<div class="muted">${T({ar:'الأسئلة المتروكة هتتحسب غلط.',en:'Unanswered questions count as wrong.'})}</div>`:''}
         <div class="ctrls"><button class="btn blue sm" id="tgo">${T({ar:'ارجع لها',en:'Go back to them'})}</button><button class="btn ghost sm" id="tfin">${T({ar:'سلّم كده',en:'Submit anyway'})}</button></div></div>`;
@@ -1631,13 +1652,13 @@ const GAMES=[
   {g:'wheel',ico:'🎡',bg:'#e3f6f6',t:{ar:'عجلة الحظ الكيميائية',en:'Chemistry wheel'},d:{ar:'لفّ العجلة، تقف على درس، وجاوب سؤال منه.',en:'Spin the wheel, land on a lesson, answer a question from it.'},tag:{ar:'تحدي سريع',en:'Quick challenge'}},
   {g:'kc',ico:'🧩',bg:'#fff4e0',t:{ar:'رتّب معادلتك',en:'Build the expression'},d:{ar:'رتّب البطاقات عشان تبني تعبير ثابت الاتزان صح.',en:'Arrange cards to build the equilibrium-constant expression.'},tag:{ar:'تحدي التفكير',en:'Thinking'}},
   {g:'lab',ico:'🔐',bg:'#f3eefc',t:{ar:'اهرب من مختبر الاتزان',en:'Escape the equilibrium lab'},d:{ar:'ألغاز علمية، ماتعديش للأوضة الجاية غير لما تحل اللغز.',en:'Science puzzles — solve each one to unlock the next room.'},tag:{ar:'حل المشكلات',en:'Problem solving'}}];
-const gSay=(t,ms=4500,force=false)=>{ if(CUR_ROUTE==='games') COACH.say(T(t),ms,{gap:force?0:2500,force}); };
+const gSay=(t,ms=4500,force=false)=>{ if(CUR_ROUTE==='games') COACH.say(T(t),ms,{gap:force?0:2500,force,voice:t.v}); };
 const GINTRO={
-  tf:{ar:'يلا بينا 🤖 اقرا العبارة كويس وقرّر: صح ولا غلط؟ وأنا هقولك ليه بعد كل إجابة',en:'Read each statement and decide: true or false? I’ll explain after every answer 🤖'},
-  match:{ar:'دوّر على الكلمة المفتاحية في كل تعريف، هتوصّلك للمفهوم على طول 🔍',en:'Look for the key word in each description — it points to the concept 🔍'},
-  wheel:{ar:'جاهز؟ 🎡 لفّ العجلة وأنا هشوف معاك هتقف على أنهي درس!',en:'Ready? 🎡 Spin and let’s see which lesson it lands on!'},
-  kc:{ar:'افتكر القاعدة 🧩 النواتج فوق، المتفاعلات تحت، والصلب والسائل النقي برّه!',en:'Remember 🧩 products on top, reactants below, pure solids and liquids out!'},
-  lab:{ar:'إنت محبوس في مختبر الاتزان 🔐 حل لغز كل أوضة عشان تفتح الباب اللي بعدها، ويلا نهرب سوا!',en:'You’re locked in the equilibrium lab 🔐 Solve each room’s puzzle to open the next door!'}};
+  tf:{v:97,ar:'يلا بينا 🤖 اقرا العبارة كويس وقرّر: صح ولا غلط؟ وأنا هقولك ليه بعد كل إجابة',en:'Read each statement and decide: true or false? I’ll explain after every answer 🤖'},
+  match:{v:98,ar:'دوّر على الكلمة المفتاحية في كل تعريف، هتوصّلك للمفهوم على طول 🔍',en:'Look for the key word in each description — it points to the concept 🔍'},
+  wheel:{v:99,ar:'جاهز؟ 🎡 لفّ العجلة وأنا هشوف معاك هتقف على أنهي درس!',en:'Ready? 🎡 Spin and let’s see which lesson it lands on!'},
+  kc:{v:100,ar:'افتكر القاعدة 🧩 النواتج فوق، المتفاعلات تحت، والصلب والسائل النقي برّه!',en:'Remember 🧩 products on top, reactants below, pure solids and liquids out!'},
+  lab:{v:101,ar:'إنت محبوس في مختبر الاتزان 🔐 حل لغز كل أوضة عشان تفتح الباب اللي بعدها، ويلا نهرب سوا!',en:'You’re locked in the equilibrium lab 🔐 Solve each room’s puzzle to open the next door!'}};
 /* choose-then-confirm: the student can change the choice before pressing "confirm" */
 function gPick(root, sel, fn){ const opts=[...root.querySelectorAll(sel)]; if(!opts.length) return; let ref=opts[opts.length-1]; if(ref.parentElement.classList.contains('gtf')) ref=ref.parentElement;
   const wrap=document.createElement('div'); wrap.className='gconf';
@@ -1653,14 +1674,14 @@ function gOpen(g){ logEv('game_open',g); ({tf:gTF,match:gMatch,wheel:gWheel,kc:g
   box.insertAdjacentHTML('afterbegin',`<div class="gbar"><button class="btn ghost sm" id="gBack">→ ${T({ar:'قايمة الألعاب',en:'Games menu'})}</button><b>${x.ico} ${T(x.t)}</b></div>`);
   $('#gBack').onclick=gMenu; box.scrollIntoView({behavior:'smooth',block:'start'}); }
 function gTF(){ const box=gInner(); const qs=shuf(tfBank()).slice(0,8); let i=0, right=0, streak=0;
-  const show=()=>{ if(i>=qs.length){ gSay(right>=6?{ar:`جبت ${right} من ${qs.length} 🔥 مستواك عالي! جرّب جولة كمان`,en:`${right}/${qs.length} 🔥 Great level! Try another round`}:{ar:`جبت ${right} من ${qs.length} 💪 الجولة الجاية هتبقى أحسن، وأنا معاك`,en:`${right}/${qs.length} 💪 Next round will be better`},6000,true); box.innerHTML=`<div class="gend"><div class="gbig">${right}/${qs.length}</div><p>${right>=6?T({ar:'تحفة! 🔥 فهمك للمفاهيم دي قوي',en:'Great! 🔥 Your understanding is strong'}):T({ar:'كويس! 💪 الجولة الجاية هتبقى أحسن',en:'Good! 💪 Next round will be better'})}</p><button class="btn blue" id="gAgain">🔄 ${T({ar:'جولة جديدة',en:'New round'})}</button></div>`; logEv('game_round','tf:'+right+'/'+qs.length); $('#gAgain').onclick=()=>gTF(); return; }
+  const show=()=>{ if(i>=qs.length){ gSay(right>=6?{v:105,ar:`جبت ${right} من ${qs.length} 🔥 مستواك عالي! جرّب جولة كمان`,en:`${right}/${qs.length} 🔥 Great level! Try another round`}:{v:106,ar:`جبت ${right} من ${qs.length} 💪 الجولة الجاية هتبقى أحسن، وأنا معاك`,en:`${right}/${qs.length} 💪 Next round will be better`},6000,true); box.innerHTML=`<div class="gend"><div class="gbig">${right}/${qs.length}</div><p>${right>=6?T({ar:'تحفة! 🔥 فهمك للمفاهيم دي قوي',en:'Great! 🔥 Your understanding is strong'}):T({ar:'كويس! 💪 الجولة الجاية هتبقى أحسن',en:'Good! 💪 Next round will be better'})}</p><button class="btn blue" id="gAgain">🔄 ${T({ar:'جولة جديدة',en:'New round'})}</button></div>`; logEv('game_round','tf:'+right+'/'+qs.length); $('#gAgain').onclick=()=>gTF(); return; }
     const q=qs[i];
     box.innerHTML=`<div class="gtop"><span class="pill">${T({ar:'عبارة',en:'Statement'})} ${i+1}/${qs.length}</span><span class="pill soft">${T(CONCEPTS[q.c])}</span></div>
       <p class="gstmt">${chem(T(q.s))}</p>
       <div class="gtf"><button class="btn gT" data-v="1">✔ ${T({ar:'صح',en:'True'})}</button><button class="btn gF" data-v="0">✘ ${T({ar:'غلط',en:'False'})}</button></div>
       <div id="gFb"></div>`;
     gPick(box,'.gtf button',b=>{ const ok=(b.dataset.v==='1')===q.ok; box.querySelectorAll('.gtf button').forEach(x=>x.disabled=true); b.classList.add(ok?'good':'bad');
-      if(ok){ right++; gAdd(10); streak++; gSay(streak>=3?{ar:`${streak} ورا بعض! 🔥 إنت ماشي صاروخ`,en:`${streak} in a row! 🔥`}:{ar:'برافو عليك 👏',en:'Well done 👏'},3000); } else { streak=0; gSay({ar:'ولا يهمك 😊 اقرا التفسير كويس، هو ده المهم',en:'No worries 😊 read the explanation — that’s what matters'},4000); } 
+      if(ok){ right++; gAdd(10); streak++; gSay(streak>=3?{v:103,ar:`${streak} ورا بعض! 🔥 إنت ماشي صاروخ`,en:`${streak} in a row! 🔥`}:{v:102,ar:'برافو عليك 👏',en:'Well done 👏'},3000); } else { streak=0; gSay({v:104,ar:'ولا يهمك 😊 اقرا التفسير كويس، هو ده المهم',en:'No worries 😊 read the explanation — that’s what matters'},4000); } 
       $('#gFb').innerHTML=`<div class="fb ${ok?'ok':'no'}"><b>${ok?T({ar:'برافو! +10 ✔',en:'Correct! +10 ✔'}):T({ar:'مش بالظبط ✘',en:'Not quite ✘'})}</b> — ${q.ok?T({ar:'العبارة صح. ',en:'The statement is true. '}):T({ar:'العبارة غلط، والصح: ',en:'It is false. Correct idea: '})}${chem(T(q.why))}</div><button class="btn blue" id="gNext">${T({ar:'اللي بعده ←',en:'Next →'})}</button>`;
       logEv('game_answer',`tf:${q.c}:${ok?1:0}`); $('#gNext').onclick=()=>{i++;show()}; }); };
   show(); }
@@ -1680,14 +1701,14 @@ function gWheel(){ const box=gInner(); let rot=0, busy=false;
   const svg=$('#wSvg'), btn=$('#wSpin');
   btn.onclick=()=>{ if(busy) return; busy=true; btn.disabled=true; const n=WHEEL.length, i=Math.floor(Math.random()*n);
     const target=360-(i*360/n+360/n/2); rot+=360*5+((target-rot%360)+360)%360; svg.style.transform=`rotate(${rot}deg)`; svg.querySelectorAll('.wl').forEach(g=>g.style.transform=`rotate(${-rot}deg)`);
-    $('#wQ').innerHTML=`<p class="muted" style="text-align:center">${T({ar:'العجلة بتلف… بالتوفيق! 🤞',en:'Spinning… good luck! 🤞'})}</p>`; gSay({ar:'يا ترى هتقف على أنهي درس؟ 🤔',en:'Which lesson will it land on? 🤔'},2800,true);
+    $('#wQ').innerHTML=`<p class="muted" style="text-align:center">${T({ar:'العجلة بتلف… بالتوفيق! 🤞',en:'Spinning… good luck! 🤞'})}</p>`; gSay({v:111,ar:'يا ترى هتقف على أنهي درس؟ 🤔',en:'Which lesson will it land on? 🤔'},2800,true);
     setTimeout(()=>{ busy=false; ask(WHEEL[i]); },3300); };
-  function ask(w){ const u=unitById(w.u), q=u.quiz[Math.floor(Math.random()*u.quiz.length)]; logEv('game_spin',w.u+':'+q.id); gSay({ar:`وقفت على "${T(w.t)}" 🎯 ركّز وجاوب`,en:`Landed on "${T(w.t)}" 🎯 Focus and answer`},3500,true);
+  function ask(w){ const u=unitById(w.u), q=u.quiz[Math.floor(Math.random()*u.quiz.length)]; logEv('game_spin',w.u+':'+q.id); gSay({v:112,ar:`وقفت على "${T(w.t)}" 🎯 ركّز وجاوب`,en:`Landed on "${T(w.t)}" 🎯 Focus and answer`},3500,true);
     $('#wQ').innerHTML=`<div class="gtop"><span class="pill" style="background:${w.c}22;color:${w.c}">🎯 ${T(w.t)}</span><span class="pill soft">${T({ar:'الدرس',en:'Lesson'})} ${u.n}</span></div>
       <p class="gstmt">${chem(T(q.q))}</p>${q.o.map((o,j)=>`<button class="opt" data-j="${j}"><span class="k">${j+1}</span><span>${chem(T(o))}</span></button>`).join('')}<div id="wFb"></div>`;
     gPick($('#wQ'),'.opt',b=>{ const j=+b.dataset.j, ok=j===q.a; $('#wQ').querySelectorAll('.opt').forEach(x=>x.disabled=true);
       b.classList.add(ok?'good':'bad'); if(!ok) $('#wQ').querySelector(`.opt[data-j="${q.a}"]`).classList.add('good');
-      if(ok) gAdd(15); logEv('game_answer',`wheel:${q.id}:${ok?1:0}`); gSay(ok?{ar:'+15 نقطة 🎉 لفّ تاني!',en:'+15 points 🎉 Spin again!'}:{ar:'ولا يهمك 😊 بص على الإجابة الصح والتفسير، ولفّ تاني',en:'No worries 😊 check the explanation and spin again'},4000,true);
+      if(ok) gAdd(15); logEv('game_answer',`wheel:${q.id}:${ok?1:0}`); gSay(ok?{v:113,ar:'+15 نقطة 🎉 لفّ تاني!',en:'+15 points 🎉 Spin again!'}:{v:114,ar:'ولا يهمك 😊 بص على الإجابة الصح والتفسير، ولفّ تاني',en:'No worries 😊 check the explanation and spin again'},4000,true);
       $('#wFb').innerHTML=`<div class="fb ${ok?'ok':'no'}"><b>${ok?T({ar:'برافو! +15 🎉',en:'Correct! +15 🎉'}):T({ar:'مش بالظبط ✘',en:'Not quite ✘'})}</b>${q.x?' — '+chem(T(q.x)):''}</div>`;
       btn.disabled=false; btn.textContent='🎡 '+T({ar:'لفّ تاني',en:'Spin again'}); }); }
 }
@@ -1695,7 +1716,7 @@ function gWheel(){ const box=gInner(); let rot=0, busy=false;
 /* game: build the Kc expression (reactions from the unit-3 builder) */
 function gKc(){ const box=gInner(); const rx=shuf(KC_RX); let i=0, right=0;
   const where=x=>(x.ph==='s'||x.ph==='l')?'o':(x.s==='P'?'n':'d');
-  const show=()=>{ if(i>=rx.length){ gSay(right>=4?{ar:`بنيت ${right} من ${rx.length} صح 🏆 إنت كده محترف Kc!`,en:`${right}/${rx.length} correct 🏆 Kc pro!`}:{ar:`بنيت ${right} من ${rx.length} 💪 راجع قاعدة الصلب والسائل النقي وجرّب تاني`,en:`${right}/${rx.length} 💪 review the solids/liquids rule and retry`},6000,true);
+  const show=()=>{ if(i>=rx.length){ gSay(right>=4?{v:119,ar:`بنيت ${right} من ${rx.length} صح 🏆 إنت كده محترف Kc!`,en:`${right}/${rx.length} correct 🏆 Kc pro!`}:{v:120,ar:`بنيت ${right} من ${rx.length} 💪 راجع قاعدة الصلب والسائل النقي وجرّب تاني`,en:`${right}/${rx.length} 💪 review the solids/liquids rule and retry`},6000,true);
       box.innerHTML=`<div class="gend"><div class="gbig">${right}/${rx.length}</div><p>${T({ar:'معادلات اتبنت صح من أول مرة',en:'expressions built right first time'})}</p><button class="btn blue" id="gAgain">🔄 ${T({ar:'جولة جديدة',en:'New round'})}</button></div>`; logEv('game_round','kc:'+right+'/'+rx.length); $('#gAgain').onclick=()=>gKc(); return; }
     const r=rx[i]; let sel=null; const place={};
     box.innerHTML=`<div class="gtop"><span class="pill">${T({ar:'معادلة',en:'Reaction'})} ${i+1}/${rx.length}</span></div>
@@ -1713,11 +1734,11 @@ function gKc(){ const box=gInner(); const rx=shuf(KC_RX); let i=0, right=0;
     $('#kUndo').onclick=()=>{ const h=hist.pop(); if(!h) return; moveTo(h[0],h[1]); box.querySelectorAll('.kcard').forEach(x=>x.classList.remove('sel')); sel=null; prev(); };
     $('#kReset').onclick=()=>{ box.querySelectorAll('.kcard').forEach(c=>{ c.classList.remove('sel'); moveTo(c,'p'); }); hist.length=0; sel=null; prev(); };
     prev();
-    $('#kChk').onclick=()=>{ if(Object.keys(place).length<r.sp.length){ toast(T({ar:'حط كل البطاقات الأول 🧩',en:'Place every card first'})); gSay({ar:'لسه فيه بطاقات ما حطّتهاش مكانها 🧩',en:'Some cards are still unplaced 🧩'},3000); return; }
+    $('#kChk').onclick=()=>{ if(Object.keys(place).length<r.sp.length){ toast(T({ar:'حط كل البطاقات الأول 🧩',en:'Place every card first'})); gSay({v:115,ar:'لسه فيه بطاقات ما حطّتهاش مكانها 🧩',en:'Some cards are still unplaced 🧩'},3000); return; }
       let all=true; r.sp.forEach((x,j)=>{ const ok=place[j]===where(x); if(!ok) all=false; box.querySelector(`.kcard[data-j="${j}"]`).classList.add(ok?'good':'bad'); });
       const corr=kexpr(r.sp.filter(x=>where(x)==='n'),r.sp.filter(x=>where(x)==='d'));
-      if(all){ right++; gAdd(20); gSay({ar:'تحفة 🎉 +20 نقطة! المعامل بقى أُس زي ما اتعلمنا',en:'Brilliant 🎉 +20! Coefficients became powers'},4000,true); }
-      else { const sl=r.sp.some((x,j)=>where(x)==='o'&&place[j]!=='o'); gSay(sl?{ar:'خلّي بالك 👀 المادة الصلبة والسائل النقي تركيزهم ثابت فما بيتكتبوش',en:'Careful 👀 pure solids and liquids are omitted'}:{ar:'افتكر 👀 النواتج فوق والمتفاعلات تحت',en:'Remember 👀 products on top, reactants below'},5000,true); }
+      if(all){ right++; gAdd(20); gSay({v:116,ar:'تحفة 🎉 +20 نقطة! المعامل بقى أُس زي ما اتعلمنا',en:'Brilliant 🎉 +20! Coefficients became powers'},4000,true); }
+      else { const sl=r.sp.some((x,j)=>where(x)==='o'&&place[j]!=='o'); gSay(sl?{v:117,ar:'خلّي بالك 👀 المادة الصلبة والسائل النقي تركيزهم ثابت فما بيتكتبوش',en:'Careful 👀 pure solids and liquids are omitted'}:{v:118,ar:'افتكر 👀 النواتج فوق والمتفاعلات تحت',en:'Remember 👀 products on top, reactants below'},5000,true); }
       logEv('game_answer',`kc:${r.id}:${all?1:0}`);
       box.querySelector('.kctrl').remove(); box.querySelector('.ktip')?.remove(); box.querySelectorAll('.kcard,.kz').forEach(x=>x.onclick=null); pool.onclick=null;
       $('#gFb').innerHTML=`<div class="fb ${all?'ok':'no'}"><b>${all?T({ar:'صح! +20 ✔',en:'Correct! +20 ✔'}):T({ar:'مش بالظبط ✘',en:'Not quite ✘'})}</b> ${T({ar:'التعبير الصح:',en:'Correct expression:'})} <span>${chem(corr)}</span></div><button class="btn blue" id="gNext">${T({ar:'المعادلة اللي بعدها ←',en:'Next reaction →'})}</button>`;
@@ -1736,12 +1757,12 @@ function gLab(){ const box=gInner(); S.games=S.games||{pts:0,ok:0}; const L=S.ga
       <div class="lev"><b>🗂️ ${T({ar:'الأدلة اللي جمعتها',en:'Evidence collected'})} (${L.done.length}/6)</b><div>${L.done.length?L.done.map(id=>`<span class="pill soft">${T(unitById(id).t)}</span>`).join(''):`<span class="muted">${T({ar:'لسه مفيش… افتح أول أوضة!',en:'None yet… open the first room!'})}</span>`}</div></div>
       ${nx<0?`<div class="gend"><div class="gbig">🎉</div><p>${T({ar:'هربت من المختبر! حلّيت ألغاز الأوض الست كلها.',en:'You escaped the lab! All six rooms solved.'})}</p><button class="btn ghost" id="lReset">🔄 ${T({ar:'العب من الأول',en:'Play again'})}</button></div>`:''}`;
     box.querySelectorAll('.lroom[data-k]').forEach(b=>b.onclick=()=>{ const k=+b.dataset.k;
-      if(b.classList.contains('lock')){ toast(T({ar:'الأوضة دي مقفولة 🔒 حل اللي قبلها الأول',en:'Locked 🔒 solve the previous room first'})); gSay({ar:'الباب ده لسه مقفول 🔒 لازم تحل لغز الأوضة اللي قبله',en:'That door is locked 🔒 solve the previous room'},3500,true); return; }
+      if(b.classList.contains('lock')){ toast(T({ar:'الأوضة دي مقفولة 🔒 حل اللي قبلها الأول',en:'Locked 🔒 solve the previous room first'})); gSay({v:121,ar:'الباب ده لسه مقفول 🔒 لازم تحل لغز الأوضة اللي قبله',en:'That door is locked 🔒 solve the previous room'},3500,true); return; }
       room(k); });
     const rs=$('#lReset'); if(rs) rs.onclick=()=>{ L.done=[]; save(); map(); gSay(GINTRO.lab,5000,true); };
-    if(nx<0) gSay({ar:'هربت من المختبر 🎉🚪 إنت بطل الاتزان الكيميائي!',en:'You escaped 🎉🚪 Equilibrium champion!'},7000,true); };
+    if(nx<0) gSay({v:127,ar:'هربت من المختبر 🎉🚪 إنت بطل الاتزان الكيميائي!',en:'You escaped 🎉🚪 Equilibrium champion!'},7000,true); };
   const room=k=>{ const r=ROOMS[k], u=unitById(r.u), qs=u.quiz; let qi=0; logEv('game_open','lab:'+r.u);
-    gSay({ar:`إنت دلوقتي في أوضة ${k+1}: "${T(u.t)}" 🔐 جاوب ${qs.length} أسئلة صح عشان الباب يتفتح`,en:`Room ${k+1}: "${T(u.t)}" 🔐 Answer ${qs.length} questions to open the door`},5000,true);
+    gSay({v:122,ar:`إنت دلوقتي في أوضة ${k+1}: "${T(u.t)}" 🔐 جاوب ${qs.length} أسئلة صح عشان الباب يتفتح`,en:`Room ${k+1}: "${T(u.t)}" 🔐 Answer ${qs.length} questions to open the door`},5000,true);
     const ask=()=>{ const q=qs[qi];
       box.innerHTML=`<div class="gtop"><span class="pill">${r.ico} ${T({ar:'أوضة',en:'Room'})} ${k+1} — ${T(u.t)}</span><span class="pill soft">🔑 ${qi}/${qs.length}</span></div>
         <div class="lkeys">${qs.map((x,j)=>`<span class="${j<qi?'on':''}">🔑</span>`).join('')}</div>
@@ -1749,13 +1770,13 @@ function gLab(){ const box=gInner(); S.games=S.games||{pts:0,ok:0}; const L=S.ga
         <div class="ctrls"><button class="btn ghost sm" id="lMap">🗺️ ${T({ar:'الخريطة',en:'Map'})}</button></div>`;
       $('#lMap').onclick=map;
       gPick(box,'.opt',b=>{ const j=+b.dataset.j, ok=j===q.a; logEv('game_answer',`lab:${q.id}:${ok?1:0}`);
-        if(!ok){ b.classList.add('bad'); b.disabled=true; const H=HINTS[q.id]?.h?.[0]; $('#gFb').innerHTML=`<div class="fb hint">🔒 ${T({ar:'القفل ما اتفتحش… جرّب تاني.',en:'The lock didn’t open… try again.'})}${H?' 💡 '+chem(T(H)):''}</div>`; gSay({ar:'القفل لسه مقفول 🔒 خد التلميح ده وجرّب تاني',en:'Still locked 🔒 use the hint and try again'},4000,true); return; }
+        if(!ok){ b.classList.add('bad'); b.disabled=true; const H=HINTS[q.id]?.h?.[0]; $('#gFb').innerHTML=`<div class="fb hint">🔒 ${T({ar:'القفل ما اتفتحش… جرّب تاني.',en:'The lock didn’t open… try again.'})}${H?' 💡 '+chem(T(H)):''}</div>`; gSay({v:123,ar:'القفل لسه مقفول 🔒 خد التلميح ده وجرّب تاني',en:'Still locked 🔒 use the hint and try again'},4000,true); return; }
         box.querySelectorAll('.opt').forEach(x=>x.disabled=true); b.classList.add('good'); qi++;
-        if(qi<qs.length){ $('#gFb').innerHTML=`<div class="fb ok">🔑 ${T({ar:'لقيت مفتاح! كمّل.',en:'You found a key! Keep going.'})}</div><button class="btn blue" id="gNext">${T({ar:'اللي بعده ←',en:'Next →'})}</button>`; gSay({ar:'لقيت مفتاح 🔑 كمّل!',en:'Key found 🔑 keep going!'},2500,true); $('#gNext').onclick=ask; }
+        if(qi<qs.length){ $('#gFb').innerHTML=`<div class="fb ok">🔑 ${T({ar:'لقيت مفتاح! كمّل.',en:'You found a key! Keep going.'})}</div><button class="btn blue" id="gNext">${T({ar:'اللي بعده ←',en:'Next →'})}</button>`; gSay({v:124,ar:'لقيت مفتاح 🔑 كمّل!',en:'Key found 🔑 keep going!'},2500,true); $('#gNext').onclick=ask; }
         else { if(!L.done.includes(r.u)){ L.done.push(r.u); gAdd(20); } save();
           const last=nextIdx()<0;
           $('#gFb').innerHTML=`<div class="fb ok">🔓 ${T({ar:'الباب اتفتح! +20 نقطة، ولقيت دليل جديد:',en:'The door opened! +20 points, new evidence:'})} <b>${T(u.t)}</b></div><button class="btn blue" id="gNext">${last?T({ar:'🚪 روح لبوابة الخروج',en:'🚪 Go to the exit'}):T({ar:'🗺️ للخريطة والأوضة اللي بعدها',en:'🗺️ Back to the map'})}</button>`;
-          gSay(last?{ar:'آخر باب اتفتح 🔓 يلا على بوابة الخروج!',en:'Last door open 🔓 to the exit!'}:{ar:`الباب اتفتح 🔓 ولقيت دليل "${T(u.t)}"! يلا على الأوضة اللي بعدها`,en:`Door open 🔓 evidence found! On to the next room`},5000,true);
+          gSay(last?{v:126,ar:'آخر باب اتفتح 🔓 يلا على بوابة الخروج!',en:'Last door open 🔓 to the exit!'}:{v:125,ar:`الباب اتفتح 🔓 ولقيت دليل "${T(u.t)}"! يلا على الأوضة اللي بعدها`,en:`Door open 🔓 evidence found! On to the next room`},5000,true);
           $('#gNext').onclick=map; } }); };
     ask(); };
   map(); }
@@ -1765,9 +1786,9 @@ function gMatch(){ const box=gInner(); const items=shuf(gameDefs()).slice(0,5); 
     <div><h3>${T({ar:'التعريف أو الوصف',en:'Description'})}</h3>${defs.map(x=>`<button class="gcard gd" data-c="${x.c}">${chem(x.d)}</button>`).join('')}</div></div><div id="gFb"></div>`;
   box.querySelectorAll('.gc').forEach(b=>b.onclick=()=>{ if(b.classList.contains('good')) return; if(sel===b){ b.classList.remove('sel'); sel=null; return; } box.querySelectorAll('.gc').forEach(x=>x.classList.remove('sel')); b.classList.add('sel'); sel=b; });
   box.querySelectorAll('.gd').forEach(b=>b.onclick=()=>{ if(!sel||b.classList.contains('good')) { if(!sel) toast(T({ar:'اختار المفهوم الأول 👈',en:'Pick a concept first'})); return; } tries++;
-    if(b.dataset.c===sel.dataset.c){ [b,sel].forEach(x=>{x.classList.remove('sel');x.classList.add('good');x.disabled=true}); sel=null; done++; gAdd(10); logEv('game_answer','match:'+b.dataset.c+':1'); if(done<items.length) gSay({ar:'صح كده 👌 كمّل!',en:'Correct 👌 keep going!'},2500);
-      if(done===items.length){ gSay(tries<=items.length+1?{ar:'وصّلتهم كلهم من غير غلط تقريبًا 🤩 إيه الحلاوة دي!',en:'Almost no mistakes 🤩 amazing!'}:{ar:'خلصتهم كلهم 🎉 الجولة الجاية حاول بمحاولات أقل',en:'All matched 🎉 try fewer tries next time'},6000,true); $('#gFb').innerHTML=`<div class="gend"><p>${T({ar:`خلصت التوصيلات كلها في ${tries} ${tries<=10&&tries>2?'محاولات':'محاولة'} 🎉`,en:`All matched in ${tries} tries 🎉`})}</p><button class="btn blue" id="gAgain">🔄 ${T({ar:'جولة جديدة',en:'New round'})}</button></div>`; logEv('game_round','match:'+tries); $('#gAgain').onclick=()=>gMatch(); } }
-    else { b.classList.add('bad'); setTimeout(()=>b.classList.remove('bad'),600); logEv('game_answer','match:'+sel.dataset.c+':0'); gSay({ar:'قرّبت 🤏 فكّر تاني في معنى المفهوم ده',en:'Close 🤏 think again about this concept'},3500); } });
+    if(b.dataset.c===sel.dataset.c){ [b,sel].forEach(x=>{x.classList.remove('sel');x.classList.add('good');x.disabled=true}); sel=null; done++; gAdd(10); logEv('game_answer','match:'+b.dataset.c+':1'); if(done<items.length) gSay({v:108,ar:'صح كده 👌 كمّل!',en:'Correct 👌 keep going!'},2500);
+      if(done===items.length){ gSay(tries<=items.length+1?{v:109,ar:'وصّلتهم كلهم من غير غلط تقريبًا 🤩 إيه الحلاوة دي!',en:'Almost no mistakes 🤩 amazing!'}:{v:110,ar:'خلصتهم كلهم 🎉 الجولة الجاية حاول بمحاولات أقل',en:'All matched 🎉 try fewer tries next time'},6000,true); $('#gFb').innerHTML=`<div class="gend"><p>${T({ar:`خلصت التوصيلات كلها في ${tries} ${tries<=10&&tries>2?'محاولات':'محاولة'} 🎉`,en:`All matched in ${tries} tries 🎉`})}</p><button class="btn blue" id="gAgain">🔄 ${T({ar:'جولة جديدة',en:'New round'})}</button></div>`; logEv('game_round','match:'+tries); $('#gAgain').onclick=()=>gMatch(); } }
+    else { b.classList.add('bad'); setTimeout(()=>b.classList.remove('bad'),600); logEv('game_answer','match:'+sel.dataset.c+':0'); gSay({v:107,ar:'قرّبت 🤏 فكّر تاني في معنى المفهوم ده',en:'Close 🤏 think again about this concept'},3500); } });
 }
 
 /* Acquire coach bubble beside the floating button: text + optional action buttons, close (✕) and "mute for a while" */
@@ -1775,13 +1796,14 @@ const COACH=(()=>{ let t=null, last=0;
   const muted=()=>!!store.get('cot:mute',false);
   function el(){ let b=document.getElementById('coachBub');
     if(!b){ b=document.createElement('div'); b.id='coachBub'; b.className='coach-bub'; b.setAttribute('role','status'); b.setAttribute('aria-live','polite');
-      b.innerHTML=`<button class="cb-x" aria-label="close">✕</button><div class="cb-t"></div><div class="cb-a"></div><button class="cb-m"></button>`;
+      b.innerHTML=`<button class="cb-x" aria-label="close">✕</button><button class="cb-s" data-sndi aria-label="sound"></button><div class="cb-t"></div><div class="cb-a"></div><button class="cb-m"></button>`;
       document.body.appendChild(b);
       b.querySelector('.cb-x').onclick=()=>hide();
-      b.querySelector('.cb-m').onclick=()=>setMute(true); }
+      b.querySelector('.cb-m').onclick=()=>setMute(true); b.querySelector('.cb-s').onclick=()=>VOICE.toggle(); }
+    b.querySelector('.cb-s').textContent=VOICE.icon();
     b.querySelector('.cb-m').textContent='🤫 '+T({ar:'اسكت شوية',en:'Quiet for now'});
     return b; }
-  function say(text,ms=4500,opt={}){ if(muted() || !USER) return; if(!opt.force && Date.now()-last<(opt.gap??0)) return; last=Date.now();
+  function say(text,ms=4500,opt={}){ if(muted() || !USER) return; if(!opt.force && Date.now()-last<(opt.gap??0)) return; last=Date.now(); VOICE.play(opt.voice);
     const b=el(); b.querySelector('.cb-t').textContent=text;
     const a=b.querySelector('.cb-a'); a.innerHTML='';
     (opt.actions||[]).forEach(x=>{ const k=document.createElement('button'); k.className='btn sm '+(x.primary?'blue':'ghost'); k.textContent=x.label; k.onclick=()=>{ hide(); logEv('acquire_action',x.label); x.fn(); }; a.appendChild(k); });
@@ -1794,8 +1816,8 @@ const COACH=(()=>{ let t=null, last=0;
   function badge(){ let m=document.getElementById('muteBadge'); const on=muted()&&!!USER;
     if(!m){ m=document.createElement('button'); m.id='muteBadge'; m.className='mute-badge'; m.onclick=()=>setMute(false); document.body.appendChild(m); }
     m.textContent='🤫 '+T({ar:'رجّع Acquire يتكلم',en:'Let Acquire talk'}); m.style.display=on?'':'none'; }
-  function setMute(v){ store.set('cot:mute',!!v); logEv('acquire_mute',v?'on':'off'); hide(); badge();
-    if(!v) say(T({ar:'رجعتلك تاني 🤖 هفضل معاك خطوة بخطوة!',en:'I’m back 🤖 I’ll be with you every step!'}),3500,{force:true}); }
+  function setMute(v){ store.set('cot:mute',!!v); logEv('acquire_mute',v?'on':'off'); hide(); badge(); if(v) VOICE.stop();
+    if(!v) say(T({ar:'رجعتلك تاني 🤖 هفضل معاك خطوة بخطوة!',en:'I’m back 🤖 I’ll be with you every step!'}),3500,{force:true,voice:95}); }
   return {say,hide,setMute,badge};
 })();
 
@@ -1806,19 +1828,20 @@ const COMPANION=(()=>{ const seen=new Set();
   const go2=r=>()=>go(r);
   const say=(t,ms,opt)=>COACH.say(t,ms,opt);
   function nextUnit(){ return UNITS.find(u=>!unitDone(u)); }
+  const uv=u=>73+UNITS.indexOf(u);
   function inProgress(){ const id=S.lastUnit; if(!id) return null; const u=U(id); return u&&!unitDone(u)&&S.units?.[id]?.q&&Object.keys(S.units[id].q).length?u:(u&&!unitDone(u)?u:null); }
   function openWeak(){ return (S.pre?.weak||[]).filter(c=>!S.fixed?.[c]); }
   function pathAdvice(){
     const k=S.path||S.rec;
-    if(k==='sup'){ const w=openWeak(); if(!w.length) return {t:T({ar:'صلّحت كل نقط ضعفك 🎉 إنت جاهز للاختبار البعدي!',en:'You fixed all your weak points 🎉 Ready for the post-test!'}),a:[{label:T({ar:'▶ ابدأ الاختبار البعدي',en:'▶ Start post-test'}),fn:go2('posttest'),primary:1}]};
-      const u=U(CONCEPTS[w[0]].u); return {t:T({ar:`فاضلك ${w.length} ${w.length===1?'مفهوم':'مفاهيم'} تصلّحه، يلا نبدأ بـ "${nm(w[0])}" (الدرس ${u.n}) 💪`,en:`${w.length} concept(s) left to fix — let’s start with "${nm(w[0])}" (lesson ${u.n}) 💪`}),a:[{label:T({ar:'▶ يلا بينا',en:'▶ Let’s go'}),fn:go2(u.id),primary:1}]}; }
+    if(k==='sup'){ const w=openWeak(); if(!w.length) return {v:[65],t:T({ar:'صلّحت كل نقط ضعفك 🎉 إنت جاهز للاختبار البعدي!',en:'You fixed all your weak points 🎉 Ready for the post-test!'}),a:[{label:T({ar:'▶ ابدأ الاختبار البعدي',en:'▶ Start post-test'}),fn:go2('posttest'),primary:1}]};
+      const u=U(CONCEPTS[w[0]].u); return {v:[64],t:T({ar:`فاضلك ${w.length} ${w.length===1?'مفهوم':'مفاهيم'} تصلّحه، يلا نبدأ بـ "${nm(w[0])}" (الدرس ${u.n}) 💪`,en:`${w.length} concept(s) left to fix — let’s start with "${nm(w[0])}" (lesson ${u.n}) 💪`}),a:[{label:T({ar:'▶ يلا بينا',en:'▶ Let’s go'}),fn:go2(u.id),primary:1}]}; }
     if(k==='enr'){ const n=Object.values(S.chal||{}).filter(Boolean).length, N=CHALLENGES.length;
-      if(n>=N) return {t:T({ar:'حلّيت كل التحديات 🔥 إنت كده كسرت الدنيا! يلا على الاختبار البعدي',en:'All challenges solved 🔥 On to the post-test!'}),a:[{label:T({ar:'▶ الاختبار البعدي',en:'▶ Post-test'}),fn:go2('posttest'),primary:1}]};
-      return {t:n?T({ar:`حلّيت ${n} من ${N} تحديات 🔥 كمّل التحدي الجاي تحت`,en:`${n} of ${N} challenges solved 🔥 Keep going below`}):T({ar:`قدامك ${N} تحديات تفكير ناقد 🔥 يلا نبدأ بأول واحد!`,en:`${N} critical-thinking challenges await 🔥 Let’s start with the first!`}),a:[{label:T({ar:'وديني للتحديات',en:'Take me there'}),fn:()=>document.querySelector('#chq')?.scrollIntoView({behavior:'smooth'}),primary:1}]}; }
-    const ip=inProgress(); if(ip) return {t:T({ar:`إنت سايب "${T(ip.t)}" في النص، يلا نكمّله؟ 😉`,en:`You left "${T(ip.t)}" halfway — shall we finish it? 😉`}),a:[{label:T({ar:'▶ كمّله',en:'▶ Continue'}),fn:go2(ip.id),primary:1}]};
+      if(n>=N) return {v:['72a'],t:T({ar:'حلّيت كل التحديات 🔥 إنت كده كسرت الدنيا! يلا على الاختبار البعدي',en:'All challenges solved 🔥 On to the post-test!'}),a:[{label:T({ar:'▶ الاختبار البعدي',en:'▶ Post-test'}),fn:go2('posttest'),primary:1}]};
+      return {v:[n?(n<=6?66+n:null):66],t:n?T({ar:`حلّيت ${n} من ${N} تحديات 🔥 كمّل التحدي الجاي تحت`,en:`${n} of ${N} challenges solved 🔥 Keep going below`}):T({ar:`قدامك ${N} تحديات تفكير ناقد 🔥 يلا نبدأ بأول واحد!`,en:`${N} critical-thinking challenges await 🔥 Let’s start with the first!`}),a:[{label:T({ar:'وديني للتحديات',en:'Take me there'}),fn:()=>document.querySelector('#chq')?.scrollIntoView({behavior:'smooth'}),primary:1}]}; }
+    const ip=inProgress(); if(ip) return {v:[62],t:T({ar:`إنت سايب "${T(ip.t)}" في النص، يلا نكمّله؟ 😉`,en:`You left "${T(ip.t)}" halfway — shall we finish it? 😉`}),a:[{label:T({ar:'▶ كمّله',en:'▶ Continue'}),fn:go2(ip.id),primary:1}]};
     const nu=nextUnit(), d=UNITS.filter(unitDone).length;
-    if(!nu) return {t:T({ar:'خلصت كل الدروس 🎉 يلا على الاختبار البعدي نشوف اتحسّنت قد إيه',en:'All lessons done 🎉 Let’s see your progress in the post-test'}),a:[{label:T({ar:'▶ ابدأ الاختبار البعدي',en:'▶ Start post-test'}),fn:go2('posttest'),primary:1}]};
-    return {t:d?T({ar:`خلصت ${d} من 6 دروس 💪 الدرس الجاي: "${T(nu.t)}"`,en:`${d} of 6 lessons done 💪 Next: "${T(nu.t)}"`}):T({ar:`يلا نبدأ أول درس: "${T(nu.t)}" 🚀`,en:`Let’s start the first lesson: "${T(nu.t)}" 🚀`}),a:[{label:T({ar:'▶ يلا نبدأه',en:'▶ Start it'}),fn:go2(nu.id),primary:1}]}; }
+    if(!nu) return {v:[63],t:T({ar:'خلصت كل الدروس 🎉 يلا على الاختبار البعدي نشوف اتحسّنت قد إيه',en:'All lessons done 🎉 Let’s see your progress in the post-test'}),a:[{label:T({ar:'▶ ابدأ الاختبار البعدي',en:'▶ Start post-test'}),fn:go2('posttest'),primary:1}]};
+    return {v:d?[d<=5?55+d:null,61,uv(nu)]:[55,61,uv(nu)],t:d?T({ar:`خلصت ${d} من 6 دروس 💪 الدرس الجاي: "${T(nu.t)}"`,en:`${d} of 6 lessons done 💪 Next: "${T(nu.t)}"`}):T({ar:`يلا نبدأ أول درس: "${T(nu.t)}" 🚀`,en:`Let’s start the first lesson: "${T(nu.t)}" 🚀`}),a:[{label:T({ar:'▶ يلا نبدأه',en:'▶ Start it'}),fn:go2(nu.id),primary:1}]}; }
   function onRoute(r){ COACH.badge(); if(!USER) return;
     setTimeout(()=>{ if(CUR_ROUTE!==r) return;
       if(r==='dashboard' && S.pre){
@@ -1827,31 +1850,31 @@ const COMPANION=(()=>{ const seen=new Set();
           t+=w.length?T({ar:` عندك ${w.length} ${w.length===1?'مفهوم محتاج':'مفاهيم محتاجة'} شوية دعم: ${list(w.slice(0,3).map(nm))}${w.length>3?'…':''}.`,en:` ${w.length} concept(s) need support: ${list(w.slice(0,3).map(nm))}${w.length>3?'…':''}.`}):T({ar:' أتقنت كل المفاهيم! 🔥',en:' You mastered every concept! 🔥'});
           t+=T({ar:` أنا شايف ${T(PATHS[rec].name)} هو الأنسب ليك.`,en:` I think the ${T(PATHS[rec].name)} suits you best.`});
           document.querySelector('.path.rec')?.classList.add('glow');
-          return say(t,20000,{force:true,actions:[{label:T({ar:'▶ يلا نبدأ المسار',en:'▶ Start the path'}),fn:()=>choosePath(rec),primary:1},{label:T({ar:'وريني المسارات التانية',en:'Show other paths'}),fn:()=>document.querySelector('.paths')?.scrollIntoView({behavior:'smooth'})}]}); }
+          return say(t,20000,{force:true,voice:[48].concat(w.length?[]:[49],[{rem:50,sup:51,enr:52}[rec]]),actions:[{label:T({ar:'▶ يلا نبدأ المسار',en:'▶ Start the path'}),fn:()=>choosePath(rec),primary:1},{label:T({ar:'وريني المسارات التانية',en:'Show other paths'}),fn:()=>document.querySelector('.paths')?.scrollIntoView({behavior:'smooth'})}]}); }
         if(!sessionStorage.getItem('cot:greet')){ sessionStorage.setItem('cot:greet','1'); const a=S.path?pathAdvice():null;
-          return say(T({ar:'أهلًا تاني 👋 ',en:'Welcome back 👋 '})+(a?a.t:T({ar:'اختار مسارك وتعالى نبدأ!',en:'Pick your path and let’s begin!'})),12000,{force:true,actions:a?a.a:[]}); }
+          return say(T({ar:'أهلًا تاني 👋 ',en:'Welcome back 👋 '})+(a?a.t:T({ar:'اختار مسارك وتعالى نبدأ!',en:'Pick your path and let’s begin!'})),12000,{force:true,voice:[53].concat(a?a.v:[54]),actions:a?a.a:[]}); }
         return; }
-      if(r==='path'){ const a=pathAdvice(); sessionStorage.setItem('cot:greet','1'); return say(a.t,12000,{force:true,actions:a.a}); }
+      if(r==='path'){ const a=pathAdvice(); sessionStorage.setItem('cot:greet','1'); return say(a.t,12000,{force:true,voice:a.v,actions:a.a}); }
       if(/^u[1-6]$/.test(r)){ const u=U(r); if(seen.has(r)) return; seen.add(r);
-        say(T({ar:`الدرس ده عن: ${T(u.goal)} ابدأ بالمحاكاة، وخمّن قبل ما تدوس 🤔`,en:`This lesson: ${T(u.goal)} Start with the simulation and predict before you click 🤔`}),9000,{force:true,actions:[{label:T({ar:'وديني للمحاكاة',en:'Go to the simulation'}),fn:()=>document.querySelector('.sim')?.scrollIntoView({behavior:'smooth',block:'start'}),primary:1}]});
-        const q=document.querySelector('#uq'); if(q&&'IntersectionObserver' in window){ const io=new IntersectionObserver(es=>{ if(es.some(e=>e.isIntersecting)&&CUR_ROUTE===r){ io.disconnect(); say(T({ar:'يلا نختبر نفسنا 📝 لو احتجت، دوس 💡 تلميح جنب السؤال',en:'Time to check yourself 📝 Need help? Press 💡 Hint'}),5000,{gap:6000}); } },{threshold:.4}); io.observe(q); cleanups.push(()=>io.disconnect()); }
+        say(T({ar:`الدرس ده عن: ${T(u.goal)} ابدأ بالمحاكاة، وخمّن قبل ما تدوس 🤔`,en:`This lesson: ${T(u.goal)} Start with the simulation and predict before you click 🤔`}),9000,{force:true,voice:79+UNITS.indexOf(u),actions:[{label:T({ar:'وديني للمحاكاة',en:'Go to the simulation'}),fn:()=>document.querySelector('.sim')?.scrollIntoView({behavior:'smooth',block:'start'}),primary:1}]});
+        const q=document.querySelector('#uq'); if(q&&'IntersectionObserver' in window){ const io=new IntersectionObserver(es=>{ if(es.some(e=>e.isIntersecting)&&CUR_ROUTE===r){ io.disconnect(); say(T({ar:'يلا نختبر نفسنا 📝 لو احتجت، دوس 💡 تلميح جنب السؤال',en:'Time to check yourself 📝 Need help? Press 💡 Hint'}),5000,{gap:6000,voice:85}); } },{threshold:.4}); io.observe(q); cleanups.push(()=>io.disconnect()); }
         return; }
-      if(r==='games'){ return say(T({ar:'أهلًا بيك في ساحة الألعاب 🎮 اختار لعبة وأنا معاك فيها!',en:'Welcome to the game zone 🎮 Pick a game — I’m with you!'}),5000,{force:true}); }
+      if(r==='games'){ return say(T({ar:'أهلًا بيك في ساحة الألعاب 🎮 اختار لعبة وأنا معاك فيها!',en:'Welcome to the game zone 🎮 Pick a game — I’m with you!'}),5000,{force:true,voice:96}); }
       if(r==='report' && S.pre){
         if(S.post){ const d=S.post.score-S.pre.score, m=11-S.post.weak.length, w=S.post.weak;
           let t=d>0?T({ar:`اتحسّنت ${d}+% 🚀 بقيت متمكن من ${m} مفاهيم من 11!`,en:`You improved by +${d}% 🚀 You now master ${m} of 11 concepts!`}):T({ar:`نتيجتك ${S.post.score}%، ومتمكن من ${m} مفاهيم من 11 💪`,en:`You scored ${S.post.score}% and master ${m} of 11 concepts 💪`});
-          if(w.length){ t+=T({ar:` لسه محتاج تراجع "${nm(w[0])}".`,en:` You still need to review "${nm(w[0])}".`}); return say(t,15000,{force:true,actions:[{label:T({ar:'▶ راجع الدرس',en:'▶ Review it'}),fn:go2(CONCEPTS[w[0]].u),primary:1}]}); }
-          return say(t+T({ar:' برافو عليك 🎉',en:' Well done 🎉'}),9000,{force:true}); }
-        return say(T({ar:'لسه ماعملتش الاختبار البعدي، تحب تعمله وتشوف اتحسّنت قد إيه؟',en:'You haven’t taken the post-test yet — want to see how much you’ve improved?'}),12000,{force:true,actions:[{label:T({ar:'▶ ابدأه',en:'▶ Start it'}),fn:go2('posttest'),primary:1}]}); }
+          if(w.length){ t+=T({ar:` لسه محتاج تراجع "${nm(w[0])}".`,en:` You still need to review "${nm(w[0])}".`}); return say(t,15000,{force:true,voice:[d>0?90:91,93],actions:[{label:T({ar:'▶ راجع الدرس',en:'▶ Review it'}),fn:go2(CONCEPTS[w[0]].u),primary:1}]}); }
+          return say(t+T({ar:' برافو عليك 🎉',en:' Well done 🎉'}),9000,{force:true,voice:[d>0?90:91,92]}); }
+        return say(T({ar:'لسه ماعملتش الاختبار البعدي، تحب تعمله وتشوف اتحسّنت قد إيه؟',en:'You haven’t taken the post-test yet — want to see how much you’ve improved?'}),12000,{force:true,voice:94,actions:[{label:T({ar:'▶ ابدأه',en:'▶ Start it'}),fn:go2('posttest'),primary:1}]}); }
     },900); }
-  function wrong(){ say(T({ar:'ولا يهمك 😊 دوس 💡 تلميح وأنا معاك',en:'No worries 😊 Press 💡 Hint, I’m with you'}),4000,{gap:6000}); }
-  function fixed(c){ const left=openWeak().length; say(T({ar:`برافو 🎉 صلّحت مفهوم "${nm(c)}"${left?`، فاضلك ${left}`:'، وكده خلصت كل نقط ضعفك!'}`,en:`Bravo 🎉 You fixed "${nm(c)}"${left?` — ${left} left`:' — all weak points fixed!'}`}),6000,{force:true}); }
+  function wrong(){ say(T({ar:'ولا يهمك 😊 دوس 💡 تلميح وأنا معاك',en:'No worries 😊 Press 💡 Hint, I’m with you'}),4000,{gap:6000,voice:86}); }
+  function fixed(c){ const left=openWeak().length; say(T({ar:`برافو 🎉 صلّحت مفهوم "${nm(c)}"${left?`، فاضلك ${left}`:'، وكده خلصت كل نقط ضعفك!'}`,en:`Bravo 🎉 You fixed "${nm(c)}"${left?` — ${left} left`:' — all weak points fixed!'}`}),6000,{force:true,voice:left?87:[87,88]}); }
   function unitDoneMsg(id){ const k=S.path||S.rec; let a;
-    if(k==='sup'){ a=pathAdvice(); return say(T({ar:'خلصت الدرس 🎉 ',en:'Lesson complete 🎉 '})+a.t,15000,{force:true,actions:a.a}); }
+    if(k==='sup'){ a=pathAdvice(); return say(T({ar:'خلصت الدرس 🎉 ',en:'Lesson complete 🎉 '})+a.t,15000,{force:true,voice:[89].concat(a.v),actions:a.a}); }
     const idx=UNITS.findIndex(u=>u.id===id), nx=UNITS.slice(idx+1).find(u=>!unitDone(u))||nextUnit();
-    if(!nx) return say(T({ar:'خلصت كل الدروس 🎉 يلا على الاختبار البعدي!',en:'All lessons done 🎉 On to the post-test!'}),15000,{force:true,actions:[{label:T({ar:'▶ الاختبار البعدي',en:'▶ Post-test'}),fn:go2('posttest'),primary:1}]});
-    say(T({ar:`خلصت الدرس 🎉 الدرس الجاي: "${T(nx.t)}"`,en:`Lesson complete 🎉 Next: "${T(nx.t)}"`}),15000,{force:true,actions:[{label:T({ar:'▶ يلا نبدأه',en:'▶ Start it'}),fn:go2(nx.id),primary:1}]}); }
-  function chal(){ const n=Object.values(S.chal||{}).filter(Boolean).length, N=CHALLENGES.length; say(n>=N?T({ar:'حلّيت كل التحديات 🔥 يلا على الاختبار البعدي!',en:'All challenges solved 🔥 On to the post-test!'}):T({ar:`برافو 🔥 حلّيت ${n} من ${N}`,en:`Bravo 🔥 ${n} of ${N} solved`}),n>=N?12000:4000,{force:true,actions:n>=N?[{label:T({ar:'▶ الاختبار البعدي',en:'▶ Post-test'}),fn:go2('posttest'),primary:1}]:[]}); }
+    if(!nx) return say(T({ar:'خلصت كل الدروس 🎉 يلا على الاختبار البعدي!',en:'All lessons done 🎉 On to the post-test!'}),15000,{force:true,voice:[89,63],actions:[{label:T({ar:'▶ الاختبار البعدي',en:'▶ Post-test'}),fn:go2('posttest'),primary:1}]});
+    say(T({ar:`خلصت الدرس 🎉 الدرس الجاي: "${T(nx.t)}"`,en:`Lesson complete 🎉 Next: "${T(nx.t)}"`}),15000,{force:true,voice:[89,61,uv(nx)],actions:[{label:T({ar:'▶ يلا نبدأه',en:'▶ Start it'}),fn:go2(nx.id),primary:1}]}); }
+  function chal(){ const n=Object.values(S.chal||{}).filter(Boolean).length, N=CHALLENGES.length; say(n>=N?T({ar:'حلّيت كل التحديات 🔥 يلا على الاختبار البعدي!',en:'All challenges solved 🔥 On to the post-test!'}):T({ar:`برافو 🔥 حلّيت ${n} من ${N}`,en:`Bravo 🔥 ${n} of ${N} solved`}),n>=N?12000:4000,{force:true,voice:n>=N?'72a':(n<=6?66+n:null),actions:n>=N?[{label:T({ar:'▶ الاختبار البعدي',en:'▶ Post-test'}),fn:go2('posttest'),primary:1}]:[]}); }
   return {onRoute,wrong,fixed,unitDone:unitDoneMsg,chal};
 })();
 function renderChat(){

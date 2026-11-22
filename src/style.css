@@ -426,3 +426,6 @@ html[dir=ltr] .fab{padding:8px 10px 8px 18px}
 .kctrl{display:flex;flex-wrap:wrap;gap:8px;justify-content:center}.kctrl .btn:disabled{opacity:.45}
 .ktip{font-size:.82rem;text-align:center}
 #kPool{border-radius:14px}
+
+.coach-bub .cb-s{position:absolute;top:4px;inset-inline-end:30px;background:none;border:0;font-size:.95rem;padding:2px 4px}
+.coach-bub .cb-t{padding-inline-end:46px}
