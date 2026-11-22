@@ -499,25 +499,26 @@ body.intro-on{overflow:hidden}
 .intro{position:fixed;inset:0;z-index:300;background:radial-gradient(ellipse at 30% 50%,#0d1f42 0,#060b18 55%,#02040a 100%);overflow:hidden;direction:rtl}
 .intro.out{animation:inOut .45s ease forwards}
 @keyframes inOut{to{opacity:0}}
-.pk{position:absolute;left:0;top:46%;width:min(420px,62vw);aspect-ratio:180/150;transform:translate(-38%,-50%);opacity:0;
-  animation:pkIn .18s ease-out .5s forwards,pkZoom .85s cubic-bezier(.7,0,.3,1) 3.05s forwards,pkGone .25s linear 3.9s forwards}
+.pk{position:absolute;left:50%;top:46%;width:min(840px,124vw);aspect-ratio:180/150;transform:translate3d(calc(-50vw - 44%),-50%,0) scale(.5);transform-origin:50% 50%;opacity:0;will-change:transform,opacity;backface-visibility:hidden;
+  animation:pkIn .18s ease-out .5s forwards,pkZoom 1s cubic-bezier(.65,0,.35,1) 3s forwards,pkGone .3s linear 3.85s forwards}
 @keyframes pkGone{to{opacity:0;visibility:hidden}}
-.pk-tilt{width:100%;height:100%;transform:rotate(28deg);transform-origin:50% 60%;animation:pkStraight .85s cubic-bezier(.7,0,.3,1) 3.05s forwards}
-.pk-svg{width:100%;height:100%;overflow:visible;filter:drop-shadow(0 0 22px rgba(94,230,255,.28))}
+.pk-tilt{width:100%;height:100%;transform:rotate(28deg);transform-origin:50% 60%;animation:pkStraight 1s cubic-bezier(.65,0,.35,1) 3s forwards}
+.pk-svg{width:100%;height:100%;overflow:visible}
+.pk::before{content:"";position:absolute;inset:8%;border-radius:50%;background:radial-gradient(circle,rgba(94,230,255,.22),transparent 65%)}
 @keyframes pkIn{to{opacity:1}}
-@keyframes pkZoom{0%{left:0;transform:translate(-38%,-50%) scale(1)}100%{left:50%;opacity:1;transform:translate(-50%,-50%) scale(9)}}
+@keyframes pkZoom{0%{transform:translate3d(calc(-50vw - 44%),-50%,0) scale(.5)}100%{opacity:1;transform:translate3d(-50%,-50%,0) scale(4.6)}}
 @keyframes pkStraight{to{transform:rotate(0)}}
-.intro .pk-eyes{transform-box:fill-box;transform-origin:center;opacity:.12;animation:pkEyes .6s steps(1,end) .9s forwards,pkBlink .5s ease 2.3s 1}
-@keyframes pkEyes{0%{opacity:.12}20%{opacity:1}40%{opacity:.3}60%{opacity:1;filter:drop-shadow(0 0 6px #5ee6ff) drop-shadow(0 0 16px #5ee6ff)}100%{opacity:1;filter:drop-shadow(0 0 6px #5ee6ff) drop-shadow(0 0 16px #5ee6ff)}}
+.intro .pk-eyes{transform-box:fill-box;transform-origin:center;opacity:.12;filter:drop-shadow(0 0 5px #5ee6ff);animation:pkEyes .6s steps(1,end) .9s forwards,pkBlink .5s ease 2.3s 1}
+@keyframes pkEyes{0%{opacity:.12}20%{opacity:1}40%{opacity:.3}60%,100%{opacity:1}}
 @keyframes pkBlink{0%,100%{transform:scaleY(1)}50%{transform:scaleY(.08)}}
 .intro .pk-mouth{opacity:0;animation:pkIn .3s ease 1.3s forwards}
-.pk-h1,.pk-h2{position:absolute;left:-6px;width:min(88px,15vw);opacity:0;animation:pkIn .18s ease-out .5s forwards,pkHandOut .3s ease 3.05s forwards}
+.pk-h1,.pk-h2{position:absolute;left:-6px;width:min(88px,15vw);opacity:0;will-change:transform,opacity;animation:pkIn .18s ease-out .5s forwards,pkHandOut .3s ease 3.05s forwards}
 .pk-h1{top:calc(46% - min(210px,31vw) - 6px)}.pk-h2{top:calc(46% + min(155px,23vw))}
-.pk-hand{width:100%;height:auto;display:block;filter:drop-shadow(0 0 10px rgba(74,149,245,.35))}
+.pk-hand{width:100%;height:auto;display:block}
 @keyframes pkHandOut{to{opacity:0;transform:translateX(-30px)}}
 .pk-bub{position:absolute;left:min(290px,47vw);top:calc(46% - min(170px,27vw));background:#fff;color:#1b3358;font-weight:900;border-radius:18px;border-bottom-left-radius:4px;padding:10px 16px;font-size:clamp(.9rem,3.8vw,1.15rem);box-shadow:0 10px 30px rgba(0,0,0,.4);opacity:0;transform:scale(.6);transform-origin:0 100%;animation:pkBub 1.6s ease 1.35s forwards;white-space:nowrap;max-width:60vw}
 @keyframes pkBub{0%{opacity:0;transform:scale(.6)}15%,85%{opacity:1;transform:scale(1)}100%{opacity:0;transform:scale(.95)}}
-.in-flash{position:absolute;inset:0;background:radial-gradient(circle at 50% 46%,#ffffff 0,#bfe9ff 35%,#1d5fc2 100%);opacity:0;pointer-events:none;animation:inFlash 1s ease 3.65s forwards}
+.in-flash{position:absolute;inset:0;background:radial-gradient(circle at 50% 46%,#ffffff 0,#bfe9ff 35%,#1d5fc2 100%);opacity:0;pointer-events:none;will-change:opacity;animation:inFlash 1s ease 3.6s forwards}
 @keyframes inFlash{0%{opacity:0}35%{opacity:1}100%{opacity:0}}
 .in-title{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;opacity:0;transform:scale(.92);animation:inTitle .8s ease 4.2s forwards}
 .in-title svg{width:clamp(80px,22vw,120px);height:auto;filter:drop-shadow(0 0 18px rgba(120,180,255,.7));margin-bottom:8px}
@@ -1559,7 +1560,7 @@ const VOICE=(()=>{ let a=null, q=[], pending=null; const RATE=1.1, cache={}, war
   async function warm(){ const lg=LANG==='en'?'en':'ar'; if(warming[lg]) return; warming[lg]=1;
     for(const id of ALL){ const u=src(id).replace(/^audio\/\w+/,'audio/'+lg); if(cache[u]) continue;
       try{ const r=await fetch(u); if(r.ok) cache[u]=URL.createObjectURL(await r.blob()); }catch(e){ warming[lg]=0; return; } } }
-  setTimeout(warm,300);
+  setTimeout(warm,7000); /* after the intro, so the animation stays smooth */
   function next(){ const id=q.shift(); if(id==null){ a=null; return; } const rest=q.slice(); const u=src(id); a=new Audio(cache[u]||u); a.playbackRate=RATE; a.preservesPitch=true; a.onended=next;
     a.play().catch(()=>{ pending=[id,...rest]; q=[]; }); }
   function play(ids){ stop(); warm(); if(!on()||ids==null) return; q=[].concat(ids).filter(x=>x!=null); pending=null; next(); }

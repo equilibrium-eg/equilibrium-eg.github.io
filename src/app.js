@@ -169,7 +169,7 @@ const VOICE=(()=>{ let a=null, q=[], pending=null; const RATE=1.1, cache={}, war
   async function warm(){ const lg=LANG==='en'?'en':'ar'; if(warming[lg]) return; warming[lg]=1;
     for(const id of ALL){ const u=src(id).replace(/^audio\/\w+/,'audio/'+lg); if(cache[u]) continue;
       try{ const r=await fetch(u); if(r.ok) cache[u]=URL.createObjectURL(await r.blob()); }catch(e){ warming[lg]=0; return; } } }
-  setTimeout(warm,300);
+  setTimeout(warm,7000); /* after the intro, so the animation stays smooth */
   function next(){ const id=q.shift(); if(id==null){ a=null; return; } const rest=q.slice(); const u=src(id); a=new Audio(cache[u]||u); a.playbackRate=RATE; a.preservesPitch=true; a.onended=next;
     a.play().catch(()=>{ pending=[id,...rest]; q=[]; }); }
   function play(ids){ stop(); warm(); if(!on()||ids==null) return; q=[].concat(ids).filter(x=>x!=null); pending=null; next(); }
