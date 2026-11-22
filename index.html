@@ -1311,12 +1311,18 @@ function vLogin(){
 
 /* Acquire guide: talks, grows, waves and points at what to fill */
 /* ---- Acquire voice: recorded lines in audio/<lang>/<id>.mp3 (ids = robot script numbers) ---- */
-const VOICE=(()=>{ let a=null, q=[], pending=null;
+const VOICE=(()=>{ let a=null, q=[], pending=null; const RATE=1.1, cache={}, warming={};
   const on=()=>store.get('cot:sound',true)&&!store.get('cot:mute',false);
   const src=id=>`audio/${LANG==='en'?'en':'ar'}/${String(id).padStart(2,'0')}.mp3`;
-  function next(){ const id=q.shift(); if(id==null){ a=null; return; } const rest=q.slice(); a=new Audio(src(id)); a.onended=next;
+  const ALL=[...Array(127)].map((_,i)=>i+1); ALL.splice(72,0,'72a');
+  /* download every line of the current language once, in the background, so a line starts instantly */
+  async function warm(){ const lg=LANG==='en'?'en':'ar'; if(warming[lg]) return; warming[lg]=1;
+    for(const id of ALL){ const u=src(id).replace(/^audio\/\w+/,'audio/'+lg); if(cache[u]) continue;
+      try{ const r=await fetch(u); if(r.ok) cache[u]=URL.createObjectURL(await r.blob()); }catch(e){ warming[lg]=0; return; } } }
+  setTimeout(warm,300);
+  function next(){ const id=q.shift(); if(id==null){ a=null; return; } const rest=q.slice(); const u=src(id); a=new Audio(cache[u]||u); a.playbackRate=RATE; a.preservesPitch=true; a.onended=next;
     a.play().catch(()=>{ pending=[id,...rest]; q=[]; }); }
-  function play(ids){ stop(); if(!on()||ids==null) return; q=[].concat(ids).filter(x=>x!=null); pending=null; next(); }
+  function play(ids){ stop(); warm(); if(!on()||ids==null) return; q=[].concat(ids).filter(x=>x!=null); pending=null; next(); }
   function stop(){ q=[]; if(a){ a.onended=null; try{a.pause()}catch(e){} a=null; } }
   const unlock=()=>{ if(pending&&on()){ const p=pending; pending=null; play(p); } };
   ['pointerdown','keydown','touchstart'].forEach(ev=>document.addEventListener(ev,unlock,{capture:true}));
@@ -1866,7 +1872,7 @@ const COMPANION=(()=>{ const seen=new Set();
           if(w.length){ t+=T({ar:` لسه محتاج تراجع "${nm(w[0])}".`,en:` You still need to review "${nm(w[0])}".`}); return say(t,15000,{force:true,voice:[d>0?90:91,93],actions:[{label:T({ar:'▶ راجع الدرس',en:'▶ Review it'}),fn:go2(CONCEPTS[w[0]].u),primary:1}]}); }
           return say(t+T({ar:' برافو عليك 🎉',en:' Well done 🎉'}),9000,{force:true,voice:[d>0?90:91,92]}); }
         return say(T({ar:'لسه ماعملتش الاختبار البعدي، تحب تعمله وتشوف اتحسّنت قد إيه؟',en:'You haven’t taken the post-test yet — want to see how much you’ve improved?'}),12000,{force:true,voice:94,actions:[{label:T({ar:'▶ ابدأه',en:'▶ Start it'}),fn:go2('posttest'),primary:1}]}); }
-    },900); }
+    },350); }
   function wrong(){ say(T({ar:'ولا يهمك 😊 دوس 💡 تلميح وأنا معاك',en:'No worries 😊 Press 💡 Hint, I’m with you'}),4000,{gap:6000,voice:86}); }
   function fixed(c){ const left=openWeak().length; say(T({ar:`برافو 🎉 صلّحت مفهوم "${nm(c)}"${left?`، فاضلك ${left}`:'، وكده خلصت كل نقط ضعفك!'}`,en:`Bravo 🎉 You fixed "${nm(c)}"${left?` — ${left} left`:' — all weak points fixed!'}`}),6000,{force:true,voice:left?87:[87,88]}); }
   function unitDoneMsg(id){ const k=S.path||S.rec; let a;
