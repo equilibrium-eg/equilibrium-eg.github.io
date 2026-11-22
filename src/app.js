@@ -79,6 +79,17 @@ function nav(){
     <button role="menuitem" class="out" onclick="menuGo(logout)">${ART.i.out}<span>${T({ar:'خروج',en:'Logout'})}</span></button>
    </div>`:`<button class="lang" onclick="toggleLang()" aria-label="language">${ART.i.globe}<span>${LANG==='ar'?'English':'العربية'}</span></button>`}</div></nav>`;
 }
+/* one-time notice after login: the robot talks, and the voice can be turned off from the ☰ menu */
+function soundNote(){ if(!USER || store.get('cot:sndNote',false) || document.getElementById('sndNote')) return;
+  const h=document.getElementById('hamb'); if(!h) return;
+  const d=document.createElement('div'); d.id='sndNote'; d.className='snd-note'; d.setAttribute('role','dialog');
+  d.innerHTML=`<div class="sn-ico">🔊</div><div class="sn-tx"><b>${T({ar:'صوت الروبوت شغّال معاك',en:'The robot’s voice is on'})}</b><span>${T({ar:'Acquire هيكلمك بصوته وإنت بتتعلم. تقدر تقفل الصوت في أي وقت من القايمة ☰ اللي فوق.',en:'Acquire will talk to you as you learn. You can turn the voice off any time from the ☰ menu above.'})}</span>
+    <div class="sn-b"><button class="btn blue sm" id="snOk">${T({ar:'تمام 👍',en:'OK 👍'})}</button><button class="btn ghost sm" id="snOff">🔇 ${T({ar:'اقفل الصوت',en:'Turn voice off'})}</button></div></div>`;
+  document.body.appendChild(d); h.classList.add('glow');
+  const done=()=>{ store.set('cot:sndNote',true); d.remove(); h.classList.remove('glow'); };
+  d.querySelector('#snOk').onclick=()=>{ logEv('sound_note','ok'); done(); };
+  d.querySelector('#snOff').onclick=()=>{ VOICE.set(false); logEv('sound_note','off'); done(); toast(T({ar:'قفلنا الصوت 🔇 تقدر ترجّعه من القايمة ☰',en:'Voice off 🔇 turn it back on from the ☰ menu'})); };
+  h.addEventListener('click',done,{once:true}); }
 function toggleMenu(ev){ ev&&ev.stopPropagation(); const m=document.getElementById('navmenu'), b=document.getElementById('hamb'); if(!m) return; const o=!m.classList.contains('open'); m.classList.toggle('open',o); b.setAttribute('aria-expanded',o); b.querySelector('.hb-i').textContent=o?'✕':'☰'; }
 function closeMenu(){ const m=document.getElementById('navmenu'); if(m&&m.classList.contains('open')) toggleMenu(); }
 function menuGo(f){ closeMenu(); f(); }
@@ -105,6 +116,7 @@ function render(){
   AFTER.splice(0).forEach(f=>{try{f()}catch(e){console.error(e)}});
   if(!/test$/.test(r)) COACH.hide();
   try{ COMPANION.onRoute(r); }catch(e){ console.error(e); }
+  try{ soundNote(); }catch(e){ console.error(e); }
 }
 let AFTER=[], CUR_ROUTE='';
 window.addEventListener('hashchange',render);

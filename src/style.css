@@ -429,3 +429,10 @@ html[dir=ltr] .fab{padding:8px 10px 8px 18px}
 
 .coach-bub .cb-s{position:absolute;top:4px;inset-inline-end:30px;background:none;border:0;font-size:.95rem;padding:2px 4px}
 .coach-bub .cb-t{padding-inline-end:46px}
+
+.snd-note{position:fixed;top:78px;inset-inline-end:16px;z-index:70;display:flex;gap:12px;max-width:340px;background:#fff;border:2px solid #2f6fdb;border-radius:18px;padding:14px;box-shadow:0 16px 40px rgba(15,35,75,.25);animation:bubIn .25s ease-out}
+.snd-note::before{content:"";position:absolute;top:-10px;inset-inline-end:22px;width:16px;height:16px;background:#fff;border-top:2px solid #2f6fdb;border-left:2px solid #2f6fdb;transform:rotate(45deg)}
+.sn-ico{font-size:1.8rem;line-height:1}
+.sn-tx{display:flex;flex-direction:column;gap:4px;color:#1b3358}.sn-tx span{font-size:.9rem;color:#5b6b82;line-height:1.7}
+.sn-b{display:flex;gap:8px;margin-top:6px;flex-wrap:wrap}
+@media (max-width:640px){.snd-note{top:70px;inset-inline-end:10px;max-width:calc(100vw - 20px)}}
