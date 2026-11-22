@@ -530,4 +530,4 @@ body.intro-on{overflow:hidden}
 .in-go{font-family:inherit;font-size:clamp(1.2rem,5vw,1.6rem);font-weight:900;color:#fff;border:0;border-radius:999px;padding:16px 38px;background:linear-gradient(180deg,#2f7be6,#1d5fc2);box-shadow:0 0 0 0 rgba(94,230,255,.6),0 10px 30px rgba(29,95,194,.5);animation:inPulse 1.6s ease-in-out infinite;cursor:pointer}
 .in-go:hover{transform:translateY(-1px)}
 @keyframes inPulse{0%{box-shadow:0 0 0 0 rgba(94,230,255,.55),0 10px 30px rgba(29,95,194,.5)}70%{box-shadow:0 0 0 22px rgba(94,230,255,0),0 10px 30px rgba(29,95,194,.5)}100%{box-shadow:0 0 0 0 rgba(94,230,255,0),0 10px 30px rgba(29,95,194,.5)}}
-.in-start span{color:#9fb6d6;font-weight:600;font-size:.95rem}
+.in-snd{background:none;border:0;color:#9fb6d6;font-weight:700;font-size:.95rem;font-family:inherit;cursor:pointer;padding:6px 10px;border-radius:10px}.in-snd:hover{background:rgba(255,255,255,.08)}

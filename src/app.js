@@ -161,7 +161,12 @@ function vLogin(){
 
 /* Acquire guide: talks, grows, waves and points at what to fill */
 /* ---- Acquire voice: recorded lines in audio/<lang>/<id>.mp3 (ids = robot script numbers) ---- */
-const VOICE=(()=>{ let a=null, q=[], pending=null; const RATE=1.1, cache={}, warming={};
+const VOICE=(()=>{ let a=null, q=[], pending=null, primed=false, held=false; const RATE=1.1, cache={}, warming={};
+  /* ONE audio element reused for every line: phones (iPhone above all) only let a page play sound on an element first started by a tap */
+  const el=new Audio(); el.preload='auto'; el.setAttribute('playsinline','');
+  const SILENT='data:audio/wav;base64,UklGRiQAAABXQVZFZm10IBAAAAABAAEAQB8AAIA+AAACABAAZGF0YQAAAAA=';
+  try{ if(navigator.audioSession) navigator.audioSession.type='playback'; }catch(e){} /* iPhone: play even with the silent switch on */
+  function prime(){ if(primed) return; primed=true; try{ if(!el.src||el.src===location.href){ el.src=SILENT; } const r=el.play(); if(r&&r.catch) r.catch(()=>{ primed=false; }); }catch(e){ primed=false; } }
   const on=()=>store.get('cot:sound',true)&&!store.get('cot:mute',false);
   const src=id=>`audio/${LANG==='en'?'en':'ar'}/${String(id).padStart(2,'0')}.mp3`;
   const ALL=[...Array(127)].map((_,i)=>i+1); ALL.splice(72,0,'72a');
@@ -170,16 +175,17 @@ const VOICE=(()=>{ let a=null, q=[], pending=null; const RATE=1.1, cache={}, war
     for(const id of ALL){ const u=src(id).replace(/^audio\/\w+/,'audio/'+lg); if(cache[u]) continue;
       try{ const r=await fetch(u); if(r.ok) cache[u]=URL.createObjectURL(await r.blob()); }catch(e){ warming[lg]=0; return; } } }
   setTimeout(warm,7000); /* after the intro, so the animation stays smooth */
-  function next(){ const id=q.shift(); if(id==null){ a=null; return; } const rest=q.slice(); const u=src(id); a=new Audio(cache[u]||u); a.playbackRate=RATE; a.preservesPitch=true; a.onended=next;
-    a.play().catch(()=>{ pending=[id,...rest]; q=[]; }); }
-  function play(ids){ stop(); warm(); if(!on()||ids==null) return; q=[].concat(ids).filter(x=>x!=null); pending=null; next(); }
+  function next(){ const id=q.shift(); if(id==null){ a=null; return; } const rest=q.slice(); const u=src(id); a=el; el.onended=next; el.src=cache[u]||u; el.playbackRate=RATE; el.defaultPlaybackRate=RATE; el.preservesPitch=true;
+    const r=el.play(); if(r&&r.catch) r.catch(()=>{ pending=[id,...rest]; q=[]; }); }
+  function play(ids){ stop(); warm(); if(held){ pending=null; return; } if(!on()||ids==null) return; q=[].concat(ids).filter(x=>x!=null); pending=null; next(); }
   function stop(){ q=[]; if(a){ a.onended=null; try{a.pause()}catch(e){} a=null; } }
-  const unlock=()=>{ if(pending&&on()){ const p=pending; pending=null; play(p); } };
-  ['pointerdown','keydown','touchstart'].forEach(ev=>document.addEventListener(ev,unlock,{capture:true}));
+  /* the first real tap (touchend / click / key) unlocks sound; a line that was blocked before it plays then */
+  const unlock=()=>{ if(!held&&pending&&on()){ const p=pending; pending=null; play(p); } else prime(); };
+  ['touchend','click','keydown'].forEach(ev=>document.addEventListener(ev,unlock,{capture:true}));
   function set(v){ store.set('cot:sound',!!v); logEv('acquire_sound',v?'on':'off'); if(!v) stop(); document.querySelectorAll('[data-snd]').forEach(b=>b.innerHTML=label()); document.querySelectorAll('[data-sndi]').forEach(b=>b.textContent=icon()); }
   const icon=()=>store.get('cot:sound',true)?'🔊':'🔇';
   const label=()=>store.get('cot:sound',true)?'🔊 '+T({ar:'صوت الروبوت شغّال',en:'Robot voice on'}):'🔇 '+T({ar:'صوت الروبوت مقفول',en:'Robot voice off'});
-  return {play,stop,on,set,label,icon,toggle:()=>set(!store.get('cot:sound',true))};
+  return {play,stop,on,set,label,icon,prime,hold:v=>{ held=!!v; if(held){ pending=null; stop(); } },toggle:()=>set(!store.get('cot:sound',true))};
 })();
 
 const GUIDE = (()=>{
@@ -798,5 +804,5 @@ function botInner(kind,arg){
 }
 
 /* ================= BOOT ================= */
-applyDir(); renderChat(); render();
-INTRO.run(()=>{ VOICE.stop(); const rp=document.getElementById('rreplay'); if(rp) rp.click(); });
+applyDir(); renderChat(); VOICE.hold(true); render();
+INTRO.run(()=>{ VOICE.hold(false); VOICE.stop(); const rp=document.getElementById('rreplay'); if(rp) rp.click(); });

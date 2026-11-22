@@ -15,13 +15,15 @@ const INTRO=(()=>{
       <div class="pk-h1">${hand}</div><div class="pk-h2">${hand}</div>
       <div class="in-flash"></div>
       <div class="in-title">${ART.atom(96)}<b>${T({ar:'الاتزان الكيميائي',en:'Chemical Equilibrium'})}</b><span>${T({ar:'الصف الثالث الثانوي · كيمياء',en:'Grade 12 · Chemistry'})}</span></div>
-      <div class="in-start"><button class="in-go" type="button">▶ ${T({ar:'ابدأ الرحلة',en:'Start the journey'})}</button><span>🔊 ${T({ar:'شغّل الصوت عشان تسمع',en:'Turn your sound on'})}</span></div>
+      <div class="in-start"><button class="in-go" type="button">▶ ${T({ar:'ابدأ الرحلة',en:'Start the journey'})}</button><button class="in-snd" type="button"></button></div>
       <button class="in-skip" type="button">${T({ar:'تخطي ⏭',en:'Skip ⏭'})}</button>`;
     document.body.appendChild(d); document.body.classList.add('intro-on');
     let ended=false, t=null; const end=()=>{ if(ended) return; ended=true; clearTimeout(t); SFX.stop(); d.classList.add('out'); document.body.classList.remove('intro-on');
       setTimeout(()=>{ d.remove(); onDone&&onDone(); },450); };
     const go=d.querySelector('.in-go'); go.onpointerdown=()=>SFX.warm();
-    go.onclick=async()=>{ if(d.classList.contains('go')||go.dataset.busy) return; go.dataset.busy=1; logEv('intro_start','');
+    const snd=d.querySelector('.in-snd'), paint=()=>{ snd.textContent=VOICE.on()?'🔊 '+T({ar:'الصوت شغّال — علّي صوت الموبايل',en:'Sound is on — turn your volume up'}):'🔇 '+T({ar:'الصوت مقفول — دوس هنا تشغّله',en:'Sound is off — tap to turn it on'}); };
+    paint(); snd.onclick=()=>{ if(!VOICE.on()){ store.set('cot:mute',false); VOICE.set(true); COACH.badge&&COACH.badge(); } paint(); };
+    go.onclick=async()=>{ if(d.classList.contains('go')||go.dataset.busy) return; go.dataset.busy=1; logEv('intro_start',''); VOICE.prime(); SFX.warm();
       const lead=await SFX.play();   /* seconds until the sounds are actually heard */
       setTimeout(()=>requestAnimationFrame(()=>{ d.classList.add('go'); t=setTimeout(end,DUR); }), Math.round(lead*1000)); };
     d.querySelector('.in-skip').onclick=()=>{ logEv('intro_skip',''); end(); };
@@ -38,7 +40,9 @@ const SFX=(()=>{ let ac=null, nodes=[];
     const s=ac.createBufferSource(); s.buffer=n; const bp=ac.createBiquadFilter(); bp.type='bandpass'; bp.Q.value=1.2; bp.frequency.setValueAtTime(fA,t0); bp.frequency.exponentialRampToValueAtTime(fB,t0+dur*0.85);
     const g=ac.createGain(); g.gain.setValueAtTime(0.0001,t0); g.gain.exponentialRampToValueAtTime(vol,t0+dur*0.7); g.gain.exponentialRampToValueAtTime(0.0001,t0+dur);
     s.connect(bp).connect(g).connect(ac.destination); s.start(t0); s.stop(t0+dur); nodes.push(s); }
-  function warm(){ try{ if(!VOICE.on()) return; ac=ac||new (window.AudioContext||window.webkitAudioContext)(); if(ac.state!=='running') ac.resume(); }catch(e){} }
+  function warm(){ try{ if(!VOICE.on()) return; ac=ac||new (window.AudioContext||window.webkitAudioContext)(); if(ac.state!=='running') ac.resume();
+      const b=ac.createBufferSource(); b.buffer=ac.createBuffer(1,1,22050); b.connect(ac.destination); b.start(0); /* iPhone: a sound started inside the tap unlocks the context */
+    }catch(e){} }
   /* schedules every sound on the audio clock and returns how long until it is heard, so the animation starts at the same instant */
   async function play(){ try{ if(!VOICE.on()) return 0; warm(); if(ac.state!=='running') await Promise.race([ac.resume(),new Promise(r=>setTimeout(r,400))]);
       const lead=0.12, lat=Math.min(0.3,(ac.outputLatency||0)+(ac.baseLatency||0)), T0=ac.currentTime+lead;
