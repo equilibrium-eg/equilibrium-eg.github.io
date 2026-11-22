@@ -455,6 +455,7 @@ html[dir=rtl] .cert{left:auto;right:0;transform-origin:100% 0}
 .cert b{font-weight:700}
 .cert .c-line{position:absolute;left:0;right:0;margin:0 auto;height:2px;width:620px;background:linear-gradient(90deg,transparent,#a8822a,transparent)}
 .cert .c-sig{position:absolute;bottom:150px;width:330px}.cert .c-sig>div:first-child{height:56px}
+.cert .c-sign{position:relative}.cert .c-sign img{position:absolute;left:50%;bottom:-14px;height:150px;transform:translateX(-50%)}
 .cert .c-sl{border-top:1.5px solid #a8822a;padding-top:6px;font-size:24px;color:#3b3220}
 .cert-card h2{display:flex;gap:8px;align-items:center}
 .cert-prev{position:relative;border-radius:10px;overflow:hidden;box-shadow:0 8px 24px rgba(20,40,80,.15);margin:10px 0 14px}

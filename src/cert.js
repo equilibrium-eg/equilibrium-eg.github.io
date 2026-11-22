@@ -57,7 +57,7 @@ const CERT=(()=>{
       <div class="c-line" style="top:612px"></div>
       <div class="c-l am" style="top:632px;font-size:28px;color:#3b3220;line-height:1.75;padding:0 250px">has successfully completed the <b>Chemical Equilibrium &amp; Le Chatelier’s Principle</b> unit for the third year of secondary school and passed all of its assessments with a grade of <b style="color:#7a1414">${grade(p,1)} (${p}%)</b>, mastering all of its scientific concepts.</div>
       <div class="c-sig am" style="left:200px"><div style="font-size:28px;color:#13254a">${date}</div><div class="c-sl">Date of issue</div></div>
-      <div class="c-sig am" style="right:560px"><div></div><div class="c-sl">Teacher’s signature</div></div>`
+      <div class="c-sig am" style="right:560px"><div class="c-sign"><img src="img/sign.png" alt=""></div><div class="c-sl">Teacher’s signature</div></div>`
     :`
       <div class="c-l ci" style="top:272px;font-size:22px;letter-spacing:8px;color:${GOLD}">CERTIFICATE OF COMPLETION</div>
       <div class="c-l ru" style="top:290px;font-size:96px;color:#13254a;line-height:1.3">شهادة إتمام</div>
@@ -65,7 +65,7 @@ const CERT=(()=>{
       <div class="c-l ru c-name" style="top:490px;font-size:78px;color:#7a1414;line-height:1.35">${esc(name)}</div>
       <div class="c-line" style="top:610px"></div>
       <div class="c-l am" style="top:632px;font-size:29px;color:#3b3220;line-height:1.75;padding:0 260px">قد أتمّ بنجاح وحدة <b>الاتزان الكيميائي ومبدأ لوشاتيليه</b> للصف الثالث الثانوي،<br>واجتاز جميع اختباراتها بتقدير <b style="color:#7a1414">${grade(p)}</b> بنسبة <b style="color:#7a1414">${arNum(p)}٪</b>، متقنًا جميع مفاهيمها العلمية.</div>
-      <div class="c-sig am" style="left:560px"><div></div><div class="c-sl">توقيع المعلمة</div></div>
+      <div class="c-sig am" style="left:560px"><div class="c-sign"><img src="img/sign.png" alt=""></div><div class="c-sl">توقيع المعلمة</div></div>
       <div class="c-sig am" style="right:200px"><div style="font-size:30px;color:#13254a">${date}</div><div class="c-sl">تاريخ الإصدار</div></div>`;
     const u='c'+(++UID), svg=bg(en).replace(/\b(cPa|cGf|cSeal)\b/g,'$1'+u);
     return `<div class="cert" dir="${en?'ltr':'rtl'}" lang="${lang}">${svg}${body}<div class="c-l ci" style="bottom:104px;font-size:16px;letter-spacing:3px;color:${GOLD}">CERTIFICATE NO. ${number()}</div></div>`; }
