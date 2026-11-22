@@ -13,16 +13,36 @@ const INTRO=(()=>{
     const d=document.createElement('div'); d.id='intro'; d.className='intro'; d.setAttribute('role','dialog'); d.setAttribute('aria-label',T({ar:'مقدمة المنصة',en:'Platform intro'}));
     d.innerHTML=`<div class="pk"><div class="pk-tilt">${head()}</div></div>
       <div class="pk-h1">${hand}</div><div class="pk-h2">${hand}</div>
-      <div class="pk-bub">${T({ar:'الكيمياء في قفص الاتهام! 🔍',en:'Chemistry on trial! 🔍'})}</div>
       <div class="in-flash"></div>
       <div class="in-title">${ART.atom(96)}<b>${T({ar:'الاتزان الكيميائي',en:'Chemical Equilibrium'})}</b><span>${T({ar:'الصف الثالث الثانوي · كيمياء',en:'Grade 12 · Chemistry'})}</span></div>
+      <div class="in-start"><button class="in-go" type="button">▶ ${T({ar:'ابدأ الرحلة',en:'Start the journey'})}</button><span>🔊 ${T({ar:'شغّل الصوت عشان تسمع',en:'Turn your sound on'})}</span></div>
       <button class="in-skip" type="button">${T({ar:'تخطي ⏭',en:'Skip ⏭'})}</button>`;
     document.body.appendChild(d); document.body.classList.add('intro-on');
-    let ended=false; const end=()=>{ if(ended) return; ended=true; clearTimeout(t); d.classList.add('out'); document.body.classList.remove('intro-on');
+    let ended=false, t=null; const end=()=>{ if(ended) return; ended=true; clearTimeout(t); SFX.stop(); d.classList.add('out'); document.body.classList.remove('intro-on');
       setTimeout(()=>{ d.remove(); onDone&&onDone(); },450); };
-    const t=setTimeout(end,DUR);
+    d.querySelector('.in-go').onclick=()=>{ logEv('intro_start',''); d.classList.add('go'); SFX.play(); t=setTimeout(end,DUR); };
     d.querySelector('.in-skip').onclick=()=>{ logEv('intro_skip',''); end(); };
     addEventListener('keydown',function k(e){ if(e.key==='Escape'){ removeEventListener('keydown',k); end(); } });
   }
   return {run};
+})();
+
+/* intro sound effects, made in the browser (no audio files): power-on zap, whoosh on the zoom, shimmer on the title */
+const SFX=(()=>{ let ac=null, nodes=[];
+  function tone(type,f0,f1,t0,dur,vol){ const o=ac.createOscillator(), g=ac.createGain(); o.type=type; o.frequency.setValueAtTime(f0,t0); if(f1) o.frequency.exponentialRampToValueAtTime(f1,t0+dur);
+    g.gain.setValueAtTime(0.0001,t0); g.gain.exponentialRampToValueAtTime(vol,t0+0.02); g.gain.exponentialRampToValueAtTime(0.0001,t0+dur); o.connect(g).connect(ac.destination); o.start(t0); o.stop(t0+dur+0.05); nodes.push(o); }
+  function noise(t0,dur,vol,fA,fB){ const n=ac.createBuffer(1,ac.sampleRate*dur,ac.sampleRate), d=n.getChannelData(0); for(let i=0;i<d.length;i++) d[i]=Math.random()*2-1;
+    const s=ac.createBufferSource(); s.buffer=n; const bp=ac.createBiquadFilter(); bp.type='bandpass'; bp.Q.value=1.2; bp.frequency.setValueAtTime(fA,t0); bp.frequency.exponentialRampToValueAtTime(fB,t0+dur*0.85);
+    const g=ac.createGain(); g.gain.setValueAtTime(0.0001,t0); g.gain.exponentialRampToValueAtTime(vol,t0+dur*0.7); g.gain.exponentialRampToValueAtTime(0.0001,t0+dur);
+    s.connect(bp).connect(g).connect(ac.destination); s.start(t0); s.stop(t0+dur); nodes.push(s); }
+  function play(){ try{ if(!VOICE.on()) return; ac=ac||new (window.AudioContext||window.webkitAudioContext)(); ac.resume(); const T0=ac.currentTime+0.05;
+      tone('sine',320,140,T0+0.5,0.18,0.25);                                   // pop: the head appears at the edge
+      [0,0.12,0.24].forEach((x,i)=>tone('square',900+i*260,1400+i*200,T0+0.9+x,0.09,0.05)); // zap: the eyes flicker on
+      tone('sine',220,220,T0+1.1,1.6,0.035);                                   // soft hum while it looks at you
+      tone('triangle',660,990,T0+2.3,0.12,0.06);                               // blink blip
+      noise(T0+2.95,1.05,0.5,250,3200);                                        // whoosh: the zoom
+      [1046.5,1318.5,1568,2093].forEach((f,i)=>tone('sine',f,0,T0+3.75+i*0.07,1.6,0.12)); // shimmer: flash and title
+    }catch(e){} }
+  function stop(){ nodes.forEach(n=>{ try{n.stop()}catch(e){} }); nodes=[]; }
+  return {play,stop};
 })();
