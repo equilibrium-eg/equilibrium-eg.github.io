@@ -1394,7 +1394,10 @@ const INTRO=(()=>{
     document.body.appendChild(d); document.body.classList.add('intro-on');
     let ended=false, t=null; const end=()=>{ if(ended) return; ended=true; clearTimeout(t); SFX.stop(); d.classList.add('out'); document.body.classList.remove('intro-on');
       setTimeout(()=>{ d.remove(); onDone&&onDone(); },450); };
-    d.querySelector('.in-go').onclick=()=>{ logEv('intro_start',''); d.classList.add('go'); SFX.play(); t=setTimeout(end,DUR); };
+    const go=d.querySelector('.in-go'); go.onpointerdown=()=>SFX.warm();
+    go.onclick=async()=>{ if(d.classList.contains('go')||go.dataset.busy) return; go.dataset.busy=1; logEv('intro_start','');
+      const lead=await SFX.play();   /* seconds until the sounds are actually heard */
+      setTimeout(()=>requestAnimationFrame(()=>{ d.classList.add('go'); t=setTimeout(end,DUR); }), Math.round(lead*1000)); };
     d.querySelector('.in-skip').onclick=()=>{ logEv('intro_skip',''); end(); };
     addEventListener('keydown',function k(e){ if(e.key==='Escape'){ removeEventListener('keydown',k); end(); } });
   }
@@ -1409,16 +1412,20 @@ const SFX=(()=>{ let ac=null, nodes=[];
     const s=ac.createBufferSource(); s.buffer=n; const bp=ac.createBiquadFilter(); bp.type='bandpass'; bp.Q.value=1.2; bp.frequency.setValueAtTime(fA,t0); bp.frequency.exponentialRampToValueAtTime(fB,t0+dur*0.85);
     const g=ac.createGain(); g.gain.setValueAtTime(0.0001,t0); g.gain.exponentialRampToValueAtTime(vol,t0+dur*0.7); g.gain.exponentialRampToValueAtTime(0.0001,t0+dur);
     s.connect(bp).connect(g).connect(ac.destination); s.start(t0); s.stop(t0+dur); nodes.push(s); }
-  function play(){ try{ if(!VOICE.on()) return; ac=ac||new (window.AudioContext||window.webkitAudioContext)(); ac.resume(); const T0=ac.currentTime+0.05;
-      tone('sine',320,140,T0+0.5,0.18,0.25);                                   // pop: the head appears at the edge
-      [0,0.12,0.24].forEach((x,i)=>tone('square',900+i*260,1400+i*200,T0+0.9+x,0.09,0.05)); // zap: the eyes flicker on
-      tone('sine',220,220,T0+1.1,1.6,0.035);                                   // soft hum while it looks at you
-      tone('triangle',660,990,T0+2.3,0.12,0.06);                               // blink blip
-      noise(T0+2.95,1.05,0.5,250,3200);                                        // whoosh: the zoom
-      [1046.5,1318.5,1568,2093].forEach((f,i)=>tone('sine',f,0,T0+3.75+i*0.07,1.6,0.12)); // shimmer: flash and title
-    }catch(e){} }
+  function warm(){ try{ if(!VOICE.on()) return; ac=ac||new (window.AudioContext||window.webkitAudioContext)(); if(ac.state!=='running') ac.resume(); }catch(e){} }
+  /* schedules every sound on the audio clock and returns how long until it is heard, so the animation starts at the same instant */
+  async function play(){ try{ if(!VOICE.on()) return 0; warm(); if(ac.state!=='running') await Promise.race([ac.resume(),new Promise(r=>setTimeout(r,400))]);
+      const lead=0.12, lat=Math.min(0.3,(ac.outputLatency||0)+(ac.baseLatency||0)), T0=ac.currentTime+lead;
+      // cue times match the CSS timeline of the intro (seconds after it starts)
+      tone('sine',320,140,T0+0.5,0.18,0.25);                                   // 0.50 pop: the head appears at the edge
+      [1.02,1.14,1.26].forEach((x,i)=>tone('square',900+i*260,1400+i*200,T0+x,0.08,0.05)); // eyes flicker on (each light-up step)
+      tone('sine',220,220,T0+1.3,1.6,0.035);                                   // 1.30 soft hum while it looks at you
+      tone('triangle',660,990,T0+2.52,0.1,0.06);                               // 2.55 the blink closes
+      noise(T0+3.0,0.95,0.5,250,3200);                                         // 3.00–3.95 whoosh with the zoom
+      [1046.5,1318.5,1568,2093].forEach((f,i)=>tone('sine',f,0,T0+3.9+i*0.06,1.6,0.12)); // 3.95 flash, then the title
+      return lead+lat; }catch(e){ return 0; } }
   function stop(){ nodes.forEach(n=>{ try{n.stop()}catch(e){} }); nodes=[]; }
-  return {play,stop};
+  return {play,stop,warm};
 })();
 
 /* ================= CONFIG ================= */
