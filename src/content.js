@@ -144,7 +144,10 @@ const UNITS = [
     '<p>Calculate the expression using the current concentrations and compare with the stated $K_{c}$ <b>at the same temperature</b>. If they differ, the mixture is not at equilibrium.</p>'}},
    {h:{ar:'عكس المعادلة وضربها',en:'Reversing and multiplying'}, b:{ar:
     '<div class="eqblock">$K_{reverse}=«1|K_{forward}»$ &nbsp;&nbsp;&nbsp; $K_{new}=(K_{original})^{n}$</div><p>عند عكس المعادلة يصبح الثابت مقلوب الثابت الأصلي، وعند ضرب كل المعاملات في n يُرفع الثابت للأس n.</p>',en:
-    '<div class="eqblock">$K_{reverse}=«1|K_{forward}»$ &nbsp;&nbsp;&nbsp; $K_{new}=(K_{original})^{n}$</div><p>Reversing gives the reciprocal; multiplying all coefficients by n raises K to the power n.</p>'}}
+    '<div class="eqblock">$K_{reverse}=«1|K_{forward}»$ &nbsp;&nbsp;&nbsp; $K_{new}=(K_{original})^{n}$</div><p>Reversing gives the reciprocal; multiplying all coefficients by n raises K to the power n.</p>'}},
+   {h:{ar:'مثال عددي: تكوين يوديد الهيدروجين',en:'Worked example: forming hydrogen iodide'}, newrev:true, b:{ar:
+    '<div class="eqblock">$H2(g)+I2(g)<=>2HI(g)$ &nbsp;&nbsp; $K_{c}=«[HI]^{2}|[H2][I2]»=50$</div><p><b>دلالة القيمة:</b> $K_{c}=50$ أكبر من 1، فعند الاتزان تكون نسبة النواتج كبيرة مقارنة بالمتفاعلات عند درجة الحرارة المحددة.</p><p><b>مثال 1 — احسب $K_{c}$:</b> عند الاتزان $[HI]=0.500 mol/L$ و $[H2]=0.050 mol/L$ و $[I2]=0.100 mol/L$.</p><div class="eqblock">$K_{c}=«(0.500)^{2}|(0.050)(0.100)»=«0.250|0.005»=50.000$</div><p><b>مثال 2 — احسب $[HI]$:</b> عند الاتزان $[H2]=[I2]=0.100 mol/L$.</p><div class="eqblock">$[HI]^{2}=50×0.100×0.100=0.500$ ⟹ $[HI]=0.707 mol/L$</div><ul class="kp"><li>قرّب الناتج النهائي لأقرب <b>3 أرقام عشرية</b>.</li><li>عوّض بتركيزات <b>الاتزان</b> فقط، واكتب خطوات الحساب.</li></ul>',en:
+    '<div class="eqblock">$H2(g)+I2(g)<=>2HI(g)$ &nbsp;&nbsp; $K_{c}=«[HI]^{2}|[H2][I2]»=50$</div><p><b>Meaning:</b> $K_{c}=50$ is greater than 1, so at equilibrium the proportion of products is large compared with reactants at the specified temperature.</p><p><b>Example 1 — find $K_{c}$:</b> at equilibrium $[HI]=0.500 mol/L$, $[H2]=0.050 mol/L$, $[I2]=0.100 mol/L$.</p><div class="eqblock">$K_{c}=«(0.500)^{2}|(0.050)(0.100)»=«0.250|0.005»=50.000$</div><p><b>Example 2 — find $[HI]$:</b> at equilibrium $[H2]=[I2]=0.100 mol/L$.</p><div class="eqblock">$[HI]^{2}=50×0.100×0.100=0.500$ ⟹ $[HI]=0.707 mol/L$</div><ul class="kp"><li>Round the final answer to <b>3 decimal places</b>.</li><li>Substitute <b>equilibrium</b> concentrations only and show the working.</li></ul>'}}
   ],
   sims:['kc'],
   mis:[
@@ -154,7 +157,8 @@ const UNITS = [
   ],
   quiz:[
    {id:'Q3a', c:'c_phase', q:{ar:'تعبير $K_{c}$ للتفاعل $NH3(l)<=>NH3(g)$ هو:',en:'The $K_{c}$ for $NH3(l)<=>NH3(g)$ is:'}, o:[{ar:'$K_{c}=«[NH3(g)]|[NH3(l)]»$',en:'$K_{c}=«[NH3(g)]|[NH3(l)]»$'},{ar:'$K_{c}=[NH3]$',en:'$K_{c}=[NH3]$'},{ar:'$K_{c}=1$',en:'$K_{c}=1$'}], a:1, x:{ar:'السائل النقي لا يُكتب.',en:'The pure liquid is omitted.'}},
-   {id:'Q3b', c:'c_kc', q:{ar:'في تعبير $K_{c}$، معامل المادة في المعادلة الموزونة:',en:'In a $K_{c}$ expression, a substance’s coefficient:'}, o:[{ar:'يُضرب في التركيز',en:'Multiplies the concentration'},{ar:'يصبح أسًا للتركيز',en:'Becomes the power of the concentration'},{ar:'يُهمل',en:'Is ignored'}], a:1, x:{ar:'مثال: $[H2]^{2}$',en:'Example: $[H2]^{2}$'}}
+   {id:'Q3b', c:'c_kc', q:{ar:'في تعبير $K_{c}$، معامل المادة في المعادلة الموزونة:',en:'In a $K_{c}$ expression, a substance’s coefficient:'}, o:[{ar:'يُضرب في التركيز',en:'Multiplies the concentration'},{ar:'يصبح أسًا للتركيز',en:'Becomes the power of the concentration'},{ar:'يُهمل',en:'Is ignored'}], a:1, x:{ar:'مثال: $[H2]^{2}$',en:'Example: $[H2]^{2}$'}},
+   {id:'Q3c', c:'c_kc', q:{ar:'للتفاعل $H2(g)+I2(g)<=>2HI(g)$ قيمة $K_{c}=50$. إذا كان عند الاتزان $[H2]=[I2]=0.100 mol/L$ فإن $[HI]$ يساوي:',en:'For $H2(g)+I2(g)<=>2HI(g)$, $K_{c}=50$. If at equilibrium $[H2]=[I2]=0.100 mol/L$, then $[HI]$ equals:'}, o:[{ar:'0.707 mol/L',en:'0.707 mol/L'},{ar:'0.500 mol/L',en:'0.500 mol/L'},{ar:'5.000 mol/L',en:'5.000 mol/L'},{ar:'0.071 mol/L',en:'0.071 mol/L'}], a:0, x:{ar:'$[HI]^{2}=50×0.100×0.100=0.500$ ، إذن $[HI]=0.707$',en:'$[HI]^{2}=50×0.100×0.100=0.500$, so $[HI]=0.707$'}}
   ]
 },
 { id:'u4', n:4, color:'blue',

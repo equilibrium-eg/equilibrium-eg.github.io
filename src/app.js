@@ -529,7 +529,7 @@ function vUnit(id){
    <div class="banner" style="margin-top:14px;justify-content:flex-start;text-align:start"><span class="n" style="background:var(--${u.color});color:#fff;width:52px;height:52px;border-radius:16px;display:inline-flex;align-items:center;justify-content:center;font-size:1.5rem;font-weight:900;flex:none">${u.n}</span><div><h1 style="font-size:1.6rem">${T(u.t)}</h1><p>${T(u.goal)}</p></div></div>
    ${unitObjectives(u)}
    ${unitVideo(u)}
-   <div class="card" style="margin-top:18px">${u.sections.map(s=>`<div class="section"><h2>${T(s.h)}${s.review?reviewTag():''}</h2>${T(s.b)}</div>`).join('')}</div>
+   <div class="card" style="margin-top:18px">${u.sections.map(s=>`<div class="section"><h2>${T(s.h)}${s.review?reviewTag():''}${s.newrev?reviewTag(CONFIG.showObjTags):''}</h2>${T(s.b)}</div>`).join('')}</div>
    <div class="section"><h2>${T({ar:'جرّب بنفسك',en:'Try it yourself'})}</h2>${u.sims.map(s=>`<div id="sim-${s}"></div>`).join('')}</div>
    <div class="card"><h2 style="margin-top:0">${T({ar:'انتبه من الأخطاء الشائعة',en:'Watch out for common misconceptions'})}</h2>${u.mis.map(m=>`<div class="mis"><div class="w">✘ ${T(m.w)}</div><div class="r">✔ ${T(m.r)}</div></div>`).join('')}</div>
    <div class="card" style="margin-top:18px"><h2 style="margin-top:0">${k==='sup'?T({ar:'إعادة التقييم',en:'Reassessment'}):T({ar:'اختبر نفسك',en:'Check yourself'})}</h2><div id="uq"></div></div>
