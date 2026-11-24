@@ -45,6 +45,9 @@ An adaptive learning website for **Egyptian 3rd-year secondary chemistry — Che
 4. Commit and push to `main`.
 
 ## Open items / next steps
-- Teacher approval of the 14 diagnostic questions and all items tagged "بانتظار اعتماد المعلمة"; then set `CONFIG.showReviewTags = false`.
+- DONE 2026-11-25: teacher approved the 14 diagnostic questions, all review-tagged sections, the 0 °C NO₂ description and the six video scripts → `CONFIG.showReviewTags = false`.
+- Unit objectives (`UNIT_EXTRA.obj`) still await approval (`CONFIG.showObjTags = true`).
+- Teacher chose to ADD the HI numerical example and K units/rounding — waiting for her data (value 50 or 55.16, temperature, concentrations, units convention). Q and extra reactions stay hidden.
+- Unit story videos (AR/EN) live in `video/`; production files and scripts are outside the repo.
 - Owner mentioned a possible **7th lesson** — content not received yet.
 - Pilot with students → analyse pre/post + usage from the Sheet (DBR evaluation cycle).
