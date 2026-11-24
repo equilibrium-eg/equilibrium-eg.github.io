@@ -35,6 +35,24 @@ function post(payload){
   if(!CONFIG.API_URL) return Promise.resolve(null);
   return fetch(CONFIG.API_URL,{method:'POST',headers:{'Content-Type':'text/plain;charset=utf-8'},body:JSON.stringify(payload)}).then(r=>r.json()).catch(()=>null);
 }
+/* ---- accessibility settings (font size, contrast, motion, voice speed) ---- */
+const A11Y=(()=>{ const K='cot:a11y'; const s=Object.assign({fs:0,hc:false,rm:false,slow:false},store.get(K,{}));
+  function apply(){ const h=document.documentElement; h.classList.toggle('a-fs1',s.fs===1); h.classList.toggle('a-fs2',s.fs===2); h.classList.toggle('a-hc',!!s.hc); h.classList.toggle('a-rm',!!s.rm); }
+  function set(p){ Object.assign(s,p); store.set(K,s); apply(); try{logEv('a11y',JSON.stringify(s))}catch(e){} paint(); }
+  const rm=()=>!!s.rm||matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const rate=()=>s.slow?0.9:1.1;
+  function opt(on,label,fn){ return `<button class="a11y-o ${on?'on':''}" onclick="${fn}" aria-pressed="${!!on}">${label}</button>`; }
+  function paint(){ const b=document.getElementById('a11yBody'); if(!b) return;
+    b.innerHTML=`<div class="a11y-r"><b>🔠 ${T({ar:'حجم الخط',en:'Text size'})}</b><div>${opt(s.fs===0,'<bdi dir=ltr>A</bdi>','A11Y.set({fs:0})')}${opt(s.fs===1,'<bdi dir=ltr>A+</bdi>','A11Y.set({fs:1})')}${opt(s.fs===2,'<bdi dir=ltr>A++</bdi>','A11Y.set({fs:2})')}</div></div>
+     <div class="a11y-r"><b>🌓 ${T({ar:'تباين عالي',en:'High contrast'})}</b><div>${opt(!s.hc,T({ar:'عادي',en:'Normal'}),'A11Y.set({hc:false})')}${opt(s.hc,T({ar:'عالي',en:'High'}),'A11Y.set({hc:true})')}</div></div>
+     <div class="a11y-r"><b>🐢 ${T({ar:'صوت Acquire',en:'Acquire’s voice'})}</b><div>${opt(!s.slow,T({ar:'عادي',en:'Normal'}),'A11Y.set({slow:false})')}${opt(s.slow,T({ar:'أبطأ',en:'Slower'}),'A11Y.set({slow:true})')}</div></div>
+     <div class="a11y-r"><b>✋ ${T({ar:'الحركة والأنيميشن',en:'Motion & animation'})}</b><div>${opt(!s.rm,T({ar:'عادي',en:'Normal'}),'A11Y.set({rm:false})')}${opt(s.rm,T({ar:'أقل',en:'Reduced'}),'A11Y.set({rm:true})')}</div></div>`; }
+  function open(){ close(); const d=document.createElement('div'); d.className='a11y-bg'; d.id='a11yP'; d.setAttribute('role','dialog'); d.setAttribute('aria-modal','true');
+    d.innerHTML=`<div class="a11y-card"><div class="a11y-h"><h2>♿ ${T({ar:'إعدادات الإتاحة',en:'Accessibility'})}</h2><button class="btn ghost sm" onclick="A11Y.close()" aria-label="close">✕</button></div><div id="a11yBody"></div><p class="muted" style="font-size:.88rem;margin:8px 0 0">${T({ar:'الإعدادات بتتحفظ على الجهاز ده.',en:'Settings are saved on this device.'})}</p></div>`;
+    d.onclick=e=>{ if(e.target===d) close(); }; document.body.appendChild(d); paint(); logEv('a11y_open'); }
+  function close(){ document.getElementById('a11yP')?.remove(); }
+  apply(); return {set,get:()=>s,rm,rate,open,close,apply};
+})();
 function logEv(event, details=''){
   const p={action:'log', ts:new Date().toISOString(), email:USER?.email||'', phone:USER?.phone||'', event, details:String(details).slice(0,500), path:S.path||'', pre:S.pre?.score??'', post:S.post?.score??'', lang:LANG};
   if(CONFIG.API_URL){ const q=store.get('cot:pending',[]); q.push(p); store.set('cot:pending',q.slice(-300)); flushLogs(); }
@@ -75,6 +93,7 @@ function nav(){
     <button role="menuitem" onclick="menuGo(()=>go('games'))"><span class="mi-emo">🎮</span><span>${T({ar:'ساحة الألعاب',en:'Game zone'})}</span></button>
     <button role="menuitem" onclick="menuGo(openChat)">${ART.i.help}<span>${T({ar:'المساعدة',en:'Help'})}</span></button>
     <button role="menuitem" data-snd onclick="VOICE.toggle()">${VOICE.label()}</button>
+    <button role="menuitem" onclick="menuGo(A11Y.open)"><span class="mi-emo">♿</span><span>${T({ar:'الإتاحة',en:'Accessibility'})}</span></button>
     <button role="menuitem" onclick="menuGo(toggleLang)">${ART.i.globe}<span>${LANG==='ar'?'English':'العربية'}</span></button>
     <hr>
     <button role="menuitem" class="out" onclick="menuGo(logout)">${ART.i.out}<span>${T({ar:'خروج',en:'Logout'})}</span></button>
@@ -175,7 +194,7 @@ const VOICE=(()=>{ let a=null, q=[], pending=null, primed=false, held=false; con
     for(const id of ALL){ const u=src(id).replace(/^audio\/\w+/,'audio/'+lg); if(cache[u]) continue;
       try{ const r=await fetch(u); if(r.ok) cache[u]=URL.createObjectURL(await r.blob()); }catch(e){ warming[lg]=0; return; } } }
   setTimeout(warm,7000); /* after the intro, so the animation stays smooth */
-  function next(){ const id=q.shift(); if(id==null){ a=null; return; } const rest=q.slice(); const u=src(id); a=el; el.onended=next; el.src=cache[u]||u; el.playbackRate=RATE; el.defaultPlaybackRate=RATE; el.preservesPitch=true;
+  function next(){ const id=q.shift(); if(id==null){ a=null; return; } const rest=q.slice(); const u=src(id); a=el; el.onended=next; el.src=cache[u]||u; el.playbackRate=A11Y.rate(); el.defaultPlaybackRate=A11Y.rate(); el.preservesPitch=true;
     const r=el.play(); if(r&&r.catch) r.catch(()=>{ pending=[id,...rest]; q=[]; }); }
   function play(ids){ stop(); warm(); if(held){ pending=null; return; } if(!on()||ids==null) return; q=[].concat(ids).filter(x=>x!=null); pending=null; next(); }
   function stop(){ q=[]; if(a){ a.onended=null; try{a.pause()}catch(e){} a=null; } }
@@ -205,7 +224,7 @@ const GUIDE = (()=>{
   function mood(cls){ const b=$r('#rbot'); if(!b)return; b.classList.remove('pop','jump','wave','point','big'); void b.offsetWidth; cls.split(' ').filter(Boolean).forEach(c=>b.classList.add(c)); }
   function say(o){ const el=$r('#rtxt'); if(!el)return; const txt=T(o); VOICE.play(o.v); clearInterval(typing); el.textContent=''; let i=0;
     const bub=$r('#rbub'); bub.classList.remove('show'); void bub.offsetWidth; bub.classList.add('show');
-    if(matchMedia('(prefers-reduced-motion: reduce)').matches){ el.textContent=txt; return; }
+    if(A11Y.rm()){ el.textContent=txt; return; }
     const chars=[...txt]; typing=setInterval(()=>{ el.textContent+=chars[i++]||''; if(i>=chars.length) clearInterval(typing); },32); }
   function highlight(sel){ document.querySelectorAll('.glow').forEach(x=>x.classList.remove('glow')); if(!sel) return; const t=$r(sel); if(t) t.classList.add('glow'); }
   function aim(sel){ const arm=$r('#rbPoint'), svg=$r('#rbSvg'); if(!arm||!svg) return;
@@ -279,7 +298,7 @@ const MOOD_LINES = {
 const WALKER = (()=>{
   const EMO={great:'🤩',good:'👍',nervous:'😬',tired:'😴'};
   let el=null, pos={x:0,y:0}, running=false, token=0, current=null;
-  const reduce=()=>matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const reduce=()=>A11Y.rm();
   const sizeFor=()=>{ const b=document.querySelector('.moods button'); const h=b?b.getBoundingClientRect().height:44; return Math.round(h*1.6); };
   function make(){ el?.remove(); el=document.createElement('div'); el.className='walker'; el.innerHTML=`<div class="wb-bub" aria-hidden="true"></div><div class="wb-body">${ART.robotMini()}</div>`; document.body.appendChild(el); size(); }
   function size(){ if(!el) return; const h=sizeFor(); el.style.width=Math.round(h*100/132)+'px'; el.style.height=h+'px'; }
@@ -457,21 +476,64 @@ function practice(box, qs, bucket, unit){
 
 /* ---- UNIT ---- */
 const UNIT_VIDEOS={u1:1,u2:1,u3:1,u4:1,u5:1,u6:1};
+/* the moment (s) each video reaches its "common mistake" card: the video pauses there and asks */
+const VQ_AT={u1:{ar:37.47,en:39.33},u2:{ar:41.97,en:42.97},u3:{ar:38.83,en:40.0},u4:{ar:49.97,en:52.93},u5:{ar:43.47,en:43.03},u6:{ar:37.9,en:39.07}};
 function unitVideo(u){ if(!UNIT_VIDEOS[u.id]) return '';
   return `<div class="card uvid" style="margin-top:18px"><h2 style="margin-top:0">🎬 ${T({ar:'حكاية المحور',en:'The unit story'})}</h2>
-   <video controls playsinline preload="metadata" poster="video/${u.id}-poster.jpg" src="video/${u.id}-${LANG}.mp4" onplay="VOICE.stop();logEv('video_play','${u.id}:${LANG}')" onended="logEv('video_end','${u.id}:${LANG}')"></video></div>`; }
+   <div class="vwrap"><video controls playsinline preload="metadata" poster="video/${u.id}-poster.jpg" src="video/${u.id}-${LANG}.mp4" onplay="VOICE.stop();logEv('video_play','${u.id}:${LANG}')" onended="logEv('video_end','${u.id}:${LANG}')"></video></div>
+   <p class="muted" style="font-size:.88rem;margin:8px 0 0">⏸️ ${T({ar:'الفيديو هيقف مرة ويسألك سؤال سريع قبل ما يكمّل.',en:'The video will pause once to ask you a quick question.'})}</p></div>`; }
+function vqAttach(u){ const v=document.querySelector('.uvid video'), w=document.querySelector('.uvid .vwrap'); if(!v||!VQ_AT[u.id]) return;
+  const at=VQ_AT[u.id][LANG]-0.2, m=u.mis[0]; let asked=false;
+  const exitFs=()=>{ try{ if(document.fullscreenElement) document.exitFullscreen(); else if(v.webkitDisplayingFullscreen) v.webkitExitFullscreen(); }catch(e){} };
+  v.addEventListener('timeupdate',()=>{ if(!asked && v.currentTime>=at && v.currentTime<at+4){ asked=true; v.pause(); exitFs(); ask(); } });
+  v.addEventListener('seeked',()=>{ if(v.currentTime<at-1){ asked=false; w.querySelector('.vq')?.remove(); } });
+  function ask(){ w.querySelector('.vq')?.remove(); const o=document.createElement('div'); o.className='vq'; o.setAttribute('role','dialog');
+    o.innerHTML=`<div class="vq-c"><div class="vq-t">⏸️ ${T({ar:'سؤال سريع قبل ما نكمّل',en:'Quick question before we go on'})}</div>
+      <div class="vq-s">${T({ar:'صح ولا غلط؟',en:'True or false?'})}<br>«${chem(T(m.w))}»</div>
+      <div class="vq-b"><button class="btn green" data-a="t">✔ ${T({ar:'صح',en:'True'})}</button><button class="btn" style="background:#e04848;color:#fff" data-a="f">✘ ${T({ar:'غلط',en:'False'})}</button></div><div class="vq-f"></div></div>`;
+    w.appendChild(o);
+    o.querySelectorAll('[data-a]').forEach(b=>b.onclick=()=>{ const ok=b.dataset.a==='f'; logEv('video_q',`${u.id}:${ok?'correct':'wrong'}`);
+      o.querySelector('.vq-b').innerHTML='';
+      o.querySelector('.vq-f').innerHTML=`<div class="fb ${ok?'ok':'no'}">${ok?T({ar:'✔ برافو! الجملة دي غلط فعلًا.',en:'✔ Well done! That statement is false.'}):T({ar:'✘ لأ، الجملة دي غلط شائع.',en:'✘ No, that is a common mistake.'})} ${T({ar:'الصح:',en:'Correct idea:'})} ${chem(T(m.r))}</div>
+        <button class="btn blue" style="margin-top:10px">▶ ${T({ar:'كمّل الفيديو',en:'Continue the video'})}</button>`;
+      o.querySelector('.vq-f .btn').onclick=()=>{ o.remove(); v.play(); }; }); }
+}
+function unitObjectives(u){ const x=(typeof UNIT_EXTRA!=='undefined')&&UNIT_EXTRA[u.id]; if(!x) return '';
+  return `<div class="card" style="margin-top:18px"><h2 style="margin-top:0">🎯 ${T({ar:'بعد المحور ده هتقدر:',en:'After this unit you will be able to:'})}${reviewTag()}</h2>
+   <ol class="objs" style="--c:var(--${u.color})">${x.obj.map((o,i)=>`<li><b>${i+1}</b><span>${chem(T(o))}</span></li>`).join('')}</ol></div>`; }
+function unitInfo(u){ const x=(typeof UNIT_EXTRA!=='undefined')&&UNIT_EXTRA[u.id]; if(!x) return ''; const m=u.mis[0];
+  return `<div class="info" style="margin-top:18px"><div class="info-h" style="background:var(--${u.color})"><span>📌 ${T({ar:'المحور في صورة',en:'The unit at a glance'})}</span><span>${u.n}</span></div>
+   <div class="info-g">${x.sum.map(t=>`<div class="info-t"><div class="ic">${t.i}</div><b>${chem(T(t.t))}</b><span>${chem(T(t.d))}</span></div>`).join('')}</div>
+   <div class="info-m"><div class="w">✘ ${chem(T(m.w))}</div><div class="r">✔ ${chem(T(m.r))}</div></div></div>`; }
+function reflRender(u){ const box=document.getElementById('refl'); if(!box) return; const st=S.units[u.id]||{}; const r=st.refl;
+  const CF=[['low','😟',{ar:'لسه مش فاهم',en:'Not yet'}],['mid','🙂',{ar:'فاهم نص نص',en:'Getting there'}],['high','😎',{ar:'فاهم كويس',en:'Got it'}]];
+  const head=`<h2 style="margin-top:0">🪞 ${T({ar:'لحظة تأمّل',en:'A moment to reflect'})}</h2>`;
+  if(r && !box._edit){ box.innerHTML=head+`<div class="saved">✔ ${T({ar:'اتسجّل تأمّلك. شكرًا!',en:'Your reflection is saved. Thanks!'})}<br><b>${CF.find(c=>c[0]===r.c)?.[1]||''}</b> ${r.l?`· ${T({ar:'اتعلمت:',en:'Learned:'})} ${esc(r.l)}`:''} ${r.q?`· ${T({ar:'محتاج أفهم:',en:'Still unclear:'})} ${esc(r.q)}`:''}</div><div class="ctrls"><button class="btn ghost sm" id="rfEdit">✎ ${T({ar:'عدّل',en:'Edit'})}</button></div>`;
+    box.querySelector('#rfEdit').onclick=()=>{ box._edit=true; reflRender(u); }; return; }
+  let c=r?.c||'';
+  box.innerHTML=head+`<label>${T({ar:'حاسس إنك فاهم المحور ده قد إيه؟',en:'How well do you understand this unit?'})}</label><div class="conf">${CF.map(x=>`<button data-c="${x[0]}" class="${c===x[0]?'on':''}">${x[1]} ${T(x[2])}</button>`).join('')}</div>
+    <label for="rfL">${T({ar:'إيه أهم حاجة اتعلمتها؟',en:'What is the most important thing you learned?'})}</label><textarea id="rfL" maxlength="300">${r?.l?esc(r.l):''}</textarea>
+    <label for="rfQ">${T({ar:'إيه اللي لسه مش واضح ليك؟',en:'What is still not clear to you?'})}</label><textarea id="rfQ" maxlength="300">${r?.q?esc(r.q):''}</textarea>
+    <div class="ctrls" style="margin-top:10px"><button class="btn blue" id="rfSave">${T({ar:'احفظ تأمّلي',en:'Save my reflection'})}</button></div>`;
+  box.querySelectorAll('[data-c]').forEach(b=>b.onclick=()=>{ c=b.dataset.c; box.querySelectorAll('[data-c]').forEach(x=>x.classList.toggle('on',x===b)); });
+  box.querySelector('#rfSave').onclick=()=>{ const l=box.querySelector('#rfL').value.trim(), q=box.querySelector('#rfQ').value.trim();
+    if(!c && !l && !q){ toast(T({ar:'اختار إحساسك أو اكتب جملة 🙂',en:'Pick a feeling or write a line 🙂'})); return; }
+    st.refl={c,l,q,at:new Date().toISOString()}; S.units[u.id]=st; save(); logEv('reflection',`${u.id}|${c}|${l}|${q}`); box._edit=false; reflRender(u); toast(T({ar:'اتسجّل ✔',en:'Saved ✔'})); }; }
 function vUnit(id){
   const u=unitById(id), k=S.path||S.rec, p=PATHS[k], idx=UNITS.indexOf(u);
   S.units=S.units||{}; S.units[id]=S.units[id]||{}; if(!S.units[id].opened){S.units[id].opened=new Date().toISOString()} S.lastUnit=id; save();
   logEv('unit_open',id); CTX.unit=id;
-  AFTER.push(()=>{ u.sims.forEach(s=>{const c=SIMS[s]($('#sim-'+s));if(typeof c==='function')cleanups.push(c)}); practice($('#uq'),u.quiz,'units',id); });
+  AFTER.push(()=>{ u.sims.forEach(s=>{const c=SIMS[s]($('#sim-'+s));if(typeof c==='function')cleanups.push(c)}); practice($('#uq'),u.quiz,'units',id); vqAttach(u); reflRender(u); });
   return `<div style="display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap"><button class="btn ghost sm" onclick="go('path')">${LANG==='ar'?'→':'←'} ${T(p.name)}</button><button class="btn ghost sm" onclick="askAbout()">${ART.i.help.replace('<svg','<svg width="18"')} ${T({ar:'اسأل Acquire عن الدرس ده',en:'Ask Acquire about this lesson'})}</button></div>
    <div class="banner" style="margin-top:14px;justify-content:flex-start;text-align:start"><span class="n" style="background:var(--${u.color});color:#fff;width:52px;height:52px;border-radius:16px;display:inline-flex;align-items:center;justify-content:center;font-size:1.5rem;font-weight:900;flex:none">${u.n}</span><div><h1 style="font-size:1.6rem">${T(u.t)}</h1><p>${T(u.goal)}</p></div></div>
+   ${unitObjectives(u)}
    ${unitVideo(u)}
    <div class="card" style="margin-top:18px">${u.sections.map(s=>`<div class="section"><h2>${T(s.h)}${s.review?reviewTag():''}</h2>${T(s.b)}</div>`).join('')}</div>
    <div class="section"><h2>${T({ar:'جرّب بنفسك',en:'Try it yourself'})}</h2>${u.sims.map(s=>`<div id="sim-${s}"></div>`).join('')}</div>
    <div class="card"><h2 style="margin-top:0">${T({ar:'انتبه من الأخطاء الشائعة',en:'Watch out for common misconceptions'})}</h2>${u.mis.map(m=>`<div class="mis"><div class="w">✘ ${T(m.w)}</div><div class="r">✔ ${T(m.r)}</div></div>`).join('')}</div>
    <div class="card" style="margin-top:18px"><h2 style="margin-top:0">${k==='sup'?T({ar:'إعادة التقييم',en:'Reassessment'}):T({ar:'اختبر نفسك',en:'Check yourself'})}</h2><div id="uq"></div></div>
+   ${unitInfo(u)}
+   <div class="card refl" id="refl" style="margin-top:18px"></div>
    <div style="display:flex;justify-content:space-between;margin-top:18px">${idx>0?`<button class="btn ghost" onclick="go('${UNITS[idx-1].id}')">${T({ar:'الدرس السابق',en:'Previous'})}</button>`:'<span></span>'}${idx<5?`<button class="btn ${p.color}" onclick="go('${UNITS[idx+1].id}')">${T({ar:'الدرس التالي',en:'Next lesson'})}</button>`:`<button class="btn ${p.color}" onclick="go('path')">${T({ar:'رجوع للمسار',en:'Back to path'})}</button>`}</div>`;
 }
 

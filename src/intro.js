@@ -9,7 +9,7 @@ const INTRO=(()=>{
   const hand=`<svg viewBox="0 0 60 44" class="pk-hand" aria-hidden="true"><defs><linearGradient id="pkH" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#4a95f5"/><stop offset="1" stop-color="#1d5fc2"/></linearGradient></defs>
       <rect x="0" y="8" width="40" height="28" rx="14" fill="url(#pkH)"/><rect x="30" y="2" width="12" height="16" rx="6" fill="url(#pkH)"/><rect x="34" y="15" width="14" height="12" rx="6" fill="url(#pkH)"/><rect x="30" y="26" width="12" height="15" rx="6" fill="url(#pkH)"/></svg>`;
   function run(onDone){
-    if(matchMedia('(prefers-reduced-motion: reduce)').matches) return onDone&&onDone();
+    if(matchMedia('(prefers-reduced-motion: reduce)').matches||(typeof A11Y!=='undefined'&&A11Y.get().rm)) return onDone&&onDone();
     const d=document.createElement('div'); d.id='intro'; d.className='intro'; d.setAttribute('role','dialog'); d.setAttribute('aria-label',T({ar:'مقدمة المنصة',en:'Platform intro'}));
     d.innerHTML=`<div class="pk"><div class="pk-tilt">${head()}</div></div>
       <div class="pk-h1">${hand}</div><div class="pk-h2">${hand}</div>

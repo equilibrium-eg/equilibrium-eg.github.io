@@ -263,3 +263,60 @@ const CHALLENGES = [
   o:[{ar:'يُكتب الماء في الحالتين',en:'Water is written in both'},{ar:'يُكتب البخار (v) ولا يُكتب السائل النقي (l)',en:'Vapour (v) is included; pure liquid (l) is omitted'},{ar:'لا يُكتب في الحالتين',en:'Omitted in both'}], a:1,
   x:{ar:'البخار غاز تركيزه متغير، والسائل النقي تركيزه ثابت.',en:'Vapour is a gas with variable concentration; a pure liquid’s is constant.'}}
 ];
+
+/* Behavioural objectives (review: pending teacher approval) + one-screen summary ("infographic") per unit */
+const UNIT_EXTRA = {
+ u1:{obj:[
+   {ar:'يفسّر المقصود بالاتزان الديناميكي في نظام مغلق.',en:'Explain dynamic equilibrium in a closed system.'},
+   {ar:'يميّز بين تساوي معدلي التفاعل وثبات التركيزات.',en:'Distinguish equal rates from constant concentrations.'},
+   {ar:'يتنبأ باتجاه إزاحة الاتزان عند تغيير تركيز مادة متفاعلة أو ناتجة.',en:'Predict the shift when a reactant or product concentration changes.'},
+   {ar:'يطبّق مبدأ لوشاتيليه على أمثلة بسيطة.',en:"Apply Le Chatelier's principle to simple examples."}],
+  sum:[{i:'🔁',t:{ar:'اتزان ديناميكي',en:'Dynamic equilibrium'},d:{ar:'التفاعلان مستمران بنفس المعدل',en:'Both reactions continue at equal rates'}},
+   {i:'📊',t:{ar:'التركيزات',en:'Concentrations'},d:{ar:'ثابتة… وليست بالضرورة متساوية',en:'Constant… not necessarily equal'}},
+   {i:'➕',t:{ar:'زيادة متفاعل',en:'Add a reactant'},d:{ar:'إزاحة طردية',en:'Forward shift'}},
+   {i:'➖',t:{ar:'زيادة ناتج',en:'Add a product'},d:{ar:'إزاحة عكسية',en:'Backward shift'}}]},
+ u2:{obj:[
+   {ar:'يكتب تعبيري معدل التفاعل الطردي والعكسي للمثال المدرسي.',en:'Write the forward and backward rate expressions for the school example.'},
+   {ar:'يستنتج أن $K_{c}=«k_{f}|k_{b}»$ عند تساوي المعدلين.',en:'Derive $K_{c}=«k_{f}|k_{b}»$ when the two rates are equal.'},
+   {ar:'يوضّح أن معامل المادة في المعادلة الموزونة يصبح أسًا لتركيزها.',en:'Show that a coefficient in the balanced equation becomes a power.'},
+   {ar:'يفسّر تغيّر شدة اللون الأحمر عند إضافة متفاعل أو ناتج.',en:'Explain the change in red colour when a reactant or product is added.'}],
+  sum:[{i:'⚖️',t:{ar:'عند الاتزان',en:'At equilibrium'},d:{ar:'$r_{f}=r_{b}$',en:'$r_{f}=r_{b}$'}},
+   {i:'🧮',t:{ar:'ثابت الاتزان',en:'Equilibrium constant'},d:{ar:'$K_{c}=«k_{f}|k_{b}»$',en:'$K_{c}=«k_{f}|k_{b}»$'}},
+   {i:'³',t:{ar:'المعامل',en:'The coefficient'},d:{ar:'يصبح أسًا: $[NH4SCN]^{3}$',en:'Becomes a power: $[NH4SCN]^{3}$'}},
+   {i:'🔴',t:{ar:'تجربة اللون',en:'Colour test'},d:{ar:'+$FeCl3$ أغمق · +$NH4Cl$ أفتح',en:'+$FeCl3$ deeper · +$NH4Cl$ paler'}}]},
+ u3:{obj:[
+   {ar:'يكتب تعبير $K_{c}$ من معادلة موزونة.',en:'Write the $K_{c}$ expression from a balanced equation.'},
+   {ar:'يستبعد المواد الصلبة النقية والسوائل النقية من التعبير.',en:'Omit pure solids and pure liquids from the expression.'},
+   {ar:'يميّز بين السائل (l) والبخار (v) عند كتابة التعبير.',en:'Distinguish liquid (l) from vapour (v) when writing the expression.'},
+   {ar:'يفسّر دلالة القيمة الكبيرة جدًا والصغيرة جدًا لـ $K_{c}$.',en:'Interpret very large and very small values of $K_{c}$.'}],
+  sum:[{i:'⬆️',t:{ar:'النواتج',en:'Products'},d:{ar:'في البسط',en:'On top'}},
+   {i:'⬇️',t:{ar:'المتفاعلات',en:'Reactants'},d:{ar:'في المقام',en:'On the bottom'}},
+   {i:'🚫',t:{ar:'(s) و (l)',en:'(s) and (l)'},d:{ar:'لا تُكتب',en:'Not written'}},
+   {i:'✅',t:{ar:'(g) و (v) و (aq)',en:'(g), (v), (aq)'},d:{ar:'تُكتب',en:'Written'}}]},
+ u4:{obj:[
+   {ar:'يميّز بين التفاعل الطارد والماص للحرارة.',en:'Distinguish exothermic from endothermic reactions.'},
+   {ar:'يتنبأ بأثر التسخين والتبريد على موضع الاتزان.',en:'Predict the effect of heating and cooling on the equilibrium position.'},
+   {ar:'يفسّر لماذا تغيّر الحرارة قيمة K بينما لا يغيّرها تغيير التركيز.',en:'Explain why temperature changes K while concentration does not.'},
+   {ar:'يوضّح أن التسخين يزيد معدل التفاعلين الطردي والعكسي.',en:'Show that heating speeds up both forward and backward reactions.'}],
+  sum:[{i:'🔥',t:{ar:'طارد + تسخين',en:'Exothermic + heat'},d:{ar:'إزاحة عكسية · K ↓',en:'Backward shift · K ↓'}},
+   {i:'❄️',t:{ar:'طارد + تبريد',en:'Exothermic + cool'},d:{ar:'إزاحة طردية · K ↑',en:'Forward shift · K ↑'}},
+   {i:'🌡️',t:{ar:'ماص + تسخين',en:'Endothermic + heat'},d:{ar:'إزاحة طردية · K ↑',en:'Forward shift · K ↑'}},
+   {i:'⚡',t:{ar:'التسخين',en:'Heating'},d:{ar:'يسرّع التفاعلين',en:'Speeds up both reactions'}}]},
+ u5:{obj:[
+   {ar:'يتنبأ بأثر زيادة الضغط أو نقصه على الاتزانات الغازية.',en:'Predict the effect of raising or lowering pressure on gaseous equilibria.'},
+   {ar:'يحسب عدد المولات الغازية فقط في طرفي المعادلة.',en:'Count gas moles only on each side of the equation.'},
+   {ar:'يوضّح أن عدم إزاحة الاتزان لا يعني عدم تغيّر التركيزات.',en:'Explain that "no shift" does not mean concentrations stay the same.'},
+   {ar:'يكتب تعبير $K_{p}$ باستخدام الضغوط الجزئية.',en:'Write the $K_{p}$ expression using partial pressures.'}],
+  sum:[{i:'🗜️',t:{ar:'ضغط ↑',en:'Pressure ↑'},d:{ar:'نحو المولات الغازية الأقل',en:'Toward fewer gas moles'}},
+   {i:'🎈',t:{ar:'ضغط ↓',en:'Pressure ↓'},d:{ar:'نحو المولات الغازية الأكثر',en:'Toward more gas moles'}},
+   {i:'🟰',t:{ar:'مولات متساوية',en:'Equal moles'},d:{ar:'لا إزاحة… لكن التركيزات ↑',en:'No shift… but concentrations ↑'}},
+   {i:'🔒',t:{ar:'$K_{c}$ و $K_{p}$',en:'$K_{c}$ and $K_{p}$'},d:{ar:'ثابتان عند ثبوت الحرارة',en:'Unchanged at constant T'}}]},
+ u6:{obj:[
+   {ar:'يوضّح أن العامل الحفاز يوفّر مسارًا بديلًا بطاقة تنشيط أقل.',en:'Explain that a catalyst provides an alternative pathway with lower activation energy.'},
+   {ar:'يفسّر لماذا لا يزيح العامل الحفاز موضع الاتزان.',en:'Explain why a catalyst does not shift the equilibrium position.'},
+   {ar:'يميّز بين ما يغيّره الحفاز (المعدل وطاقة التنشيط) وما لا يغيّره ($ΔH$ و K والموضع).',en:'Distinguish what a catalyst changes (rate, Ea) from what it does not ($ΔH$, K, position).'}],
+  sum:[{i:'⛰️',t:{ar:'طاقة التنشيط',en:'Activation energy'},d:{ar:'يقلّلها للاتجاهين بنفس المقدار',en:'Lowered equally for both directions'}},
+   {i:'⚡',t:{ar:'المعدل',en:'Rate'},d:{ar:'الطردي والعكسي يزيدان معًا',en:'Forward and backward both increase'}},
+   {i:'⏱️',t:{ar:'الاتزان',en:'Equilibrium'},d:{ar:'يُوصَل إليه أسرع',en:'Reached sooner'}},
+   {i:'🔒',t:{ar:'$ΔH$ و K والموضع',en:'$ΔH$, K, position'},d:{ar:'لا تتغير',en:'Unchanged'}}]}
+};
