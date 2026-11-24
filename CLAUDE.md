@@ -46,8 +46,8 @@ An adaptive learning website for **Egyptian 3rd-year secondary chemistry — Che
 
 ## Open items / next steps
 - DONE 2026-11-25: teacher approved the 14 diagnostic questions, all review-tagged sections, the 0 °C NO₂ description and the six video scripts → `CONFIG.showReviewTags = false`.
-- Unit objectives (`UNIT_EXTRA.obj`) still await approval (`CONFIG.showObjTags = true`).
-- HI example ADDED to Unit 3 with Kc = 50 (teacher's choice) + quiz Q3c; rounding = 3 decimal places (teacher). The worked-example concentrations are illustrative and tagged pending approval (`newrev`, shown with `CONFIG.showObjTags`). Still open: whether K is written with units. Q and extra reactions stay hidden.
+- Unit objectives were removed from the page at the owner's request (data stays in `UNIT_EXTRA.obj`, unused).
+- HI example in Unit 3 (approved by owner 2026-11-25): Kc = 50, illustrative concentrations chosen to give 50, **round final answers to one decimal place**, **Kc written without units**; quiz Q3c. Q and extra reactions stay hidden.
 - Unit story videos (AR/EN) live in `video/`; production files and scripts are outside the repo.
 - Owner mentioned a possible **7th lesson** — content not received yet.
 - Pilot with students → analyse pre/post + usage from the Sheet (DBR evaluation cycle).

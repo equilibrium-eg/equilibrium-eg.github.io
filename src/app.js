@@ -3,7 +3,6 @@ const CONFIG = {
   API_URL: 'https://script.google.com/macros/s/AKfycbwkTkQUCGk2qS5gro0e0cEB2YF1A8R0czG9KKu_HErutTg4woSlBZHNVTFFrP9pFrojmw/exec', // Google Apps Script Web App (logging)
   certMinPost: 50,          // post-test % needed (with a finished path) to unlock the certificate
   showReviewTags: false,     // teacher approved the reviewed items on 2026-11-25
-  showObjTags: true,         // unit objectives were added later and still await approval
   thresholds: { remedial: 49, support: 79 }, // 0–49 remedial · 50–79 support · 80–100 enrichment
   teacher: { ar:'أ. أروى يوسف', en:'Miss Arwa Yousef' }
 };
@@ -500,7 +499,7 @@ function vqAttach(u){ const v=document.querySelector('.uvid video'), w=document.
       o.querySelector('.vq-f .btn').onclick=()=>{ o.remove(); v.play(); }; }); }
 }
 function unitObjectives(u){ const x=(typeof UNIT_EXTRA!=='undefined')&&UNIT_EXTRA[u.id]; if(!x) return '';
-  return `<div class="card" style="margin-top:18px"><h2 style="margin-top:0">🎯 ${T({ar:'بعد المحور ده هتقدر:',en:'After this unit you will be able to:'})}${reviewTag(CONFIG.showObjTags)}</h2>
+  return `<div class="card" style="margin-top:18px"><h2 style="margin-top:0">🎯 ${T({ar:'بعد المحور ده هتقدر:',en:'After this unit you will be able to:'})}</h2>
    <ol class="objs" style="--c:var(--${u.color})">${x.obj.map((o,i)=>`<li><b>${i+1}</b><span>${chem(T(o))}</span></li>`).join('')}</ol></div>`; }
 function unitInfo(u){ const x=(typeof UNIT_EXTRA!=='undefined')&&UNIT_EXTRA[u.id]; if(!x) return ''; const m=u.mis[0];
   return `<div class="info" style="margin-top:18px"><div class="info-h" style="background:var(--${u.color})"><span>📌 ${T({ar:'المحور في صورة',en:'The unit at a glance'})}</span><span>${u.n}</span></div>
@@ -527,9 +526,8 @@ function vUnit(id){
   AFTER.push(()=>{ u.sims.forEach(s=>{const c=SIMS[s]($('#sim-'+s));if(typeof c==='function')cleanups.push(c)}); practice($('#uq'),u.quiz,'units',id); vqAttach(u); reflRender(u); });
   return `<div style="display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap"><button class="btn ghost sm" onclick="go('path')">${LANG==='ar'?'→':'←'} ${T(p.name)}</button><button class="btn ghost sm" onclick="askAbout()">${ART.i.help.replace('<svg','<svg width="18"')} ${T({ar:'اسأل Acquire عن الدرس ده',en:'Ask Acquire about this lesson'})}</button></div>
    <div class="banner" style="margin-top:14px;justify-content:flex-start;text-align:start"><span class="n" style="background:var(--${u.color});color:#fff;width:52px;height:52px;border-radius:16px;display:inline-flex;align-items:center;justify-content:center;font-size:1.5rem;font-weight:900;flex:none">${u.n}</span><div><h1 style="font-size:1.6rem">${T(u.t)}</h1><p>${T(u.goal)}</p></div></div>
-   ${unitObjectives(u)}
    ${unitVideo(u)}
-   <div class="card" style="margin-top:18px">${u.sections.map(s=>`<div class="section"><h2>${T(s.h)}${s.review?reviewTag():''}${s.newrev?reviewTag(CONFIG.showObjTags):''}</h2>${T(s.b)}</div>`).join('')}</div>
+   <div class="card" style="margin-top:18px">${u.sections.map(s=>`<div class="section"><h2>${T(s.h)}${s.review?reviewTag():''}</h2>${T(s.b)}</div>`).join('')}</div>
    <div class="section"><h2>${T({ar:'جرّب بنفسك',en:'Try it yourself'})}</h2>${u.sims.map(s=>`<div id="sim-${s}"></div>`).join('')}</div>
    <div class="card"><h2 style="margin-top:0">${T({ar:'انتبه من الأخطاء الشائعة',en:'Watch out for common misconceptions'})}</h2>${u.mis.map(m=>`<div class="mis"><div class="w">✘ ${T(m.w)}</div><div class="r">✔ ${T(m.r)}</div></div>`).join('')}</div>
    <div class="card" style="margin-top:18px"><h2 style="margin-top:0">${k==='sup'?T({ar:'إعادة التقييم',en:'Reassessment'}):T({ar:'اختبر نفسك',en:'Check yourself'})}</h2><div id="uq"></div></div>
