@@ -1892,7 +1892,7 @@ function practice(box, qs, bucket, unit){
 }
 
 /* ---- UNIT ---- */
-const UNIT_VIDEOS={u1:1,u2:1};
+const UNIT_VIDEOS={u1:1,u2:1,u3:1};
 function unitVideo(u){ if(!UNIT_VIDEOS[u.id]) return '';
   return `<div class="card uvid" style="margin-top:18px"><h2 style="margin-top:0">🎬 ${T({ar:'حكاية المحور',en:'The unit story'})}</h2>
    <video controls playsinline preload="metadata" poster="video/${u.id}-poster.jpg" src="video/${u.id}-${LANG}.mp4" onplay="VOICE.stop();logEv('video_play','${u.id}:${LANG}')" onended="logEv('video_end','${u.id}:${LANG}')"></video></div>`; }
