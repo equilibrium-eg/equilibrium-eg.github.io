@@ -38,7 +38,7 @@ function post(payload){
 /* ---- accessibility settings (font size, contrast, motion, voice speed) ---- */
 const A11Y=(()=>{ const K='cot:a11y'; const s=Object.assign({fs:0,hc:false,rm:false,slow:false},store.get(K,{}));
   function apply(){ const h=document.documentElement; h.classList.toggle('a-fs1',s.fs===1); h.classList.toggle('a-fs2',s.fs===2); h.classList.toggle('a-hc',!!s.hc); h.classList.toggle('a-rm',!!s.rm); }
-  function set(p){ Object.assign(s,p); store.set(K,s); apply(); try{logEv('a11y',JSON.stringify(s))}catch(e){} paint(); }
+  function set(p){ const wasSlow=s.slow; Object.assign(s,p); store.set(K,s); if(p.slow&&!wasSlow) setTimeout(()=>aSay({v:135,ar:'تمام، هتكلم أبطأ شوية 🐢',en:'Okay, I’ll speak a little slower 🐢'},3500),50); apply(); try{logEv('a11y',JSON.stringify(s))}catch(e){} paint(); }
   const rm=()=>!!s.rm||matchMedia('(prefers-reduced-motion: reduce)').matches;
   const rate=()=>s.slow?0.9:1.1;
   function opt(on,label,fn){ return `<button class="a11y-o ${on?'on':''}" onclick="${fn}" aria-pressed="${!!on}">${label}</button>`; }
@@ -49,10 +49,12 @@ const A11Y=(()=>{ const K='cot:a11y'; const s=Object.assign({fs:0,hc:false,rm:fa
      <div class="a11y-r"><b>✋ ${T({ar:'الحركة والأنيميشن',en:'Motion & animation'})}</b><div>${opt(!s.rm,T({ar:'عادي',en:'Normal'}),'A11Y.set({rm:false})')}${opt(s.rm,T({ar:'أقل',en:'Reduced'}),'A11Y.set({rm:true})')}</div></div>`; }
   function open(){ close(); const d=document.createElement('div'); d.className='a11y-bg'; d.id='a11yP'; d.setAttribute('role','dialog'); d.setAttribute('aria-modal','true');
     d.innerHTML=`<div class="a11y-card"><div class="a11y-h"><h2>♿ ${T({ar:'إعدادات الإتاحة',en:'Accessibility'})}</h2><button class="btn ghost sm" onclick="A11Y.close()" aria-label="close">✕</button></div><div id="a11yBody"></div><p class="muted" style="font-size:.88rem;margin:8px 0 0">${T({ar:'الإعدادات بتتحفظ على الجهاز ده.',en:'Settings are saved on this device.'})}</p></div>`;
-    d.onclick=e=>{ if(e.target===d) close(); }; document.body.appendChild(d); paint(); logEv('a11y_open'); }
+    d.onclick=e=>{ if(e.target===d) close(); }; document.body.appendChild(d); paint(); logEv('a11y_open'); aSay({v:134,ar:'ظبّط الإعدادات اللي تريّحك 🙂',en:'Adjust the settings that suit you best 🙂'},3500); }
   function close(){ document.getElementById('a11yP')?.remove(); }
   apply(); return {set,get:()=>s,rm,rate,open,close,apply};
 })();
+/* Acquire says a line (text + recorded voice id) */
+function aSay(o,ms=4500){ try{ COACH.say(T(o),ms,{force:true,voice:o.v}); }catch(e){} }
 function logEv(event, details=''){
   const p={action:'log', ts:new Date().toISOString(), email:USER?.email||'', phone:USER?.phone||'', event, details:String(details).slice(0,500), path:S.path||'', pre:S.pre?.score??'', post:S.post?.score??'', lang:LANG};
   if(CONFIG.API_URL){ const q=store.get('cot:pending',[]); q.push(p); store.set('cot:pending',q.slice(-300)); flushLogs(); }
@@ -456,7 +458,7 @@ const qById = id => ALLQ().find(q=>q.id===id);
 function practice(box, qs, bucket, unit){
   box.innerHTML = qs.map((q,qi)=>`<div class="section" data-q="${q.id}"><div style="display:flex;justify-content:space-between;gap:10px;align-items:flex-start"><b>${qi+1}. ${chem(T(q.q))}</b><button class="btn sm hintb" data-h="${q.id}">💡 ${T({ar:'تلميح',en:'Hint'})}</button></div>${q.o.map((o,j)=>`<button class="opt" data-j="${j}"><span class="k">${j+1}</span><span>${chem(T(o))}</span></button>`).join('')}<div class="qhint"></div><div class="qfb"></div></div>`).join('');
   qs.forEach(q=>{ const sec=$(`[data-q="${q.id}"]`,box); let lvl=0;
-    $('.hintb',sec).onclick=()=>{ const H=HINTS[q.id]?.h||[]; lvl++;
+    $('.hintb',sec).onclick=()=>{ const H=HINTS[q.id]?.h||[]; lvl++; if(q.id==='Q3c'&&lvl===1) aSay({v:136,ar:'ابدأ بالتعبير، وعوّض، وبعدين خد الجذر ✍️',en:'Start with the expression, substitute, then take the square root ✍️'},4500);
       const parts=H.slice(0,lvl).map((h,k)=>`<div><b>${T({ar:'تلميح',en:'Hint'})} ${k+1}:</b> ${chem(T(h))}</div>`);
       if(lvl>H.length) parts.push(`<div><b>${T({ar:'الحل:',en:'Solution:'})}</b> ${chem(T(q.o[q.a]))} — ${chem(T(q.x))}</div>`);
       $('.qhint',sec).innerHTML=`<div class="fb hint">${parts.join('')}${lvl<=H.length?`<div class="muted" style="font-size:.85rem">${lvl<H.length?T({ar:'لسه محتاج مساعدة؟ دوس تلميح تاني.',en:'Still stuck? Press Hint again.'}):T({ar:'دوس تلميح تاني لو عايز تشوف الحل.',en:'Press Hint again to see the solution.'})}</div>`:''}</div>`;
@@ -466,7 +468,7 @@ function practice(box, qs, bucket, unit){
       $$('.opt',sec).forEach((x,k)=>{x.classList.remove('ok','no'); if(k===j)x.classList.add(ok?'ok':'no')});
       const why=HINTS[q.id]?.w?.[j];
       $('.qfb',sec).innerHTML=`<div class="fb ${ok?'ok':'no'}">${ok?T({ar:'✔ إجابة صحيحة. ',en:'✔ Correct. '})+chem(T(q.x)):T({ar:'✘ مش دي. ',en:'✘ Not this one. '})+(why?chem(T(why)):'')+'<br>'+T({ar:'جرّب اختيار تاني، أو دوس 💡 تلميح.',en:'Try another option, or press 💡 Hint.'})}</div>`;
-      if(!ok){CTX.q=q.id; CTX.wrong={id:q.id,j}; COMPANION.wrong();}
+      if(!ok){CTX.q=q.id; CTX.wrong={id:q.id,j}; COMPANION.wrong();} else if(q.id==='Q3c') aSay({v:137,ar:'ممتاز! وما تنساش تقرّب لرقم عشري واحد ✅',en:'Excellent! And don’t forget to round to one decimal place ✅'},4500);
       S[bucket]=S[bucket]||{}; if(unit){S.units=S.units||{};S.units[unit]=S.units[unit]||{};S.units[unit].q=S.units[unit].q||{};S.units[unit].q[q.id]=ok||S.units[unit].q[q.id]||false;}
       else { const before=S[bucket][q.id]; S[bucket][q.id]=ok||S[bucket][q.id]||false; if(bucket==='chal'&&ok&&!before){ save(); COMPANION.chal(); } }
       if(ok && S.pre?.weak.includes(q.c)){S.fixed=S.fixed||{}; if(!S.fixed[q.c]){S.fixed[q.c]=true; logEv('concept_fixed',q.c); toast(T({ar:'تم تصحيح مفهوم: ',en:'Concept fixed: '})+T(CONCEPTS[q.c])); COMPANION.fixed(q.c);}}
@@ -482,6 +484,7 @@ function unitVideo(u){ if(!UNIT_VIDEOS[u.id]) return '';
   return `<div class="card uvid" style="margin-top:18px"><h2 style="margin-top:0">🎬 ${T({ar:'حكاية المحور',en:'The unit story'})}</h2>
    <div class="vwrap"><video controls playsinline preload="metadata" poster="video/${u.id}-poster.jpg" src="video/${u.id}-${LANG}.mp4" onplay="VOICE.stop();logEv('video_play','${u.id}:${LANG}')" onended="logEv('video_end','${u.id}:${LANG}')"></video></div>
    <p class="muted" style="font-size:.88rem;margin:8px 0 0">⏸️ ${T({ar:'الفيديو هيقف مرة ويسألك سؤال سريع قبل ما يكمّل.',en:'The video will pause once to ask you a quick question.'})}</p></div>`; }
+function seeOnce(sel,fn){ const el=document.querySelector(sel); if(!el||!('IntersectionObserver' in window)) return; const io=new IntersectionObserver(es=>{ if(es.some(e=>e.isIntersecting&&e.intersectionRatio>=.6)){ io.disconnect(); fn(); } },{threshold:[.6]}); io.observe(el); cleanups.push(()=>io.disconnect()); }
 function vqAttach(u){ const v=document.querySelector('.uvid video'), w=document.querySelector('.uvid .vwrap'); if(!v||!VQ_AT[u.id]) return;
   const at=VQ_AT[u.id][LANG]-0.2, m=u.mis[0]; let asked=false;
   const exitFs=()=>{ try{ if(document.fullscreenElement) document.exitFullscreen(); else if(v.webkitDisplayingFullscreen) v.webkitExitFullscreen(); }catch(e){} };
@@ -491,8 +494,8 @@ function vqAttach(u){ const v=document.querySelector('.uvid video'), w=document.
     o.innerHTML=`<div class="vq-c"><div class="vq-t">⏸️ ${T({ar:'سؤال سريع قبل ما نكمّل',en:'Quick question before we go on'})}</div>
       <div class="vq-s">${T({ar:'صح ولا غلط؟',en:'True or false?'})}<br>«${chem(T(m.w))}»</div>
       <div class="vq-b"><button class="btn green" data-a="t">✔ ${T({ar:'صح',en:'True'})}</button><button class="btn" style="background:#e04848;color:#fff" data-a="f">✘ ${T({ar:'غلط',en:'False'})}</button></div><div class="vq-f"></div></div>`;
-    w.appendChild(o);
-    o.querySelectorAll('[data-a]').forEach(b=>b.onclick=()=>{ const ok=b.dataset.a==='f'; logEv('video_q',`${u.id}:${ok?'correct':'wrong'}`);
+    w.appendChild(o); aSay({v:128,ar:'استنى! سؤال سريع قبل ما نكمّل 🤔',en:'Hold on! A quick question before we go on 🤔'},4000);
+    o.querySelectorAll('[data-a]').forEach(b=>b.onclick=()=>{ const ok=b.dataset.a==='f'; logEv('video_q',`${u.id}:${ok?'correct':'wrong'}`); aSay(ok?{v:129,ar:'برافو! كده إنت فاهم الخطأ الشائع ده كويس 👏',en:'Bravo! You really understand this common mistake 👏'}:{v:130,ar:'ولا يهمك، ناس كتير بتقع في الغلطة دي… بص على الصح 👇',en:'No worries, lots of people make this mistake… look at the right idea 👇'},5000);
       o.querySelector('.vq-b').innerHTML='';
       o.querySelector('.vq-f').innerHTML=`<div class="fb ${ok?'ok':'no'}">${ok?T({ar:'✔ برافو! الجملة دي غلط فعلًا.',en:'✔ Well done! That statement is false.'}):T({ar:'✘ لأ، الجملة دي غلط شائع.',en:'✘ No, that is a common mistake.'})} ${T({ar:'الصح:',en:'Correct idea:'})} ${chem(T(m.r))}</div>
         <button class="btn blue" style="margin-top:10px">▶ ${T({ar:'كمّل الفيديو',en:'Continue the video'})}</button>`;
@@ -518,12 +521,12 @@ function reflRender(u){ const box=document.getElementById('refl'); if(!box) retu
   box.querySelectorAll('[data-c]').forEach(b=>b.onclick=()=>{ c=b.dataset.c; box.querySelectorAll('[data-c]').forEach(x=>x.classList.toggle('on',x===b)); });
   box.querySelector('#rfSave').onclick=()=>{ const l=box.querySelector('#rfL').value.trim(), q=box.querySelector('#rfQ').value.trim();
     if(!c && !l && !q){ toast(T({ar:'اختار إحساسك أو اكتب جملة 🙂',en:'Pick a feeling or write a line 🙂'})); return; }
-    st.refl={c,l,q,at:new Date().toISOString()}; S.units[u.id]=st; save(); logEv('reflection',`${u.id}|${c}|${l}|${q}`); box._edit=false; reflRender(u); toast(T({ar:'اتسجّل ✔',en:'Saved ✔'})); }; }
+    st.refl={c,l,q,at:new Date().toISOString()}; S.units[u.id]=st; save(); logEv('reflection',`${u.id}|${c}|${l}|${q}`); box._edit=false; reflRender(u); toast(T({ar:'اتسجّل ✔',en:'Saved ✔'})); aSay({v:133,ar:'شكرًا إنك فكّرت في اللي اتعلمته، ده بيفرق جامد! 💙',en:'Thanks for thinking about what you learned. It really makes a difference! 💙'},5000); }; }
 function vUnit(id){
   const u=unitById(id), k=S.path||S.rec, p=PATHS[k], idx=UNITS.indexOf(u);
   S.units=S.units||{}; S.units[id]=S.units[id]||{}; if(!S.units[id].opened){S.units[id].opened=new Date().toISOString()} S.lastUnit=id; save();
   logEv('unit_open',id); CTX.unit=id;
-  AFTER.push(()=>{ u.sims.forEach(s=>{const c=SIMS[s]($('#sim-'+s));if(typeof c==='function')cleanups.push(c)}); practice($('#uq'),u.quiz,'units',id); vqAttach(u); reflRender(u); });
+  AFTER.push(()=>{ u.sims.forEach(s=>{const c=SIMS[s]($('#sim-'+s));if(typeof c==='function')cleanups.push(c)}); practice($('#uq'),u.quiz,'units',id); vqAttach(u); reflRender(u); seeOnce('.info',()=>aSay({v:131,ar:'ده المحور كله في صورة واحدة، راجعه بسرعة 📌',en:'Here’s the whole unit in one picture. Give it a quick look 📌'},4500)); seeOnce('#refl',()=>{ if(!(S.units[u.id]||{}).refl) aSay({v:132,ar:'قبل ما تمشي… قولّي، حاسس إنك فهمت قد إيه؟ 🪞',en:'Before you go… tell me, how well do you feel you understood? 🪞'},5000); }); });
   return `<div style="display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap"><button class="btn ghost sm" onclick="go('path')">${LANG==='ar'?'→':'←'} ${T(p.name)}</button><button class="btn ghost sm" onclick="askAbout()">${ART.i.help.replace('<svg','<svg width="18"')} ${T({ar:'اسأل Acquire عن الدرس ده',en:'Ask Acquire about this lesson'})}</button></div>
    <div class="banner" style="margin-top:14px;justify-content:flex-start;text-align:start"><span class="n" style="background:var(--${u.color});color:#fff;width:52px;height:52px;border-radius:16px;display:inline-flex;align-items:center;justify-content:center;font-size:1.5rem;font-weight:900;flex:none">${u.n}</span><div><h1 style="font-size:1.6rem">${T(u.t)}</h1><p>${T(u.goal)}</p></div></div>
    ${unitVideo(u)}
